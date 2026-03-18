@@ -1,8 +1,8 @@
 apiVersion: stack-cli.dev/v1
 kind: StackApp
 metadata:
-  name: stack-app
-  namespace: stack-demo
+  name: one-runtime
+  namespace: one-runtime
 spec:
   components:
     db: {}
@@ -10,9 +10,9 @@ spec:
     dev:
       components:
         ingress:
-          port: 30000
+          port: 32760
         db:
-          expose_db_port: 30001
+          expose_db_port: 32761
           danger_override_password: testpassword
   services:
     web:

@@ -3,7 +3,7 @@ cluster-name := "one-runtime"
 
 dev-init:
     k3d cluster delete {{cluster-name}}
-    k3d cluster create {{cluster-name}} --agents 1 -p "40000-40001:40000-40001@agent:0"
+    k3d cluster create {{cluster-name}} --agents 1 -p "32760-32761:32760-32761@agent:0"
     just get-config
 
 dev-setup:
@@ -11,7 +11,7 @@ dev-setup:
     stack deploy --manifest infra-as-code/stack.yaml --profile dev
 
 dev-secrets:
-    stack secrets --manifest infra-as-code/stack.yaml --db-host host.docker.internal --db-port 40001 >> .env
+    stack secrets --manifest infra-as-code/stack.yaml --db-host host.docker.internal --db-port 32761 >> .env
 
 # Retrieve the cluster kube config - so kubectl and k9s work.
 get-config:
