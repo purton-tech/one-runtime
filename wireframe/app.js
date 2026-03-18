@@ -4,105 +4,59 @@ const pages = {
     controls: [
       {
         type: "button",
-        label: "View provider catalog",
+        label: "Browse integrations",
         className: "btn btn-outline",
         route: "providers",
       },
       {
         type: "button",
-        label: "Generate connection link",
-        className: "btn btn-primary",
-        route: "provider-required",
-      },
-    ],
-  },
-  projects: {
-    title: "Projects",
-    controls: [
-      {
-        type: "button",
-        label: "Create project",
-        className: "btn btn-primary",
-      },
-    ],
-  },
-  providers: {
-    title: "Providers",
-    controls: [
-      {
-        type: "button",
-        label: "Browse all providers",
-        className: "btn btn-primary",
-        route: "providers",
-      },
-      {
-        type: "button",
-        label: "Import provider spec",
-        className: "btn btn-outline",
-      },
-    ],
-  },
-  "connect-gmail": {
-    title: "Connect Gmail",
-    controls: [],
-  },
-  "managed-oauth-confirm": {
-    title: "Connect With One Runtime",
-    controls: [
-      {
-        type: "button",
-        label: "Continue to Google",
-        className: "btn btn-primary",
-        route: "gmail-connected",
-      },
-    ],
-  },
-  "byo-oauth-setup": {
-    title: "Use Your Own Google OAuth App",
-    controls: [
-      {
-        type: "button",
-        label: "Save & Continue",
-        className: "btn btn-primary",
-        route: "byo-oauth-confirm",
-      },
-    ],
-  },
-  "byo-oauth-confirm": {
-    title: "Connect Gmail",
-    controls: [
-      {
-        type: "button",
-        label: "Continue to Google",
-        className: "btn btn-primary",
-        route: "gmail-connected",
-      },
-    ],
-  },
-  "gmail-connected": {
-    title: "Gmail Connected",
-    controls: [
-      {
-        type: "button",
-        label: "Reconnect",
-        className: "btn btn-outline",
-        route: "connect-gmail",
-      },
-      {
-        type: "button",
-        label: "Generate connection link",
+        label: "Open MCP API",
         className: "btn btn-primary",
         route: "api-keys",
       },
     ],
   },
+  providers: {
+    title: "Integrations",
+    controls: [
+      {
+        type: "button",
+        label: "Search functions",
+        className: "btn btn-primary",
+        route: "providers",
+      },
+      {
+        type: "button",
+        label: "View not connected flow",
+        className: "btn btn-outline",
+        route: "provider-required",
+      },
+    ],
+  },
+  "gmail-connected": {
+    title: "Gmail",
+    controls: [
+      {
+        type: "button",
+        label: "View activity",
+        className: "btn btn-outline",
+        route: "gmail-activity",
+      },
+      {
+        type: "button",
+        label: "Get connection link",
+        className: "btn btn-primary",
+        route: "provider-required",
+      },
+    ],
+  },
   "gmail-activity": {
-    title: "Gmail Activity",
+    title: "Activity",
     controls: [
       {
         type: "select",
         className: "select select-bordered",
-        options: ["Last 24 hours", "Last 7 days", "Last 30 days"],
+        options: ["All events", "Tool calls", "Connection events"],
       },
       {
         type: "button",
@@ -112,27 +66,49 @@ const pages = {
     ],
   },
   "provider-required": {
-    title: "Provider Required",
+    title: "Connection Required",
     controls: [],
   },
   "api-keys": {
-    title: "API Keys",
+    title: "API",
     controls: [
       {
         type: "button",
         label: "Create API key",
         className: "btn btn-primary",
-        route: "provider-required",
+      },
+      {
+        type: "button",
+        label: "View system secrets",
+        className: "btn btn-outline",
+        route: "system-admin",
       },
     ],
   },
-  "oauth-configuration": {
-    title: "OAuth Configuration",
+  "system-admin": {
+    title: "System Admin",
     controls: [
       {
         type: "button",
-        label: "Save changes",
+        label: "Add provider secret",
         className: "btn btn-primary",
+        route: "provider-secret-detail",
+      },
+    ],
+  },
+  "provider-secret-detail": {
+    title: "Provider Secret",
+    controls: [
+      {
+        type: "button",
+        label: "Save secret",
+        className: "btn btn-primary",
+      },
+      {
+        type: "button",
+        label: "Back to inventory",
+        className: "btn btn-outline",
+        route: "system-admin",
       },
     ],
   },
@@ -141,7 +117,7 @@ const pages = {
     controls: [
       {
         type: "button",
-        label: "Browse providers",
+        label: "Browse integrations",
         className: "btn btn-primary",
         route: "providers",
       },

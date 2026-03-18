@@ -10,26 +10,26 @@
         <div>
           <h2 class="text-2xl font-semibold">How connections work</h2>
           <p class="text-base-content/70 mt-2 text-sm">
-            One Runtime securely brokers OAuth for your product. You configure providers once, then use the One Runtime API to send your users through hosted connection links whenever access is needed.
+            One Runtime is the managed MCP and API layer your agents use to discover integrations, inspect tool readiness, and call provider-backed Python functions.
           </p>
         </div>
         <div class="grid gap-4 text-left md:grid-cols-3">
           <div class="rounded-box border border-base-300 p-4">
-            <p class="font-medium">Managed or customer-managed</p>
-            <p class="text-base-content/70 mt-2 text-sm">Choose whether consent shows One Runtime or your own Google app.</p>
+            <p class="font-medium">Discoverable</p>
+            <p class="text-base-content/70 mt-2 text-sm">Models can search available integrations and inspect Python-callable functions before taking action.</p>
           </div>
           <div class="rounded-box border border-base-300 p-4">
-            <p class="font-medium">Scoped and auditable</p>
-            <p class="text-base-content/70 mt-2 text-sm">Every provider grant and API action is constrained by configured scopes and written to the audit log.</p>
+            <p class="font-medium">State-aware</p>
+            <p class="text-base-content/70 mt-2 text-sm">One Runtime exposes whether the function is ready, needs a user connection, or still requires an upstream provider key.</p>
           </div>
           <div class="rounded-box border border-base-300 p-4">
-            <p class="font-medium">Revocable</p>
-            <p class="text-base-content/70 mt-2 text-sm">Disable a provider, rotate credentials, or revoke access whenever your security posture changes.</p>
+            <p class="font-medium">Auditable</p>
+            <p class="text-base-content/70 mt-2 text-sm">Tool searches, hosted link issuance, provider calls, and failures are logged centrally for operators.</p>
           </div>
         </div>
         <div class="flex justify-center gap-3">
-          <a href="?page=providers" data-route="providers" class="btn btn-primary">Browse providers</a>
-          <a href="?page=api-keys" data-route="api-keys" class="btn btn-outline">Review API keys</a>
+          <a href="?page=providers" data-route="providers" class="btn btn-primary">Browse integrations</a>
+          <a href="?page=api-keys" data-route="api-keys" class="btn btn-outline">Review API</a>
         </div>
       </div>
     </div>

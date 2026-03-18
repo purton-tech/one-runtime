@@ -3,9 +3,9 @@
     <div class="card-body">
       <div class="page-header-row">
         <div>
-          <h2 class="card-title">API Keys</h2>
+          <h2 class="card-title">API and MCP</h2>
           <p class="text-base-content/70 mt-1 text-sm">
-            Your backend uses One Runtime API keys to request connection links, inspect connection state, and invoke provider-backed actions after users authorize access.
+            Agent providers use One Runtime API keys and MCP endpoints to list integrations, inspect callable functions, check readiness, and request hosted connection links.
           </p>
         </div>
         <div class="badge badge-outline">Server-side only</div>
@@ -51,13 +51,33 @@
 
     <section class="card">
       <div class="card-body">
+        <h3 class="card-title">What your agents can ask One Runtime</h3>
+        <div class="space-y-3 text-sm">
+          <div class="rounded-box border border-base-300 p-4">
+            <p class="font-medium font-mono text-xs">list_integrations()</p>
+            <p class="text-base-content/70 mt-1">Return the integrations and tool families currently exposed through One Runtime.</p>
+          </div>
+          <div class="rounded-box border border-base-300 p-4">
+            <p class="font-medium font-mono text-xs">list_functions("gmail")</p>
+            <p class="text-base-content/70 mt-1">Return callable Python functions for a specific integration.</p>
+          </div>
+          <div class="rounded-box border border-base-300 p-4">
+            <p class="font-medium font-mono text-xs">get_connection_status("gmail", user_id)</p>
+            <p class="text-base-content/70 mt-1">Tell the model whether the function is ready, needs a user connection, or is blocked on an upstream key.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-body">
         <h3 class="card-title">Hosted connection links</h3>
         <div class="rounded-box border border-base-300 bg-base-200 p-4">
-          <p class="text-xs uppercase text-base-content/60">Example request output</p>
-          <p class="mt-2 break-all font-mono text-sm">https://app.one-runtime.example/connect/gmail?project=acme-agent-cloud&amp;state=cn_8912</p>
+          <p class="text-xs uppercase text-base-content/60">Example response</p>
+          <p class="mt-2 break-all font-mono text-sm">https://app.one-runtime.example/connect/gmail?workspace=acme-agent-cloud&amp;user_id=user_2184&amp;state=cn_8912</p>
         </div>
         <p class="text-base-content/70 text-sm">
-          Your app sends users to this hosted link when Gmail access is needed. One Runtime completes the OAuth redirect and returns connection state to your backend.
+          Your app returns this link when a model discovers that Gmail is not yet connected for a specific user. One Runtime completes consent and makes the tool callable afterward.
         </p>
         <a href="?page=provider-required" data-route="provider-required" class="btn btn-sm mt-3">See blocked flow</a>
       </div>

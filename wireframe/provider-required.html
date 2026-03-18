@@ -3,7 +3,7 @@
     <div class="card-body">
       <h2 class="card-title">Interrupted flow example</h2>
       <p class="text-base-content/70 text-sm">
-        This modal appears when your product tries to generate a Gmail connection link before Gmail has been configured for the project.
+        This modal appears when an agent selects a Gmail function but the required user connection does not exist yet.
       </p>
     </div>
   </section>
@@ -13,22 +13,22 @@
       <div>
         <h3 class="text-xl font-semibold">Gmail not connected</h3>
         <p class="text-base-content/70 mt-2 text-sm">
-          This action requires Gmail to be configured in One Runtime first. Choose how your project should present the Google consent screen before requesting user authorization.
+          This tool requires a Gmail connection for `user_2184`. One Runtime can return a hosted link to complete consent, or an operator can add the missing upstream credential if the integration is still unconfigured.
         </p>
       </div>
       <div class="grid gap-4 md:grid-cols-2">
-        <a href="?page=managed-oauth-confirm" data-route="managed-oauth-confirm" class="rounded-box border border-base-300 p-4">
-          <p class="font-medium">Connect with One Runtime</p>
-          <p class="text-base-content/70 mt-2 text-sm">Use managed OAuth for the fastest path to a working hosted Gmail flow.</p>
+        <a href="?page=gmail-connected" data-route="gmail-connected" class="rounded-box border border-base-300 p-4">
+          <p class="font-medium">Return hosted connection link</p>
+          <p class="text-base-content/70 mt-2 text-sm">Best path for user-authorized integrations such as Gmail, Calendar, Slack, and Notion.</p>
         </a>
-        <a href="?page=byo-oauth-setup" data-route="byo-oauth-setup" class="rounded-box border border-base-300 p-4">
-          <p class="font-medium">Use your own Google app</p>
-          <p class="text-base-content/70 mt-2 text-sm">Configure customer-managed credentials so users see your app name on consent.</p>
+        <a href="?page=system-admin" data-route="system-admin" class="rounded-box border border-base-300 p-4">
+          <p class="font-medium">Add provider key or secret</p>
+          <p class="text-base-content/70 mt-2 text-sm">Use this when the integration is blocked because One Runtime is still missing the upstream provider credential.</p>
         </a>
       </div>
       <div class="flex gap-3">
-        <a href="?page=managed-oauth-confirm" data-route="managed-oauth-confirm" class="btn btn-primary">Connect with One Runtime</a>
-        <a href="?page=byo-oauth-setup" data-route="byo-oauth-setup" class="btn btn-outline">Use your own Google app</a>
+        <a href="?page=gmail-connected" data-route="gmail-connected" class="btn btn-primary">Return connection link</a>
+        <a href="?page=system-admin" data-route="system-admin" class="btn btn-outline">Open System Admin</a>
         <a href="?page=api-keys" data-route="api-keys" class="btn btn-ghost">Cancel</a>
       </div>
     </div>

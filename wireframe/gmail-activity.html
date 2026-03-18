@@ -3,9 +3,9 @@
     <div class="card-body">
       <div class="page-header-row">
         <div>
-          <h2 class="card-title">Gmail Activity</h2>
+          <h2 class="card-title">Activity</h2>
           <p class="text-base-content/70 mt-1 text-sm">
-            Audit all connection and provider activity related to Gmail. This log is designed for security review, support, and customer operations.
+            Audit what agents searched, which functions they called, and where One Runtime returned hosted links or surfaced missing credentials.
           </p>
         </div>
         <div class="flex gap-2">
@@ -14,6 +14,7 @@
             <option>messages.list</option>
             <option>messages.get</option>
             <option>drafts.create</option>
+            <option>connection.link_issued</option>
           </select>
           <select class="select select-bordered select-sm">
             <option>Last 7 days</option>
@@ -40,33 +41,39 @@
           <tbody>
             <tr>
               <td>2026-03-18 09:11 UTC</td>
-              <td>messages.list</td>
+              <td>integrations.search</td>
+              <td>triage-agent</td>
+              <td><span class="badge badge-success badge-soft">Returned Gmail, Slack, Calendar</span></td>
+            </tr>
+            <tr>
+              <td>2026-03-18 09:11 UTC</td>
+              <td>get_connection_status</td>
               <td>user_2184 via Acme Agent Cloud</td>
-              <td><span class="badge badge-success badge-soft">Success</span></td>
+              <td><span class="badge badge-warning badge-soft">Needs user connection</span></td>
             </tr>
             <tr>
               <td>2026-03-18 09:10 UTC</td>
-              <td>messages.get</td>
-              <td>user_2184 via Ops triage agent</td>
+              <td>connection.link_issued</td>
+              <td>reply-agent</td>
+              <td><span class="badge badge-outline">Hosted Gmail link returned</span></td>
+            </tr>
+            <tr>
+              <td>2026-03-18 09:05 UTC</td>
+              <td>messages.list</td>
+              <td>ops-assistant</td>
               <td><span class="badge badge-success badge-soft">Success</span></td>
             </tr>
             <tr>
-              <td>2026-03-18 09:09 UTC</td>
+              <td>2026-03-18 09:02 UTC</td>
               <td>drafts.create</td>
-              <td>user_2184 via reply assistant</td>
-              <td><span class="badge badge-warning badge-soft">Pending approval</span></td>
-            </tr>
-            <tr>
-              <td>2026-03-18 08:57 UTC</td>
-              <td>oauth.consent.completed</td>
-              <td>user_2184</td>
-              <td><span class="badge badge-success badge-soft">Granted</span></td>
+              <td>reply-assistant</td>
+              <td><span class="badge badge-success badge-soft">Success</span></td>
             </tr>
             <tr>
               <td>2026-03-18 08:56 UTC</td>
-              <td>oauth.consent.started</td>
-              <td>One Runtime hosted link</td>
-              <td><span class="badge badge-outline">Redirected to Google</span></td>
+              <td>provider.secret.missing</td>
+              <td>system</td>
+              <td><span class="badge badge-outline">GitHub upstream token required</span></td>
             </tr>
           </tbody>
         </table>
@@ -74,7 +81,7 @@
       <div class="rounded-box border border-dashed border-base-300 p-4 text-sm">
         <p class="font-medium">Empty state behavior</p>
         <p class="text-base-content/70 mt-1">
-          If no Gmail activity matches the current filters, show: “No Gmail activity for this time range. Connection and provider events will appear here as your users authorize access and your product calls Gmail through One Runtime.”
+          If no events match the current filters, show: “No activity for this time range. Tool discovery, hosted links, provider calls, and credential issues will appear here as your agents use One Runtime.”
         </p>
       </div>
     </div>
