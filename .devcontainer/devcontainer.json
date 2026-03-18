@@ -1,0 +1,57 @@
+{
+  "name": "One Runtime",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
+
+  "runArgs": [
+    "--add-host=host.docker.internal:host-gateway"
+  ],
+
+  "features": {
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+      // https://github.com/devcontainers/features/issues/1466
+      "moby": false
+    }
+  },
+
+  // Mount the project at /workspace like before
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+  "workspaceFolder": "/workspace",
+
+  // Gives access to the ssh keys on the host for git operations.
+  "mounts": [
+    "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached"
+  ],
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "lldb.executable": "/usr/bin/lldb",
+        "files.watcherExclude": {
+          "**/target/**": true
+        },
+        "rust-analyzer.checkOnSave.command": "clippy"
+      },
+      "extensions": [
+        "vadimcn.vscode-lldb",
+        "mutantdino.resourcemonitor",
+        "matklad.rust-analyzer",
+        "tamasfe.even-better-toml",
+        "fill-labs.dependi"
+      ]
+    }
+  },
+  "remoteEnv": {
+    "HOST_PROJECT_PATH": "${localWorkspaceFolder}",
+    // If you call the bash alias `gitsetup` it will use these to set your git config.
+    // It's probably good advice to use a github no reply for the emial i.e. <github-username>@users.noreply.github.com
+    // Then all your commits will be associated with the correct account.
+    "EMAIL": "${localEnv:EMAIL}",
+    "NAME": "${localEnv:NAME}",
+    // Psql (via perl) always complains about locales. This makes that go away.
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8"
+  },
+  "remoteUser": "vscode"
+}
