@@ -1,0 +1,66 @@
+<div class="page-stack">
+  <div>
+    <h2 class="text-2xl font-semibold">Settings</h2>
+    <p class="text-base-content/70 mt-1 text-sm">
+      Use this page for preferences, configuration boundaries, and the rules that shape the product.
+    </p>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    <section class="card">
+      <div class="card-body">
+        <h3 class="card-title">Behavior</h3>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Default mode</legend>
+          <select class="select select-bordered w-full">
+            <option selected>Balanced</option>
+            <option>Guided</option>
+            <option>Strict</option>
+          </select>
+        </fieldset>
+        <label class="label justify-start gap-3">
+          <input type="checkbox" checked class="toggle">
+          <span>Show suggestions automatically</span>
+        </label>
+        <label class="label justify-start gap-3">
+          <input type="checkbox" checked class="toggle">
+          <span>Allow collaborative editing</span>
+        </label>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-body">
+        <h3 class="card-title">Context</h3>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Primary source systems</legend>
+          <input class="input input-bordered w-full" value="Project docs, CRM, internal tools">
+        </fieldset>
+        <fieldset class="fieldset">
+          <legend class="fieldset-legend">Default workspace scope</legend>
+          <input class="input input-bordered w-full" value="Core product team">
+        </fieldset>
+      </div>
+    </section>
+
+    <section class="card lg:col-span-2">
+      <div class="card-body">
+        <h3 class="card-title">System Summary</h3>
+        <div class="grid gap-4 md:grid-cols-3">
+          <div class="stat rounded-box">
+            <div class="stat-title">Configured modules</div>
+            <div class="stat-value text-2xl">6</div>
+          </div>
+          <div class="stat rounded-box">
+            <div class="stat-title">Active workflows</div>
+            <div class="stat-value text-2xl">4</div>
+          </div>
+          <div class="stat rounded-box">
+            <div class="stat-title">Open questions</div>
+            <div class="stat-value text-2xl">9</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
