@@ -4,53 +4,146 @@ const pages = {
     controls: [
       {
         type: "button",
-        label: "Primary action",
+        label: "View provider catalog",
+        className: "btn btn-outline",
+        route: "providers",
+      },
+      {
+        type: "button",
+        label: "Generate connection link",
+        className: "btn btn-primary",
+        route: "provider-required",
+      },
+    ],
+  },
+  projects: {
+    title: "Projects",
+    controls: [
+      {
+        type: "button",
+        label: "Create project",
         className: "btn btn-primary",
       },
     ],
   },
-  items: {
-    title: "Items",
+  providers: {
+    title: "Providers",
     controls: [
       {
         type: "button",
-        label: "Create item",
+        label: "Browse all providers",
         className: "btn btn-primary",
-      },
-    ],
-  },
-  "item-detail": {
-    title: "Item Detail",
-    controls: [
-      {
-        type: "button",
-        label: "Save draft",
-        className: "btn btn-primary",
+        route: "providers",
       },
       {
         type: "button",
-        label: "Secondary action",
+        label: "Import provider spec",
         className: "btn btn-outline",
       },
     ],
   },
-  "empty-state": {
-    title: "Empty State",
+  "connect-gmail": {
+    title: "Connect Gmail",
+    controls: [],
+  },
+  "managed-oauth-confirm": {
+    title: "Connect With One Runtime",
     controls: [
       {
         type: "button",
-        label: "Create first item",
+        label: "Continue to Google",
         className: "btn btn-primary",
+        route: "gmail-connected",
       },
     ],
   },
-  settings: {
-    title: "Settings",
+  "byo-oauth-setup": {
+    title: "Use Your Own Google OAuth App",
+    controls: [
+      {
+        type: "button",
+        label: "Save & Continue",
+        className: "btn btn-primary",
+        route: "byo-oauth-confirm",
+      },
+    ],
+  },
+  "byo-oauth-confirm": {
+    title: "Connect Gmail",
+    controls: [
+      {
+        type: "button",
+        label: "Continue to Google",
+        className: "btn btn-primary",
+        route: "gmail-connected",
+      },
+    ],
+  },
+  "gmail-connected": {
+    title: "Gmail Connected",
+    controls: [
+      {
+        type: "button",
+        label: "Reconnect",
+        className: "btn btn-outline",
+        route: "connect-gmail",
+      },
+      {
+        type: "button",
+        label: "Generate connection link",
+        className: "btn btn-primary",
+        route: "api-keys",
+      },
+    ],
+  },
+  "gmail-activity": {
+    title: "Gmail Activity",
+    controls: [
+      {
+        type: "select",
+        className: "select select-bordered",
+        options: ["Last 24 hours", "Last 7 days", "Last 30 days"],
+      },
+      {
+        type: "button",
+        label: "Export audit log",
+        className: "btn btn-outline",
+      },
+    ],
+  },
+  "provider-required": {
+    title: "Provider Required",
+    controls: [],
+  },
+  "api-keys": {
+    title: "API Keys",
+    controls: [
+      {
+        type: "button",
+        label: "Create API key",
+        className: "btn btn-primary",
+        route: "provider-required",
+      },
+    ],
+  },
+  "oauth-configuration": {
+    title: "OAuth Configuration",
     controls: [
       {
         type: "button",
         label: "Save changes",
         className: "btn btn-primary",
+      },
+    ],
+  },
+  "how-connections-work": {
+    title: "How Connections Work",
+    controls: [
+      {
+        type: "button",
+        label: "Browse providers",
+        className: "btn btn-primary",
+        route: "providers",
       },
     ],
   },
@@ -76,6 +169,9 @@ function renderActions(page) {
       const button = document.createElement("button");
       button.className = control.className;
       button.textContent = control.label;
+      if (control.route) {
+        button.dataset.route = control.route;
+      }
       actions.appendChild(button);
       continue;
     }

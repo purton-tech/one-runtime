@@ -1,0 +1,73 @@
+<div class="page-stack">
+  <section class="card">
+    <div class="card-body">
+      <div class="page-header-row">
+        <div class="flex items-center gap-3">
+          <div class="provider-mark">G</div>
+          <div>
+            <h2 class="card-title">Gmail connected</h2>
+            <p class="text-base-content/70 mt-1 text-sm">
+              Gmail is enabled for Acme Agent Cloud. Your backend can now request hosted connection links and invoke Gmail-backed actions through One Runtime.
+            </p>
+          </div>
+        </div>
+        <div class="badge badge-success badge-soft">Ready for production</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="admin-grid">
+    <section class="card">
+      <div class="card-body">
+        <h3 class="card-title">Connection summary</h3>
+        <div class="summary-list">
+          <div class="summary-row">
+            <span class="text-base-content/60">Connection method</span>
+            <span class="font-medium">Your Google app</span>
+          </div>
+          <div class="summary-row">
+            <span class="text-base-content/60">Scopes granted</span>
+            <span class="font-medium">gmail.readonly, gmail.metadata, gmail.compose</span>
+          </div>
+          <div class="summary-row">
+            <span class="text-base-content/60">Connected at</span>
+            <span class="font-medium">March 18, 2026 09:14 UTC</span>
+          </div>
+          <div class="summary-row">
+            <span class="text-base-content/60">Last used</span>
+            <span class="font-medium">3 minutes ago</span>
+          </div>
+          <div class="summary-row">
+            <span class="text-base-content/60">Redirect URI</span>
+            <span class="font-mono text-xs">https://app.one-runtime.example/oauth/callback/google</span>
+          </div>
+        </div>
+        <div class="flex gap-3 mt-4">
+          <button class="btn btn-outline">Disconnect</button>
+          <button class="btn btn-outline">Reconnect</button>
+          <a href="?page=gmail-activity" data-route="gmail-activity" class="btn btn-primary">View activity</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-body">
+        <h3 class="card-title">Trust &amp; audit</h3>
+        <div class="space-y-4 text-sm">
+          <div class="rounded-box border border-base-300 p-4">
+            <p class="font-medium">Revocable at any time</p>
+            <p class="text-base-content/70 mt-1">Disable Gmail here or revoke the OAuth client in Google to stop new connection grants immediately.</p>
+          </div>
+          <div class="rounded-box border border-base-300 p-4">
+            <p class="font-medium">Every event is logged</p>
+            <p class="text-base-content/70 mt-1">Consent start, token exchange, refresh, revoke, and provider actions are available in the project activity log.</p>
+          </div>
+          <div class="rounded-box border border-base-300 p-4">
+            <p class="font-medium">Enterprise controls stay intact</p>
+            <p class="text-base-content/70 mt-1">Gmail is configured with customer-managed OAuth and can be limited to approved scopes only.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

@@ -1,0 +1,66 @@
+<div class="page-stack">
+  <section class="card">
+    <div class="card-body">
+      <div class="page-header-row">
+        <div>
+          <h2 class="card-title">API Keys</h2>
+          <p class="text-base-content/70 mt-1 text-sm">
+            Your backend uses One Runtime API keys to request connection links, inspect connection state, and invoke provider-backed actions after users authorize access.
+          </p>
+        </div>
+        <div class="badge badge-outline">Server-side only</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="admin-grid">
+    <section class="card">
+      <div class="card-body">
+        <h3 class="card-title">Issued keys</h3>
+        <div class="overflow-x-auto">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Prefix</th>
+                <th>Created</th>
+                <th>Last used</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Production backend</td>
+                <td><span class="font-mono text-xs">or_live_2m8...</span></td>
+                <td>2026-03-02</td>
+                <td>2 minutes ago</td>
+                <td><span class="badge badge-success badge-soft">Active</span></td>
+              </tr>
+              <tr>
+                <td>Staging backend</td>
+                <td><span class="font-mono text-xs">or_test_f8d...</span></td>
+                <td>2026-02-11</td>
+                <td>Yesterday</td>
+                <td><span class="badge badge-outline">Active</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-body">
+        <h3 class="card-title">Hosted connection links</h3>
+        <div class="rounded-box border border-base-300 bg-base-200 p-4">
+          <p class="text-xs uppercase text-base-content/60">Example request output</p>
+          <p class="mt-2 break-all font-mono text-sm">https://app.one-runtime.example/connect/gmail?project=acme-agent-cloud&amp;state=cn_8912</p>
+        </div>
+        <p class="text-base-content/70 text-sm">
+          Your app sends users to this hosted link when Gmail access is needed. One Runtime completes the OAuth redirect and returns connection state to your backend.
+        </p>
+        <a href="?page=provider-required" data-route="provider-required" class="btn btn-sm mt-3">See blocked flow</a>
+      </div>
+    </section>
+  </div>
+</div>

@@ -1,49 +1,64 @@
 <div class="page-stack">
-  <div>
-    <p class="text-base-content/70 text-sm">
-      Use the overview page to summarize the current product shape, highlight key metrics, and surface the main questions that still need answers.
-    </p>
-  </div>
+  <section class="card">
+    <div class="card-body">
+      <div class="page-header-row">
+        <div>
+          <h2 class="card-title">Acme Agent Cloud</h2>
+          <p class="text-base-content/70 mt-1 text-sm">
+            One Runtime brokers OAuth for your product so your end users can authorize external services through a hosted flow.
+          </p>
+        </div>
+        <div class="badge badge-outline">Project status: Production pilot</div>
+      </div>
+      <div class="stats-grid mt-2">
+        <div class="stat rounded-box">
+          <div class="stat-title">Configured providers</div>
+          <div class="stat-value text-2xl">5</div>
+          <div class="stat-desc">Gmail requires BYO in production</div>
+        </div>
+        <div class="stat rounded-box">
+          <div class="stat-title">Active user connections</div>
+          <div class="stat-value text-2xl">1,284</div>
+          <div class="stat-desc">Across all projects this week</div>
+        </div>
+        <div class="stat rounded-box">
+          <div class="stat-title">Managed providers</div>
+          <div class="stat-value text-2xl">3</div>
+          <div class="stat-desc">Fastest path for evaluation</div>
+        </div>
+        <div class="stat rounded-box">
+          <div class="stat-title">Audit events</div>
+          <div class="stat-value text-2xl">18,402</div>
+          <div class="stat-desc">All connection and token activity logged</div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-  <div class="stats-grid">
-    <div class="stat rounded-box">
-      <div class="stat-title">Primary users</div>
-      <div class="stat-value text-2xl">3</div>
-    </div>
-    <div class="stat rounded-box">
-      <div class="stat-title">Core journeys</div>
-      <div class="stat-value text-2xl">5</div>
-    </div>
-    <div class="stat rounded-box">
-      <div class="stat-title">Known constraints</div>
-      <div class="stat-value text-2xl">7</div>
-    </div>
-  </div>
-
-  <div class="content-split">
+  <div class="admin-grid">
     <section class="card">
       <div class="card-body">
         <div class="page-header-row">
-          <h2 class="card-title">Recent decisions</h2>
-          <span class="badge badge-primary badge-soft">Working draft</span>
+          <h2 class="card-title">How One Runtime fits into your product</h2>
+          <a href="?page=how-connections-work" data-route="how-connections-work" class="btn btn-sm btn-ghost">View explainer</a>
         </div>
-        <div class="space-y-4 text-sm">
-          <div class="border-base-300 border-b pb-4">
-            <p class="font-medium">Keep the first release narrow</p>
-            <p class="text-base-content/70 mt-1">
-              Focus the wireframe on the smallest useful workflow before expanding into adjacent features.
+        <div class="grid gap-4 md:grid-cols-3 text-sm">
+          <div class="rounded-box border border-base-300 p-4">
+            <p class="font-medium">1. Configure provider access</p>
+            <p class="text-base-content/70 mt-2">
+              Choose One Runtime managed OAuth for speed or use your own Google app when branded consent and enterprise controls matter.
             </p>
           </div>
-          <div class="border-base-300 border-b pb-4">
-            <p class="font-medium">Use a review step before publishing</p>
-            <p class="text-base-content/70 mt-1">
-              Add an explicit confirmation state anywhere data changes or content goes live.
+          <div class="rounded-box border border-base-300 p-4">
+            <p class="font-medium">2. Call the One Runtime API</p>
+            <p class="text-base-content/70 mt-2">
+              Your backend uses an API key to request connection links and invoke provider-backed actions after users authorize access.
             </p>
           </div>
-          <div>
-            <p class="font-medium">Track unanswered requirements</p>
-            <p class="text-base-content/70 mt-1">
-              Keep open product questions visible so the wireframe remains a requirements tool rather than a fake finished UI.
+          <div class="rounded-box border border-base-300 p-4">
+            <p class="font-medium">3. Send users through hosted consent</p>
+            <p class="text-base-content/70 mt-2">
+              One Runtime handles the redirect, token exchange, and audit trail. Access stays scoped, revocable, and visible to your team.
             </p>
           </div>
         </div>
@@ -52,27 +67,24 @@
 
     <section class="card">
       <div class="card-body">
-        <h2 class="card-title">Open questions</h2>
-        <ul class="list rounded-box">
-          <li class="list-row">
-            <div>
-              <p class="font-medium">What data is required to create a new record?</p>
-              <p class="text-base-content/70 text-sm">Form scope</p>
-            </div>
-          </li>
-          <li class="list-row">
-            <div>
-              <p class="font-medium">Which actions need approval or audit history?</p>
-              <p class="text-base-content/70 text-sm">Governance</p>
-            </div>
-          </li>
-          <li class="list-row">
-            <div>
-              <p class="font-medium">What should appear in the empty state?</p>
-              <p class="text-base-content/70 text-sm">First-run experience</p>
-            </div>
-          </li>
-        </ul>
+        <h2 class="card-title">Next recommended steps</h2>
+        <div class="space-y-4 text-sm">
+          <div class="rounded-box border border-base-300 p-4">
+            <p class="font-medium">Configure Gmail</p>
+            <p class="text-base-content/70 mt-1">Decide whether Gmail should use managed OAuth or your own Google app.</p>
+            <a href="?page=connect-gmail" data-route="connect-gmail" class="btn btn-sm mt-3">Open Gmail setup</a>
+          </div>
+          <div class="rounded-box border border-base-300 p-4">
+            <p class="font-medium">Issue production API key</p>
+            <p class="text-base-content/70 mt-1">Use a server-side key when your product requests connection links and makes provider calls.</p>
+            <a href="?page=api-keys" data-route="api-keys" class="btn btn-sm mt-3">Review API keys</a>
+          </div>
+          <div class="rounded-box border border-base-300 p-4">
+            <p class="font-medium">Review OAuth policy</p>
+            <p class="text-base-content/70 mt-1">Set whether Gmail can use managed OAuth or must use customer-managed credentials.</p>
+            <a href="?page=oauth-configuration" data-route="oauth-configuration" class="btn btn-sm mt-3">Open policy</a>
+          </div>
+        </div>
       </div>
     </section>
   </div>

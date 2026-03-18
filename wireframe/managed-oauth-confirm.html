@@ -1,0 +1,44 @@
+<div class="page-stack">
+  <section class="card">
+    <div class="card-body">
+      <h2 class="card-title">Connect with One Runtime</h2>
+      <p class="text-base-content/70 text-sm">
+        Managed OAuth keeps setup lightweight. When your users follow a Gmail connection link, One Runtime will redirect them to Google for consent.
+      </p>
+    </div>
+  </section>
+
+  <div class="admin-grid">
+    <section class="card">
+      <div class="card-body">
+        <h3 class="card-title">What your users will see</h3>
+        <div class="rounded-box border border-base-300 bg-base-200 p-5">
+          <p class="text-base-content/60 text-xs uppercase">Expected consent copy</p>
+          <p class="mt-3 text-lg font-semibold">One Runtime wants access to your Gmail</p>
+          <p class="text-base-content/70 mt-2 text-sm">
+            This is normal when you choose managed OAuth. Google shows the OAuth app that is requesting access on behalf of your product.
+          </p>
+        </div>
+        <p class="text-base-content/70 text-sm">
+          One Runtime still enforces the scopes you configure and logs the resulting connection and token activity for your project.
+        </p>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-body">
+        <h3 class="card-title">Why teams choose managed OAuth</h3>
+        <ul class="list rounded-box">
+          <li class="list-row">No Google app registration required to start evaluating Gmail access</li>
+          <li class="list-row">Fastest path to testing connection links and agent actions</li>
+          <li class="list-row">You can switch specific providers to BYO later for production</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <div class="flex gap-3">
+    <a href="?page=gmail-connected" data-route="gmail-connected" class="btn btn-primary">Continue to Google</a>
+    <a href="?page=connect-gmail" data-route="connect-gmail" class="btn btn-outline">Choose a different connection method</a>
+  </div>
+</div>

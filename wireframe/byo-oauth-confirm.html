@@ -1,0 +1,54 @@
+<div class="page-stack">
+  <section class="card">
+    <div class="card-body">
+      <h2 class="card-title">Connect Gmail</h2>
+      <p class="text-base-content/70 text-sm">
+        One Runtime will redirect users to Google using your own OAuth client. They will see your configured app name on the consent screen.
+      </p>
+    </div>
+  </section>
+
+  <div class="admin-grid">
+    <section class="card">
+      <div class="card-body">
+        <h3 class="card-title">Connection summary</h3>
+        <div class="summary-list">
+          <div class="summary-row">
+            <span class="text-base-content/60">Provider</span>
+            <span class="font-medium">Google</span>
+          </div>
+          <div class="summary-row">
+            <span class="text-base-content/60">App Name</span>
+            <span class="font-medium">Acme Internal AI</span>
+          </div>
+          <div class="summary-row">
+            <span class="text-base-content/60">Redirect URI</span>
+            <span class="font-mono text-xs">https://app.one-runtime.example/oauth/callback/google</span>
+          </div>
+          <div class="summary-row">
+            <span class="text-base-content/60">Consent owner</span>
+            <span class="font-medium">Customer-managed</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-body">
+        <h3 class="card-title">Expected end-user experience</h3>
+        <div class="rounded-box border border-base-300 bg-base-200 p-5">
+          <p class="text-base-content/60 text-xs uppercase">Google consent screen</p>
+          <p class="mt-3 text-lg font-semibold">Acme Internal AI wants access to your Gmail</p>
+          <p class="text-base-content/70 mt-2 text-sm">
+            This gives your team control over branding and consent ownership while One Runtime still manages the hosted callback and audit trail.
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="flex gap-3">
+    <a href="?page=gmail-connected" data-route="gmail-connected" class="btn btn-primary">Continue to Google</a>
+    <a href="?page=byo-oauth-setup" data-route="byo-oauth-setup" class="btn btn-outline">Back</a>
+  </div>
+</div>
