@@ -8,7 +8,9 @@ OAuth, 100's of integrations, and sandboxed runtime — all in one place.
 
 To understand the problem One Runtime solves, imagine your agent is given the following task:
 
-![Business cards example](business-cards.png)
+<p align="center">
+  <img src="business-cards.png" alt="Business cards example" width="50%">
+</p>
 
 ```
 Take this photo of business cards and:
@@ -75,7 +77,9 @@ for c in contacts:
 
 ## We manage Oauth2 workflow for your users
 
-![Oauth Integrations](oauth-popup.png)
+<p align="center">
+  <img src="oauth-popup.png" alt="Oauth Integrations" width="50%">
+</p>
 
 ## Example
 
