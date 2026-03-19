@@ -83,11 +83,11 @@ Give your users access to our library of integrations and secure Oath2 workflows
   <img src="oauth-popup.png" alt="Oauth Integrations" width="50%">
 </p>
 
-We provide an API so you can let your select select integrations.
+We provide an API that gives you icons, descriptions and tools for all our integrations so you can easily build tool selection workflows.
 
 ## Example Code
 
-Here we include the One Runtime MCP into an Open AI responses call.
+A typical model call could look like this.
 
 ```python
 from openai import OpenAI
@@ -99,26 +99,43 @@ response = client.responses.create(
     tools=[
         {
             "type": "mcp",
-            "server_url": "https://api.one-runtime.com/mcp/your_user_123",
+            "server_url": "https://api.one-runtime.com/mcp",
             "headers": {
                 "Authorization": "Bearer oru_abc123"
             }
         }
     ],
-    input="""
-Take this photo of business cards and:
+    input=[
+        {
+            "role": "user",
+            "content": [
+                {
+                    "type": "input_text",
+                    "text": """Take this photo of business cards and:
 
 - Extract all contacts
 - Add them to the CRM (skip duplicates)
 - Enrich each contact using web research
 - Draft a follow-up email for each new contact
-"""
+
+Return a summary of what was created and updated."""
+                },
+                {
+                    "type": "input_image",
+                    "image_url": "https://your-domain.com/images/business-cards.jpg",
+                    "detail": "high"
+                }
+            ]
+        }
+    ]
 )
 
 print(response.output_text)
 ```
 
 ## Typical Sequence
+
+Most of the interaction with integrations happen in the sandbox reducing token usage and execution time.
 
 ```mermaid
 sequenceDiagram
