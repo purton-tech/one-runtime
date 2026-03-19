@@ -1,0 +1,137 @@
+<div class="page-stack">
+  <div class="toolbar-stack">
+    <p class="text-base-content/70 text-sm">
+      Browse the integrations your agents can access through One Runtime. Each integration exposes Python-callable functions and an explicit connection state.
+    </p>
+    <label class="input input-bordered flex items-center gap-2">
+      <span class="text-base-content/50">Search</span>
+      <input class="grow" placeholder="Search integrations or functions...">
+    </label>
+  </div>
+
+  <div class="provider-grid">
+    <a href="?page=gmail-connected" data-route="gmail-connected" class="card cursor-pointer border-2 border-base-300">
+      <div class="card-body">
+        <div class="page-header-row">
+          <div class="flex items-center gap-3">
+            <div class="provider-mark">G</div>
+            <div>
+              <h2 class="card-title">Gmail</h2>
+              <p class="text-base-content/60 text-xs">Featured trust-sensitive integration</p>
+            </div>
+          </div>
+          <div class="badge badge-warning badge-soft">Needs user connection</div>
+        </div>
+        <p class="text-base-content/70 text-sm">
+          Models can inspect inbox data and draft replies through One Runtime once a user authorizes Gmail access.
+        </p>
+        <div class="rounded-box border border-base-300 p-3 text-sm">
+          <p class="font-medium">Available Python functions</p>
+          <p class="text-base-content/70 mt-1 font-mono text-xs">gmail.messages_list(), gmail.messages_get(), gmail.drafts_create()</p>
+        </div>
+        <div class="page-header-row">
+          <span class="text-base-content/60 text-xs">Next step: return hosted user link</span>
+          <span class="btn btn-sm">View functions</span>
+        </div>
+      </div>
+    </a>
+
+    <section class="card">
+      <div class="card-body">
+        <div class="page-header-row">
+          <div class="flex items-center gap-3">
+            <div class="provider-mark">
+              <img alt="Google Calendar logo" src="data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjU2IDI1NiIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCIgZmlsbD0iIzAwMDAwMCI+PGc+PHBvbHlnb24gZmlsbD0iI0ZGRkZGRiIgcG9pbnRzPSIxOTUuMzY4NDIxIDYwLjYzMTU3OSA2MC42MzE1NzkgNjAuNjMxNTc5IDYwLjYzMTU3OSAxOTUuMzY4NDIxIDE5NS4zNjg0MjEgMTk1LjM2ODQyMSI+PC9wb2x5Z29uPjxwb2x5Z29uIGZpbGw9IiNFQTQzMzUiIHBvaW50cz0iMTk1LjM2ODQyMSAyNTYgMjU2IDE5NS4zNjg0MjEgMjI1LjY4NDIxMSAxOTAuMTk2MDA1IDE5NS4zNjg0MjEgMTk1LjM2ODQyMSAxODkuODM1MTYyIDIyMy4wOTgwMDIiPjwvcG9seWdvbj48cGF0aCBkPSJNMCAxOTUuMzY4NDIxTDAgMjM1Ljc4OTQ3NEMwIDI0Ni45NTU3ODkgOS4wNDQyMTEgMjU2IDIwLjIxMDUyNiAyNTZMNjAuNjMxNTc5IDI1Nkw2Ni44NTY4NjUgMjI1LjY4NDIxMUw2MC42MzE1NzkgMTk1LjM2ODQyMUwyNy41OTkxODcgMTkwLjE5NjAwNVoiIGZpbGw9IiMxODgwMzgiPjwvcGF0aD48cGF0aCBkPSJNMjU2IDYwLjYzMTU3OUwyNTYgMjAuMjEwNTI2QzI1NiA5LjA0NDIxMSAyNDYuOTU1Nzg5IDAgMjM1Ljc4OTQ3NCAwTDE5NS4zNjg0MjEgMEMxOTEuNjc5NTgyIDE1LjAzNTg1NSAxODkuODM1MTYyIDI2LjEwMTA5NSAxODkuODM1MTYyIDMzLjE5NTcyQzE4OS44MzUxNjIgNDAuMjkwMzQ2IDE5MS42Nzk1ODIgNDkuNDM1NjMyIDE5NS4zNjg0MjEgNjAuNjMxNTc5QzIwOC43Nzc5ODYgNjQuNDcxNDg3IDIxOC44ODMyNDkgNjYuMzkxNDQgMjI1LjY4NDIxMSA2Ni4zOTE0NEMyMzIuNDg1MTcyIDY2LjM5MTQ0IDI0Mi41OTA0MzUgNjQuNDcxNDg3IDI1NiA2MC42MzE1NzlaIiBmaWxsPSIjMTk2N0QyIj48L3BhdGg+PHBvbHlnb24gZmlsbD0iI0ZCQkMwNCIgcG9pbnRzPSIyNTYgNjAuNjMxNTc5IDE5NS4zNjg0MjEgNjAuNjMxNTc5IDE5NS4zNjg0MjEgMTk1LjM2ODQyMSAyNTYgMTk1LjM2ODQyMSI+PC9wb2x5Z29uPjxwb2x5Z29uIGZpbGw9IiMzNEE4NTMiIHBvaW50cz0iMTk1LjM2ODQyMSAxOTUuMzY4NDIxIDYwLjYzMTU3OSAxOTUuMzY4NDIxIDYwLjYzMTU3OSAyNTYgMTk1LjM2ODQyMSAyNTYiPjwvcG9seWdvbj48cGF0aCBkPSJNMTk1LjM2ODQyMSAwTDIwLjIxMDUyNiAwQzkuMDQ0MjExIDAgMCA5LjA0NDIxMSAwIDIwLjIxMDUyNkwwIDE5NS4zNjg0MjFMNjAuNjMxNTc5IDE5NS4zNjg0MjFMNjAuNjMxNTc5IDYwLjYzMTU3OUwxOTUuMzY4NDIxIDYwLjYzMTU3OUwxOTUuMzY4NDIxIDBaIiBmaWxsPSIjNDI4NUY0Ij48L3BhdGg+PC9nPjwvc3ZnPg==">
+            </div>
+            <div>
+              <h2 class="card-title">Google Calendar</h2>
+              <p class="text-base-content/60 text-xs">Ready</p>
+            </div>
+          </div>
+          <div class="badge badge-success badge-soft">Ready</div>
+        </div>
+        <p class="text-base-content/70 text-sm">Create and update calendar events for scheduling agents and workflow automation.</p>
+        <div class="rounded-box border border-base-300 p-3 text-sm">
+          <p class="font-medium">Available Python functions</p>
+          <p class="text-base-content/70 mt-1 font-mono text-xs">gcal.create_event(), gcal.list_events()</p>
+        </div>
+        <div class="page-header-row">
+          <span class="text-base-content/60 text-xs">Callable immediately</span>
+          <a href="?page=gmail-connected" data-route="gmail-connected" class="btn btn-sm">Manage</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-body">
+        <div class="page-header-row">
+          <div class="flex items-center gap-3">
+            <div class="provider-mark">S</div>
+            <div>
+              <h2 class="card-title">Slack</h2>
+              <p class="text-base-content/60 text-xs">Ready</p>
+            </div>
+          </div>
+          <div class="badge badge-success badge-soft">Ready</div>
+        </div>
+        <p class="text-base-content/70 text-sm">Post messages and read channel context for workspace assistants and escalation agents.</p>
+        <div class="rounded-box border border-base-300 p-3 text-sm">
+          <p class="font-medium">Available Python functions</p>
+          <p class="text-base-content/70 mt-1 font-mono text-xs">slack.chat_postMessage(), slack.channels_history()</p>
+        </div>
+        <div class="page-header-row">
+          <span class="text-base-content/60 text-xs">Callable immediately</span>
+          <button class="btn btn-sm">Manage</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-body">
+        <div class="page-header-row">
+          <div class="flex items-center gap-3">
+            <div class="provider-mark">GH</div>
+            <div>
+              <h2 class="card-title">GitHub</h2>
+              <p class="text-base-content/60 text-xs">Needs API key</p>
+            </div>
+          </div>
+          <div class="badge badge-outline">Needs API key</div>
+        </div>
+        <p class="text-base-content/70 text-sm">Search repos, inspect issues, and retrieve pull request context after an upstream token is configured.</p>
+        <div class="rounded-box border border-base-300 p-3 text-sm">
+          <p class="font-medium">Available Python functions</p>
+          <p class="text-base-content/70 mt-1 font-mono text-xs">github.search_repositories(), github.issues_list()</p>
+        </div>
+        <div class="page-header-row">
+          <span class="text-base-content/60 text-xs">Next step: add upstream token</span>
+          <a href="?page=system-admin" data-route="system-admin" class="btn btn-sm">Add API key</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-body">
+        <div class="page-header-row">
+          <div class="flex items-center gap-3">
+            <div class="provider-mark">N</div>
+            <div>
+              <h2 class="card-title">Notion</h2>
+              <p class="text-base-content/60 text-xs">Needs user connection</p>
+            </div>
+          </div>
+          <div class="badge badge-warning badge-soft">Needs user connection</div>
+        </div>
+        <p class="text-base-content/70 text-sm">Read and update workspace knowledge after the user grants access through a hosted One Runtime link.</p>
+        <div class="rounded-box border border-base-300 p-3 text-sm">
+          <p class="font-medium">Available Python functions</p>
+          <p class="text-base-content/70 mt-1 font-mono text-xs">notion.pages_query(), notion.blocks_append()</p>
+        </div>
+        <div class="page-header-row">
+          <span class="text-base-content/60 text-xs">Next step: return hosted user link</span>
+          <button class="btn btn-sm">Get link</button>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

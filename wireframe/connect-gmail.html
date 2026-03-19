@@ -1,0 +1,89 @@
+<div class="page-stack">
+  <section class="card">
+    <div class="card-body">
+      <div class="page-header-row">
+        <div>
+          <h2 class="card-title">Connect Gmail</h2>
+          <p class="text-base-content/70 mt-1 text-sm">
+            Configure how One Runtime should broker Gmail authorization for your product before you generate connection links for end users.
+          </p>
+        </div>
+        <div class="badge badge-outline">Provider: Google</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="admin-grid">
+    <section class="card">
+      <div class="card-body">
+        <h3 class="card-title">What One Runtime will do</h3>
+        <div class="trust-list">
+          <div class="rounded-box border border-base-300 p-4">
+            <p class="font-medium">Host the user authorization flow</p>
+            <p class="text-base-content/70 mt-1">Generate the Google redirect, exchange tokens, and store connection status for your project.</p>
+          </div>
+          <div class="rounded-box border border-base-300 p-4">
+            <p class="font-medium">Enforce scoped access</p>
+            <p class="text-base-content/70 mt-1">Only the scopes you enable for Gmail will be requested and used for downstream API actions.</p>
+          </div>
+          <div class="rounded-box border border-base-300 p-4">
+            <p class="font-medium">Record audit events</p>
+            <p class="text-base-content/70 mt-1">Every consent start, token exchange, refresh, and provider API call can be reviewed in the activity log.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-body">
+        <h3 class="card-title">What One Runtime will not do</h3>
+        <ul class="list rounded-box">
+          <li class="list-row">Request broader Gmail access than your project configuration allows</li>
+          <li class="list-row">Expose your Google client secret when you choose customer-managed OAuth</li>
+          <li class="list-row">Prevent you from revoking tokens or disabling Gmail for your product</li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    <a href="?page=managed-oauth-confirm" data-route="managed-oauth-confirm" class="card cursor-pointer border border-base-300">
+      <div class="card-body">
+        <div class="page-header-row">
+          <h3 class="card-title">Use One Runtime</h3>
+          <div class="badge badge-soft">Quick setup</div>
+        </div>
+        <p class="text-base-content/70 text-sm">
+          Managed OAuth handled by One Runtime. Best for evaluation, pilots, and teams that want the fastest path to working Gmail connections.
+        </p>
+        <div class="rounded-box border border-base-300 p-3 text-sm">
+          <p class="font-medium">Consent screen behavior</p>
+          <p class="text-base-content/70 mt-1">Your end users will see One Runtime on the Google consent screen.</p>
+        </div>
+        <span class="btn btn-sm mt-2 self-start">Continue</span>
+      </div>
+    </a>
+
+    <a href="?page=byo-oauth-setup" data-route="byo-oauth-setup" class="card cursor-pointer border border-base-300">
+      <div class="card-body">
+        <div class="page-header-row">
+          <h3 class="card-title">Use your own Google app</h3>
+          <div class="badge badge-outline">Recommended for production</div>
+        </div>
+        <p class="text-base-content/70 text-sm">
+          You control the Google OAuth client, consent branding, and credential lifecycle while One Runtime continues to host the redirect and token flow.
+        </p>
+        <div class="rounded-box border border-base-300 p-3 text-sm">
+          <p class="font-medium">Consent screen behavior</p>
+          <p class="text-base-content/70 mt-1">Your end users will see your configured Google app name instead of One Runtime.</p>
+        </div>
+        <span class="btn btn-sm mt-2 self-start">Continue</span>
+      </div>
+    </a>
+  </div>
+
+  <div class="flex gap-3">
+    <a href="?page=providers" data-route="providers" class="btn btn-primary">Continue</a>
+    <a href="?page=providers" data-route="providers" class="btn btn-outline">Cancel</a>
+  </div>
+</div>

@@ -1,0 +1,36 @@
+<div class="page-stack">
+  <section class="card">
+    <div class="card-body">
+      <h2 class="card-title">Interrupted flow example</h2>
+      <p class="text-base-content/70 text-sm">
+        This modal appears when an agent selects a Gmail function but the required user connection does not exist yet.
+      </p>
+    </div>
+  </section>
+
+  <div class="modal-stage">
+    <div class="space-y-5">
+      <div>
+        <h3 class="text-xl font-semibold">Gmail not connected</h3>
+        <p class="text-base-content/70 mt-2 text-sm">
+          This tool requires a Gmail connection for `user_2184`. One Runtime can return a hosted link to complete consent, or an operator can add the missing upstream credential if the integration is still unconfigured.
+        </p>
+      </div>
+      <div class="grid gap-4 md:grid-cols-2">
+        <a href="?page=gmail-connected" data-route="gmail-connected" class="rounded-box border border-base-300 p-4">
+          <p class="font-medium">Return hosted connection link</p>
+          <p class="text-base-content/70 mt-2 text-sm">Best path for user-authorized integrations such as Gmail, Calendar, Slack, and Notion.</p>
+        </a>
+        <a href="?page=system-admin" data-route="system-admin" class="rounded-box border border-base-300 p-4">
+          <p class="font-medium">Add provider key or secret</p>
+          <p class="text-base-content/70 mt-2 text-sm">Use this when the integration is blocked because One Runtime is still missing the upstream provider credential.</p>
+        </a>
+      </div>
+      <div class="flex gap-3">
+        <a href="?page=gmail-connected" data-route="gmail-connected" class="btn btn-primary">Return connection link</a>
+        <a href="?page=system-admin" data-route="system-admin" class="btn btn-outline">Open System Admin</a>
+        <a href="?page=api-keys" data-route="api-keys" class="btn btn-ghost">Cancel</a>
+      </div>
+    </div>
+  </div>
+</div>

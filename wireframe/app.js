@@ -4,53 +4,122 @@ const pages = {
     controls: [
       {
         type: "button",
-        label: "Primary action",
+        label: "Browse integrations",
+        className: "btn btn-outline",
+        route: "providers",
+      },
+      {
+        type: "button",
+        label: "Open MCP API",
         className: "btn btn-primary",
+        route: "api-keys",
       },
     ],
   },
-  items: {
-    title: "Items",
+  providers: {
+    title: "Integrations",
     controls: [
       {
         type: "button",
-        label: "Create item",
+        label: "Search functions",
         className: "btn btn-primary",
+        route: "providers",
+      },
+      {
+        type: "button",
+        label: "View not connected flow",
+        className: "btn btn-outline",
+        route: "provider-required",
       },
     ],
   },
-  "item-detail": {
-    title: "Item Detail",
+  "gmail-connected": {
+    title: "Gmail",
     controls: [
       {
         type: "button",
-        label: "Save draft",
-        className: "btn btn-primary",
+        label: "View activity",
+        className: "btn btn-outline",
+        route: "gmail-activity",
       },
       {
         type: "button",
-        label: "Secondary action",
+        label: "Get connection link",
+        className: "btn btn-primary",
+        route: "provider-required",
+      },
+    ],
+  },
+  "gmail-activity": {
+    title: "Activity",
+    controls: [
+      {
+        type: "select",
+        className: "select select-bordered",
+        options: ["All events", "Tool calls", "Connection events"],
+      },
+      {
+        type: "button",
+        label: "Export audit log",
         className: "btn btn-outline",
       },
     ],
   },
-  "empty-state": {
-    title: "Empty State",
+  "provider-required": {
+    title: "Connection Required",
+    controls: [],
+  },
+  "api-keys": {
+    title: "API",
     controls: [
       {
         type: "button",
-        label: "Create first item",
+        label: "Create API key",
         className: "btn btn-primary",
+      },
+      {
+        type: "button",
+        label: "View system secrets",
+        className: "btn btn-outline",
+        route: "system-admin",
       },
     ],
   },
-  settings: {
-    title: "Settings",
+  "system-admin": {
+    title: "System Admin",
     controls: [
       {
         type: "button",
-        label: "Save changes",
+        label: "Add provider secret",
         className: "btn btn-primary",
+        route: "provider-secret-detail",
+      },
+    ],
+  },
+  "provider-secret-detail": {
+    title: "Provider Secret",
+    controls: [
+      {
+        type: "button",
+        label: "Save secret",
+        className: "btn btn-primary",
+      },
+      {
+        type: "button",
+        label: "Back to inventory",
+        className: "btn btn-outline",
+        route: "system-admin",
+      },
+    ],
+  },
+  "how-connections-work": {
+    title: "How Connections Work",
+    controls: [
+      {
+        type: "button",
+        label: "Browse integrations",
+        className: "btn btn-primary",
+        route: "providers",
       },
     ],
   },
@@ -76,6 +145,9 @@ function renderActions(page) {
       const button = document.createElement("button");
       button.className = control.className;
       button.textContent = control.label;
+      if (control.route) {
+        button.dataset.route = control.route;
+      }
       actions.appendChild(button);
       continue;
     }

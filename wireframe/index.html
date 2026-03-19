@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Wireframe Starter</title>
+    <title>One Runtime</title>
     <link href="./dist/tailwind.css" rel="stylesheet" type="text/css">
   </head>
   <body class="min-h-screen bg-base-200">
@@ -12,31 +12,35 @@
         <div class="app-sidebar-inner">
           <div class="border-base-300 border-b px-6 py-5">
             <div class="flex items-center gap-3">
-              <div class="bg-primary text-primary-content flex h-10 w-10 items-center justify-center rounded-box">
-                WS
+              <div class="bg-base-300 text-base-content flex h-10 w-10 items-center justify-center rounded-box font-semibold">
+                OR
               </div>
               <div>
-                <p class="text-sm font-semibold">Wireframe Starter</p>
+                <p class="text-sm font-semibold">One Runtime</p>
+                <p class="text-base-content/60 text-xs">Managed MCP and integrations</p>
               </div>
             </div>
           </div>
 
           <div class="app-sidebar-nav">
             <ul class="menu w-full gap-1 p-0" id="menu">
+              <li class="menu-title"><span>One Runtime</span></li>
               <li><a class="wireframe-link" href="?page=overview" data-page="overview">Overview</a></li>
-              <li><a class="wireframe-link" href="?page=items" data-page="items">Items</a></li>
-              <li><a class="wireframe-link" href="?page=item-detail" data-page="item-detail">Item Detail</a></li>
-              <li><a class="wireframe-link" href="?page=empty-state" data-page="empty-state">Empty State</a></li>
-              <li><a class="wireframe-link" href="?page=settings" data-page="settings">Settings</a></li>
+              <li><a class="wireframe-link" href="?page=providers" data-page="providers">Integrations</a></li>
+              <li><a class="wireframe-link" href="?page=gmail-activity" data-page="gmail-activity">Activity</a></li>
+              <li><a class="wireframe-link" href="?page=api-keys" data-page="api-keys">API</a></li>
+              <li><a class="wireframe-link" href="?page=how-connections-work" data-page="how-connections-work">How It Works</a></li>
+              <li class="menu-title mt-4"><span>System Admin</span></li>
+              <li><a class="wireframe-link" href="?page=system-admin" data-page="system-admin">Provider Secrets</a></li>
             </ul>
           </div>
 
           <div class="border-base-300 space-y-4 border-t px-6 py-5 text-sm">
-            <a class="link block" href="#">Project notes</a>
-            <a class="link block" href="#">Open questions</a>
+            <a class="wireframe-link link block" href="?page=provider-required" data-page="provider-required">Not connected flow</a>
+            <a class="wireframe-link link block" href="?page=provider-secret-detail" data-page="provider-secret-detail">Secret detail example</a>
             <div class="pt-4">
-              <p class="font-medium">Template workspace</p>
-              <p class="text-base-content/70 text-xs">Replace this with project-specific context</p>
+              <p class="font-medium">Workspace: Acme Agent Cloud</p>
+              <p class="text-base-content/70 text-xs">One Runtime manages auth, tool discovery, hosted links, and provider credentials</p>
             </div>
           </div>
         </div>

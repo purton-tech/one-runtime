@@ -1,0 +1,86 @@
+<div class="page-stack">
+  <section class="card">
+    <div class="card-body">
+      <div class="page-header-row">
+        <div>
+          <h2 class="card-title">API and MCP</h2>
+          <p class="text-base-content/70 mt-1 text-sm">
+            Agent providers use One Runtime API keys and MCP endpoints to list integrations, inspect callable functions, check readiness, and request hosted connection links.
+          </p>
+        </div>
+        <div class="badge badge-outline">Server-side only</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="admin-grid">
+    <section class="card">
+      <div class="card-body">
+        <h3 class="card-title">Issued keys</h3>
+        <div class="overflow-x-auto">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Prefix</th>
+                <th>Created</th>
+                <th>Last used</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Production backend</td>
+                <td><span class="font-mono text-xs">or_live_2m8...</span></td>
+                <td>2026-03-02</td>
+                <td>2 minutes ago</td>
+                <td><span class="badge badge-success badge-soft">Active</span></td>
+              </tr>
+              <tr>
+                <td>Staging backend</td>
+                <td><span class="font-mono text-xs">or_test_f8d...</span></td>
+                <td>2026-02-11</td>
+                <td>Yesterday</td>
+                <td><span class="badge badge-outline">Active</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-body">
+        <h3 class="card-title">What your agents can ask One Runtime</h3>
+        <div class="space-y-3 text-sm">
+          <div class="rounded-box border border-base-300 p-4">
+            <p class="font-medium font-mono text-xs">list_integrations()</p>
+            <p class="text-base-content/70 mt-1">Return the integrations and tool families currently exposed through One Runtime.</p>
+          </div>
+          <div class="rounded-box border border-base-300 p-4">
+            <p class="font-medium font-mono text-xs">list_functions("gmail")</p>
+            <p class="text-base-content/70 mt-1">Return callable Python functions for a specific integration.</p>
+          </div>
+          <div class="rounded-box border border-base-300 p-4">
+            <p class="font-medium font-mono text-xs">get_connection_status("gmail", user_id)</p>
+            <p class="text-base-content/70 mt-1">Tell the model whether the function is ready, needs a user connection, or is blocked on an upstream key.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-body">
+        <h3 class="card-title">Hosted connection links</h3>
+        <div class="rounded-box border border-base-300 bg-base-200 p-4">
+          <p class="text-xs uppercase text-base-content/60">Example response</p>
+          <p class="mt-2 break-all font-mono text-sm">https://app.one-runtime.example/connect/gmail?workspace=acme-agent-cloud&amp;user_id=user_2184&amp;state=cn_8912</p>
+        </div>
+        <p class="text-base-content/70 text-sm">
+          Your app returns this link when a model discovers that Gmail is not yet connected for a specific user. One Runtime completes consent and makes the tool callable afterward.
+        </p>
+        <a href="?page=provider-required" data-route="provider-required" class="btn btn-sm mt-3">See blocked flow</a>
+      </div>
+    </section>
+  </div>
+</div>

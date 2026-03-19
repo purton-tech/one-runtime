@@ -68,6 +68,54 @@
     @apply grid gap-4 lg:grid-cols-2;
 }
 
+.admin-grid {
+    @apply grid gap-6 lg:grid-cols-[1.8fr_1fr];
+}
+
+.provider-grid {
+    @apply grid gap-4 md:grid-cols-2 xl:grid-cols-3;
+}
+
+.step-stack {
+    @apply space-y-4;
+}
+
+.step-card {
+    @apply rounded-box bg-base-100 border border-base-300;
+}
+
+.step-number {
+    @apply flex h-8 w-8 items-center justify-center rounded-full bg-base-300 text-sm font-semibold;
+}
+
+.summary-list {
+    @apply space-y-3 text-sm;
+}
+
+.summary-row {
+    @apply flex items-start justify-between gap-4 border-b border-base-300 pb-3 last:border-b-0 last:pb-0;
+}
+
+.provider-mark {
+    @apply flex h-11 w-11 items-center justify-center rounded-box border border-base-300 bg-base-200 text-sm font-semibold shrink-0 overflow-hidden;
+}
+
+.provider-mark img {
+    @apply h-8 w-8 object-contain;
+}
+
+.trust-list {
+    @apply space-y-3 text-sm;
+}
+
+.modal-stage {
+    @apply mx-auto max-w-3xl rounded-box border border-base-300 bg-base-100 p-6 shadow-sm;
+}
+
+.code-field {
+    @apply w-full rounded-lg border border-base-300 bg-base-100 px-4 py-3 font-mono text-sm;
+}
+
 .card {
     @apply bg-base-100;
 }

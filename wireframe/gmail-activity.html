@@ -1,0 +1,89 @@
+<div class="page-stack">
+  <section class="card">
+    <div class="card-body">
+      <div class="page-header-row">
+        <div>
+          <h2 class="card-title">Activity</h2>
+          <p class="text-base-content/70 mt-1 text-sm">
+            Audit what agents searched, which functions they called, and where One Runtime returned hosted links or surfaced missing credentials.
+          </p>
+        </div>
+        <div class="flex gap-2">
+          <select class="select select-bordered select-sm">
+            <option>All actions</option>
+            <option>messages.list</option>
+            <option>messages.get</option>
+            <option>drafts.create</option>
+            <option>connection.link_issued</option>
+          </select>
+          <select class="select select-bordered select-sm">
+            <option>Last 7 days</option>
+            <option>Today</option>
+            <option>Last 30 days</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="card-body">
+      <div class="overflow-x-auto">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Timestamp</th>
+              <th>Action</th>
+              <th>Actor</th>
+              <th>Result</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>2026-03-18 09:11 UTC</td>
+              <td>integrations.search</td>
+              <td>triage-agent</td>
+              <td><span class="badge badge-success badge-soft">Returned Gmail, Slack, Calendar</span></td>
+            </tr>
+            <tr>
+              <td>2026-03-18 09:11 UTC</td>
+              <td>get_connection_status</td>
+              <td>user_2184 via Acme Agent Cloud</td>
+              <td><span class="badge badge-warning badge-soft">Needs user connection</span></td>
+            </tr>
+            <tr>
+              <td>2026-03-18 09:10 UTC</td>
+              <td>connection.link_issued</td>
+              <td>reply-agent</td>
+              <td><span class="badge badge-outline">Hosted Gmail link returned</span></td>
+            </tr>
+            <tr>
+              <td>2026-03-18 09:05 UTC</td>
+              <td>messages.list</td>
+              <td>ops-assistant</td>
+              <td><span class="badge badge-success badge-soft">Success</span></td>
+            </tr>
+            <tr>
+              <td>2026-03-18 09:02 UTC</td>
+              <td>drafts.create</td>
+              <td>reply-assistant</td>
+              <td><span class="badge badge-success badge-soft">Success</span></td>
+            </tr>
+            <tr>
+              <td>2026-03-18 08:56 UTC</td>
+              <td>provider.secret.missing</td>
+              <td>system</td>
+              <td><span class="badge badge-outline">GitHub upstream token required</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="rounded-box border border-dashed border-base-300 p-4 text-sm">
+        <p class="font-medium">Empty state behavior</p>
+        <p class="text-base-content/70 mt-1">
+          If no events match the current filters, show: “No activity for this time range. Tool discovery, hosted links, provider calls, and credential issues will appear here as your agents use One Runtime.”
+        </p>
+      </div>
+    </div>
+  </section>
+</div>
