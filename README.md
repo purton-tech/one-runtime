@@ -75,13 +75,19 @@ for c in contacts:
 - 🌐 Unifies web + APIs
   - `web.search`, `web.fetch`, and integrations in one place
 
-## We manage Oauth2 workflow for your users
+## We've built the integrations and the Oauth2 workflow
+
+Give your users access to our library of integrations and secure Oath2 workflows.
 
 <p align="center">
   <img src="oauth-popup.png" alt="Oauth Integrations" width="50%">
 </p>
 
-## Example
+We provide an API so you can let your select select integrations.
+
+## Example Code
+
+Here we include the One Runtime MCP into an Open AI responses call.
 
 ```python
 from openai import OpenAI
@@ -89,7 +95,7 @@ from openai import OpenAI
 client = OpenAI()
 
 response = client.responses.create(
-    model="gpt--5.4",
+    model="gpt-5.4",
     tools=[
         {
             "type": "mcp",
