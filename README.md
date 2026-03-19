@@ -104,3 +104,46 @@ Take this photo of business cards and:
 
 print(response.output_text)
 ```
+
+## Typical Sequence
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant App as Developer App
+    participant OpenAI as OpenAI Responses API
+    participant OR as One Runtime MCP
+    participant Auth as OAuth Store
+    participant SB as Sandboxed Python Runtime
+    participant Ext as External Systems
+
+    Note over App,OpenAI: App configures One Runtime as an MCP tool source
+    App->>OpenAI: responses.create(... tools=[One Runtime MCP], input=user prompt)
+
+    OpenAI->>OR: Connect to MCP server\nAuthorization: Bearer oru_...
+    OR->>OR: Resolve API key → user / tenant / permissions
+    OR-->>OpenAI: Advertise MCP tools\n(tool_search, tool_help, run_python, get_tool_connect_url)
+
+    OpenAI->>OR: tool_search("crm email web")
+    OR-->>OpenAI: Matching commands / functions
+
+    OpenAI->>OR: tool_help("crm.contacts.create")
+    OR-->>OpenAI: Usage, args, auth requirements
+
+    OpenAI->>OR: run_python(code)
+    OR->>OR: Parse request and create execution job
+    OR->>Auth: Load user OAuth credentials
+    Auth-->>OR: Scoped per-user tokens
+
+    OR->>SB: Start isolated sandbox\nInject scoped credentials + SDKs
+    SB->>Ext: CRM API calls
+    SB->>Ext: Email draft API calls
+    SB->>Ext: Web search / fetch
+    Ext-->>SB: Results
+
+    SB->>SB: Loop / dedupe / enrich / pipeline data
+    SB-->>OR: stdout, stderr, structured result, artifacts
+    OR->>OR: Audit log + policy checks
+    OR-->>OpenAI: Tool result
+    OpenAI-->>App: Final model response
+```
