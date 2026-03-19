@@ -51,7 +51,7 @@ Clorinde will fail compilation if queries are out of sync.
 
 ## Variables
 
-`project_name=web`
+`project_name=one-runtime`
 
 ## Folder: crates/${project_name}-assets
 
