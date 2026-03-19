@@ -1,318 +1,106 @@
-# 🧠 One Runtime
+# One Runtime
 
-> **One Runtime. Thousands of integrations.**
-> Run real code. Access APIs. Control the web.
+**An MCP server that turns tool calls into program execution.**
 
----
+OAuth, 100's of integrations, and sandboxed runtime — all in one place.
 
-## 🚀 Why?
+## The Problem
 
-Every agent project ends up reinventing the same thing:
+Agents don’t fail because of reasoning.  
+They fail because of execution.
 
-* ❌ hundreds of tool definitions
-* ❌ brittle function calling loops
-* ❌ manual pagination & retries
-* ❌ OAuth headaches
-* ❌ context explosion
+A simple request like:
 
-Agents today look like this:
+```
+Take this photo of business cards and:
 
-```text
-LLM → tool → LLM → tool → LLM → tool → 😩
+* Extract all contacts
+* Add them to the CRM (skip duplicates)
+* Enrich each contact using web research
+* Draft a follow-up email for each new contact
 ```
 
----
+Breaks down into real system problems:
 
-## ✅ What if instead…
+- 🔐 Managing and securing OAuth across multiple integrations (CRM, email, etc.)
+- 🧩 Tool bloat — hundreds of integrations means hundreds of tool definitions
+- 🧠 Context bloat — too many tools degrade model performance
+- 🔁 Multiple tool calls — each step requires another round trip through the model
+- ⚙️ No execution model — no loops, no state, no composition
+- 🧪 No safe runtime — logic lives in prompts, not in a sandbox
 
-Your agent could just write code:
+## The Solution
+
+Give agents a runtime.
+
+Instead of calling tools, the agent writes and executes code:
 
 ```python
-from one_mcp import gmail, web
+from one_runtime import crm, web, email, vision
 
-messages = gmail.messages.list(query="is:unread from:stripe", limit=5)
+contacts = vision.extract_contacts(image)
 
-for msg in messages:
-    full = gmail.messages.get(id=msg["id"])
-    print(full["subject"])
+for c in contacts:
+    existing = crm.contacts.search(email=c["email"])
+
+    if not existing:
+        crm.contacts.create(...)
+        email.drafts.create(...)
+
+    data = web.search(f"{c['name']} {c['company']}")
 ```
 
-No tool definitions. No loops in prompts. No glue code.
+## What One Runtime does
 
----
+- 🔐 Manages OAuth per user
+  - Each user connects their own accounts
+  - Supports managed OAuth or bring-your-own credentials
 
-## ⚡ What is One Runtime?
+- 🧩 Converts APIs into functions
+  - OpenAPI → functions the model can call
+  - No need to define hundreds of tools in prompts
 
-**One Runtime is a runtime for agents.**
+- 🔍 Eliminates tool bloat
+  - Small, discoverable interface (`tool_search`, `tool_help`)
 
-It gives your LLM:
+- 🐍 Executes code in a sandbox
+  - Safe, isolated runtime
+  - Agents can run loops, branching, retries
 
-* 🧩 **Thousands of integrations** (via OpenAPI)
-* 🔐 **Built-in OAuth handling**
-* 🌐 **Web search & fetch**
-* 🐍 **A Python runtime for real execution**
+- 🔁 Enables pipelining
+  - Data flows through a single program
+  - No repeated LLM round trips
 
-All behind a **single MCP interface**.
+- 🌐 Unifies web + APIs
+  - `web.search`, `web.fetch`, and integrations in one place
 
----
-
-## 🧱 Core idea
-
-```text
-OpenAPI → Commands → Python SDK → MCP → Agent
-```
-
-Instead of this:
-
-```text
-1000 APIs → 10,000 tools → chaos
-```
-
-You get:
-
-```text
-1 MCP → programmable runtime → everything
-```
-
----
-
-## 🛠 Example
-
-### User request
-
-> “Find unread Stripe emails and summarize them”
-
----
-
-### What the agent runs
+## Example
 
 ```python
-from one_mcp import gmail
+from openai import OpenAI
 
-messages = gmail.messages.list(
-    query="is:unread from:stripe",
-    limit=5
+client = OpenAI()
+
+response = client.responses.create(
+    model="gpt--5.4",
+    tools=[
+        {
+            "type": "mcp",
+            "server_url": "https://api.one-runtime.com/mcp/your_user_123",
+            "headers": {
+                "Authorization": "Bearer oru_abc123"
+            }
+        }
+    ],
+    input="""
+Take this photo of business cards and:
+
+- Extract all contacts
+- Add them to the CRM (skip duplicates)
+- Enrich each contact using web research
+- Draft a follow-up email for each new contact
+"""
 )
 
-results = []
-
-for msg in messages:
-    full = gmail.messages.get(id=msg["id"])
-    results.append({
-        "subject": full["subject"],
-        "from": full["from"]
-    })
-
-set_result(results)
+print(response.output_text)
 ```
-
----
-
-### That’s it.
-
-No tool orchestration. No context juggling.
-
----
-
-## 🔌 Integrations
-
-One Runtime turns APIs into Python automatically:
-
-```python
-from one_mcp import gmail, github, slack, notion
-```
-
-```python
-github.issues.create(
-    repo="acme/api",
-    title="Bug report",
-    body="Steps to reproduce"
-)
-
-slack.messages.send(
-    channel="#alerts",
-    text="Deployment complete"
-)
-```
-
----
-
-## 🌐 Web access
-
-```python
-from one_mcp import web
-
-results = web.search("latest Kubernetes CVEs", limit=3)
-
-for r in results:
-    page = web.fetch(r.url)
-    print(page.text[:500])
-```
-
----
-
-## 🧠 For agents, this changes everything
-
-Instead of:
-
-```text
-LLM → tool → LLM → tool → LLM
-```
-
-You get:
-
-```text
-LLM → writes program → runtime executes → result
-```
-
----
-
-## 🔐 Auth included
-
-No OAuth implementation needed:
-
-```python
-gmail.messages.list()
-```
-
-If not connected:
-
-```text
-Not connected: Google
-→ call get_tool_connect_url("google")
-```
-
----
-
-## ⚙️ MCP Interface
-
-Expose just a few tools:
-
-* `tool_search`
-* `tool_help`
-* `get_tool_connect_url`
-* `run_python`
-
-That’s it.
-
----
-
-## 🧪 Example (LangChain)
-
-```python
-from one_mcp import MCPTool
-
-tool = MCPTool(endpoint="http://localhost:8080")
-
-agent.run("""
-Find unread emails and summarize them
-""")
-```
-
----
-
-## 🏗 Architecture
-
-```text
-OpenAPI specs
-    ↓
-Normalization layer
-    ↓
-Command registry
-    ↓
-Python SDK generation
-    ↓
-MCP runtime
-    ↓
-Agent execution
-```
-
----
-
-## 🧩 Why not tools?
-
-Tools don’t scale:
-
-* too many
-* too verbose
-* hard to discover
-* bad for context
-
----
-
-## 🧠 Why code works
-
-Agents are good at:
-
-* loops
-* conditionals
-* iteration
-* data shaping
-
-Let them use those strengths.
-
----
-
-## 📦 Install
-
-```bash
-pip install one-mcp
-```
-
----
-
-## ▶️ Run
-
-```bash
-one-mcp serve
-```
-
----
-
-## 🔗 Connect an account
-
-```python
-get_tool_connect_url("google")
-```
-
----
-
-## 🎯 Vision
-
-> Agents shouldn’t call tools.
-> They should run code.
-
----
-
-## 🧱 Built for
-
-* AI agents
-* LLM frameworks
-* enterprise automation
-* on-prem deployments
-
----
-
-## 🗺 Roadmap
-
-* [ ] More providers (OpenAPI ingestion)
-* [ ] Sandboxed execution improvements
-* [ ] Typed SDK generation
-* [ ] Streaming execution
-* [ ] CLI runtime (bash)
-
----
-
-## 🤝 Contributing
-
-PRs welcome — especially:
-
-* new OpenAPI integrations
-* SDK improvements
-* runtime enhancements
-
----
-
-## ⭐️ If this clicks…
-
-Give it a star.
