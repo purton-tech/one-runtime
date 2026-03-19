@@ -6,10 +6,9 @@ OAuth, 100's of integrations, and sandboxed runtime — all in one place.
 
 ## The Problem
 
-Agents don’t fail because of reasoning.  
-They fail because of execution.
+To understand the problem One Runtime solves, imagine your agent is given the following task:
 
-A simple request like:
+![Business cards example](business-cards.png)
 
 ```
 Take this photo of business cards and:
@@ -73,6 +72,10 @@ for c in contacts:
 
 - 🌐 Unifies web + APIs
   - `web.search`, `web.fetch`, and integrations in one place
+
+## We manage Oauth2 workflow for your users
+
+![Oauth Integrations](oauth-popup.png)
 
 ## Example
 
