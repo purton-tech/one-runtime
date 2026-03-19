@@ -32,7 +32,7 @@ Breaks down into real system problems:
 
 ## The Solution
 
-Give agents a runtime.
+Give agents programmtic access to integrations.
 
 Instead of calling tools, the agent writes and executes code:
 
@@ -51,15 +51,18 @@ for c in contacts:
     data = web.search(f"{c['name']} {c['company']}")
 ```
 
+> One Runtime cuts tool-definition tokens by **90%+** and reduces multi-step agent round trips by **80%+**. Less costs and faster results.
+
 ## What One Runtime does
 
-- 🔐 Manages OAuth per user
+- 🔐 Manages and secures OAuth per user
   - Each user connects their own accounts
   - Supports managed OAuth or bring-your-own credentials
 
-- 🧩 Converts APIs into functions
-  - OpenAPI → functions the model can call
+- 🧩 Converts pre-built APIs into python functions
+  - functions the model can call
   - No need to define hundreds of tools in prompts
+  - No need to build your own integrations
 
 - 🔍 Eliminates tool bloat
   - Small, discoverable interface (`tool_search`, `tool_help`)
