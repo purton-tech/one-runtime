@@ -5,8 +5,8 @@ use axum::{
 };
 use clorinde::deadpool_postgres::Pool;
 use clorinde::types::ResourceVisibility;
-use octo_ui::connections::r#new::CreateConnectionDraft;
-use octo_ui::routes;
+use one_runtime_ui::connections::r#new::CreateConnectionDraft;
+use one_runtime_ui::routes;
 use serde::Deserialize;
 use uuid::Uuid;
 use validator::{Validate, ValidationError};
@@ -74,7 +74,7 @@ async fn render_new_error(
 
     transaction.commit().await?;
 
-    let html = octo_ui::connections::r#new::page(
+    let html = one_runtime_ui::connections::r#new::page(
         org_id,
         balance_label,
         integrations,

@@ -3,7 +3,7 @@ use crate::base_layout::BaseLayout;
 use crate::routes;
 use daisy_rsx::*;
 use dioxus::prelude::*;
-use octo_assets::files::*;
+use one_runtime_assets::files::*;
 
 #[derive(PartialEq, Clone, Eq, Debug)]
 pub enum SideBar {
@@ -89,8 +89,8 @@ pub fn Layout(
             title,
             fav_icon_src: Some(favicon_svg.name.into()),
             web_assembly: (
-                octo_islands_js.name.into(),
-                octo_islands_bg_wasm.name.into()
+                one_runtime_islands_js.name.into(),
+                one_runtime_islands_bg_wasm.name.into()
             ),
             stylesheets: vec![tailwind_css.name.to_string(), "https://cdn.jsdelivr.net/npm/daisyui@5".into()],
             header_left,

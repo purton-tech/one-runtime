@@ -2,7 +2,7 @@ use axum::body::Body;
 use axum::http::{HeaderValue, Response, StatusCode, header};
 use axum::response::IntoResponse;
 use axum_extra::routing::TypedPath;
-use octo_assets::files::StaticFile;
+use one_runtime_assets::files::StaticFile;
 use serde::Deserialize;
 use tokio_util::io::ReaderStream;
 

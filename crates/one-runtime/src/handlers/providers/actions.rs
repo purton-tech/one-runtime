@@ -4,8 +4,8 @@ use axum::{
     response::{Html, IntoResponse, Redirect, Response},
 };
 use clorinde::deadpool_postgres::Pool;
-use octo_ui::providers::r#new::CreateProviderDraft;
-use octo_ui::routes;
+use one_runtime_ui::providers::r#new::CreateProviderDraft;
+use one_runtime_ui::routes;
 use serde::Deserialize;
 use validator::{Validate, ValidationError};
 
@@ -34,7 +34,7 @@ fn render_new_provider_error(
     form: &CreateProviderForm,
     message: String,
 ) -> Response {
-    let html = octo_ui::providers::r#new::page(
+    let html = one_runtime_ui::providers::r#new::page(
         org_id,
         balance_label,
         Some(CreateProviderDraft {

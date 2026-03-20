@@ -4,8 +4,8 @@ use axum::{
     response::{Html, IntoResponse, Redirect, Response},
 };
 use clorinde::deadpool_postgres::Pool;
-use octo_ui::channels::page::ConnectTelegramDraft;
-use octo_ui::routes;
+use one_runtime_ui::channels::page::ConnectTelegramDraft;
+use one_runtime_ui::routes;
 use serde::Deserialize;
 use uuid::Uuid;
 use validator::{Validate, ValidationError};
@@ -72,7 +72,7 @@ async fn render_connect_error(
 
     transaction.commit().await?;
 
-    let html = octo_ui::channels::page::page(
+    let html = one_runtime_ui::channels::page::page(
         org_id,
         balance_label,
         channels,

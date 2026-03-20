@@ -1,8 +1,8 @@
 use crate::{CustomError, Jwt, authz, handlers};
 use axum::{Extension, response::Html};
 use clorinde::deadpool_postgres::Pool;
-use octo_ui::agents::page;
-use octo_ui::routes;
+use one_runtime_ui::agents::page;
+use one_runtime_ui::routes;
 
 pub async fn loader(
     routes::agents::Index { org_id }: routes::agents::Index,

@@ -1,5 +1,10 @@
 VERSION 0.8
 
+ARG PROJECT_NAME=one-runtime
+ARG APP_BINARY=one-runtime
+ARG ISLANDS_PACKAGE=one-runtime-islands
+ARG ISLANDS_WASM=one_runtime_islands
+
 # Build the same toolchain environment as the devcontainer without hardcoding
 # the upstream image in two places.
 devcontainer:
@@ -14,15 +19,18 @@ certs:
 # Run the Rust checks that CI enforces inside the shared devcontainer toolchain.
 checks:
     FROM +devcontainer
+    ARG PROJECT_NAME
+    ARG ISLANDS_PACKAGE
+    ARG ISLANDS_WASM
     WORKDIR /workspace
     COPY . .
-    RUN cd /workspace/crates/octo-assets && mkdir -p dist && tailwind-extra -i ./input.css -o ./dist/tailwind.css
+    RUN cd /workspace/crates/${PROJECT_NAME}-assets && mkdir -p dist && tailwind-extra -i ./input.css -o ./dist/tailwind.css
     RUN rustup target add wasm32-unknown-unknown
-    RUN cargo build -p octo-islands --target wasm32-unknown-unknown --release && \
+    RUN cargo build -p ${ISLANDS_PACKAGE} --target wasm32-unknown-unknown --release && \
         wasm-bindgen \
-          target/wasm32-unknown-unknown/release/octo_islands.wasm \
+          target/wasm32-unknown-unknown/release/${ISLANDS_WASM}.wasm \
           --target web \
-          --out-dir crates/octo-assets/dist
+          --out-dir crates/${PROJECT_NAME}-assets/dist
     RUN cargo fmt --check
     RUN cargo clippy --workspace --all-targets -- -D warnings
 
@@ -30,34 +38,36 @@ checks:
 # known binaries from the shared release output.
 build:
     FROM +devcontainer
+    ARG PROJECT_NAME
+    ARG APP_BINARY
+    ARG ISLANDS_PACKAGE
+    ARG ISLANDS_WASM
     WORKDIR /workspace
     COPY . .
-    RUN cd /workspace/crates/octo-assets && mkdir -p dist && tailwind-extra -i ./input.css -o ./dist/tailwind.css
+    RUN cd /workspace/crates/${PROJECT_NAME}-assets && mkdir -p dist && tailwind-extra -i ./input.css -o ./dist/tailwind.css
     RUN rustup target add wasm32-unknown-unknown
-    RUN cargo build -p octo-islands --target wasm32-unknown-unknown --release && \
+    RUN cargo build -p ${ISLANDS_PACKAGE} --target wasm32-unknown-unknown --release && \
         wasm-bindgen \
-          target/wasm32-unknown-unknown/release/octo_islands.wasm \
+          target/wasm32-unknown-unknown/release/${ISLANDS_WASM}.wasm \
           --target web \
-          --out-dir crates/octo-assets/dist
+          --out-dir crates/${PROJECT_NAME}-assets/dist
     RUN rustup target add x86_64-unknown-linux-musl
-    RUN cargo build --workspace --exclude octo-islands --release --target x86_64-unknown-linux-musl
-    SAVE ARTIFACT target/x86_64-unknown-linux-musl/release/octo /octo
-    SAVE ARTIFACT target/x86_64-unknown-linux-musl/release/telegram-ingress-polling /telegram-ingress-polling
-    SAVE ARTIFACT target/x86_64-unknown-linux-musl/release/telegram-egress /telegram-egress
-    SAVE ARTIFACT target/x86_64-unknown-linux-musl/release/agent-runtime /agent-runtime
-    SAVE ARTIFACT crates/octo-assets/dist /workspace/crates/octo-assets/dist
-    SAVE ARTIFACT crates/octo-assets/images /workspace/crates/octo-assets/images
+    RUN cargo build --workspace --exclude ${ISLANDS_PACKAGE} --release --target x86_64-unknown-linux-musl
+    SAVE ARTIFACT target/x86_64-unknown-linux-musl/release/${APP_BINARY} /${APP_BINARY}
+    SAVE ARTIFACT crates/${PROJECT_NAME}-assets/dist /workspace/crates/${PROJECT_NAME}-assets/dist
+    SAVE ARTIFACT crates/${PROJECT_NAME}-assets/images /workspace/crates/${PROJECT_NAME}-assets/images
 
 # Package a selected binary into a scratch image tagged with the binary name.
 image:
-    ARG BINARY=octo
+    ARG PROJECT_NAME
+    ARG BINARY=one-runtime
     ARG REGISTRY=your-registry
     ARG TAG=latest
     FROM scratch
     COPY +certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
     COPY +build/$BINARY /app
-    COPY +build/workspace/crates/octo-assets/dist /workspace/crates/octo-assets/dist
-    COPY +build/workspace/crates/octo-assets/images /workspace/crates/octo-assets/images
+    COPY +build/workspace/crates/${PROJECT_NAME}-assets/dist /workspace/crates/${PROJECT_NAME}-assets/dist
+    COPY +build/workspace/crates/${PROJECT_NAME}-assets/images /workspace/crates/${PROJECT_NAME}-assets/images
     USER 65532:65532
     ENTRYPOINT ["/app"]
     SAVE IMAGE --push $REGISTRY/$BINARY:$TAG
@@ -66,29 +76,32 @@ image:
 # at startup. Attach this via Stack's `init` section so migrations complete
 # before the main service starts.
 migration-image:
+    ARG PROJECT_NAME
     ARG REGISTRY=your-registry
     ARG TAG=latest
     FROM ghcr.io/amacneil/dbmate:2.26.0
     COPY crates/db/migrations /migrations
     ENTRYPOINT ["dbmate", "--no-dump-schema", "--migrations-dir", "/migrations", "up"]
-    SAVE IMAGE --push $REGISTRY/octo-migrations:$TAG
+    SAVE IMAGE --push $REGISTRY/${PROJECT_NAME}-migrations:$TAG
 
 release-candidate:
+    ARG PROJECT_NAME
+    ARG APP_BINARY
+    ARG ISLANDS_PACKAGE
+    ARG ISLANDS_WASM
     ARG REGISTRY=ghcr.io/purton-tech
     ARG TAG
-    BUILD +checks
-    BUILD +image --BINARY=octo --REGISTRY=$REGISTRY --TAG=$TAG
-    BUILD +image --BINARY=telegram-ingress-polling --REGISTRY=$REGISTRY --TAG=$TAG
-    BUILD +image --BINARY=telegram-egress --REGISTRY=$REGISTRY --TAG=$TAG
-    BUILD +image --BINARY=agent-runtime --REGISTRY=$REGISTRY --TAG=$TAG
-    BUILD +migration-image --REGISTRY=$REGISTRY --TAG=$TAG
+    BUILD +checks --PROJECT_NAME=$PROJECT_NAME --ISLANDS_PACKAGE=$ISLANDS_PACKAGE --ISLANDS_WASM=$ISLANDS_WASM
+    BUILD +image --PROJECT_NAME=$PROJECT_NAME --BINARY=$APP_BINARY --REGISTRY=$REGISTRY --TAG=$TAG
+    BUILD +migration-image --PROJECT_NAME=$PROJECT_NAME --REGISTRY=$REGISTRY --TAG=$TAG
 
-# Build all currently known binary crates. Add one BUILD line per new bin.
+# Build the currently packaged application image plus migrations.
 all:
+    ARG PROJECT_NAME
+    ARG APP_BINARY
+    ARG ISLANDS_PACKAGE
+    ARG ISLANDS_WASM
     ARG REGISTRY=ghcr.io/purton-tech
-    BUILD +checks
-    BUILD +image --BINARY=octo --REGISTRY=$REGISTRY --TAG=latest
-    BUILD +image --BINARY=telegram-ingress-polling --REGISTRY=$REGISTRY --TAG=latest
-    BUILD +image --BINARY=telegram-egress --REGISTRY=$REGISTRY --TAG=latest
-    BUILD +image --BINARY=agent-runtime --REGISTRY=$REGISTRY --TAG=latest
-    BUILD +migration-image --REGISTRY=$REGISTRY --TAG=latest
+    BUILD +checks --PROJECT_NAME=$PROJECT_NAME --ISLANDS_PACKAGE=$ISLANDS_PACKAGE --ISLANDS_WASM=$ISLANDS_WASM
+    BUILD +image --PROJECT_NAME=$PROJECT_NAME --BINARY=$APP_BINARY --REGISTRY=$REGISTRY --TAG=latest
+    BUILD +migration-image --PROJECT_NAME=$PROJECT_NAME --REGISTRY=$REGISTRY --TAG=latest

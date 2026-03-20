@@ -6,8 +6,8 @@ use axum::{
     response::{Html, IntoResponse, Redirect, Response},
 };
 use clorinde::deadpool_postgres::Pool;
-use octo_ui::billing::page;
-use octo_ui::routes;
+use one_runtime_ui::billing::page;
+use one_runtime_ui::routes;
 use serde::Deserialize;
 
 use super::loaders::load_billing_page_data;
