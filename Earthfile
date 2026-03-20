@@ -4,6 +4,7 @@ ARG PROJECT_NAME=one-runtime
 ARG APP_BINARY=one-runtime
 ARG ISLANDS_PACKAGE=one-runtime-islands
 ARG ISLANDS_WASM=one_runtime_islands
+ARG REGISTRY=ghcr.io/purton-tech
 
 # Build the same toolchain environment as the devcontainer without hardcoding
 # the upstream image in two places.
@@ -19,9 +20,6 @@ certs:
 # Run the Rust checks that CI enforces inside the shared devcontainer toolchain.
 checks:
     FROM +devcontainer
-    ARG PROJECT_NAME
-    ARG ISLANDS_PACKAGE
-    ARG ISLANDS_WASM
     WORKDIR /workspace
     COPY . .
     RUN cd /workspace/crates/${PROJECT_NAME}-assets && mkdir -p dist && tailwind-extra -i ./input.css -o ./dist/tailwind.css
@@ -38,10 +36,6 @@ checks:
 # known binaries from the shared release output.
 build:
     FROM +devcontainer
-    ARG PROJECT_NAME
-    ARG APP_BINARY
-    ARG ISLANDS_PACKAGE
-    ARG ISLANDS_WASM
     WORKDIR /workspace
     COPY . .
     RUN cd /workspace/crates/${PROJECT_NAME}-assets && mkdir -p dist && tailwind-extra -i ./input.css -o ./dist/tailwind.css
@@ -59,15 +53,13 @@ build:
 
 # Package a selected binary into a scratch image tagged with the binary name.
 image:
-    ARG PROJECT_NAME
-    ARG BINARY=one-runtime
-    ARG REGISTRY=your-registry
+    ARG BINARY=$APP_BINARY
     ARG TAG=latest
     FROM scratch
     COPY +certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
-    COPY +build/$BINARY /app
-    COPY +build/workspace/crates/${PROJECT_NAME}-assets/dist /workspace/crates/${PROJECT_NAME}-assets/dist
-    COPY +build/workspace/crates/${PROJECT_NAME}-assets/images /workspace/crates/${PROJECT_NAME}-assets/images
+    COPY (+build/$BINARY --PROJECT_NAME=$PROJECT_NAME --APP_BINARY=$APP_BINARY --ISLANDS_PACKAGE=$ISLANDS_PACKAGE --ISLANDS_WASM=$ISLANDS_WASM) /app
+    COPY (+build/workspace/crates/${PROJECT_NAME}-assets/dist --PROJECT_NAME=$PROJECT_NAME --APP_BINARY=$APP_BINARY --ISLANDS_PACKAGE=$ISLANDS_PACKAGE --ISLANDS_WASM=$ISLANDS_WASM) /workspace/crates/${PROJECT_NAME}-assets/dist
+    COPY (+build/workspace/crates/${PROJECT_NAME}-assets/images --PROJECT_NAME=$PROJECT_NAME --APP_BINARY=$APP_BINARY --ISLANDS_PACKAGE=$ISLANDS_PACKAGE --ISLANDS_WASM=$ISLANDS_WASM) /workspace/crates/${PROJECT_NAME}-assets/images
     USER 65532:65532
     ENTRYPOINT ["/app"]
     SAVE IMAGE --push $REGISTRY/$BINARY:$TAG
@@ -76,8 +68,6 @@ image:
 # at startup. Attach this via Stack's `init` section so migrations complete
 # before the main service starts.
 migration-image:
-    ARG PROJECT_NAME
-    ARG REGISTRY=your-registry
     ARG TAG=latest
     FROM ghcr.io/amacneil/dbmate:2.26.0
     COPY crates/db/migrations /migrations
@@ -85,11 +75,6 @@ migration-image:
     SAVE IMAGE --push $REGISTRY/${PROJECT_NAME}-migrations:$TAG
 
 release-candidate:
-    ARG PROJECT_NAME
-    ARG APP_BINARY
-    ARG ISLANDS_PACKAGE
-    ARG ISLANDS_WASM
-    ARG REGISTRY=ghcr.io/purton-tech
     ARG TAG
     BUILD +checks --PROJECT_NAME=$PROJECT_NAME --ISLANDS_PACKAGE=$ISLANDS_PACKAGE --ISLANDS_WASM=$ISLANDS_WASM
     BUILD +image --PROJECT_NAME=$PROJECT_NAME --BINARY=$APP_BINARY --REGISTRY=$REGISTRY --TAG=$TAG
@@ -97,11 +82,6 @@ release-candidate:
 
 # Build the currently packaged application image plus migrations.
 all:
-    ARG PROJECT_NAME
-    ARG APP_BINARY
-    ARG ISLANDS_PACKAGE
-    ARG ISLANDS_WASM
-    ARG REGISTRY=ghcr.io/purton-tech
     BUILD +checks --PROJECT_NAME=$PROJECT_NAME --ISLANDS_PACKAGE=$ISLANDS_PACKAGE --ISLANDS_WASM=$ISLANDS_WASM
     BUILD +image --PROJECT_NAME=$PROJECT_NAME --BINARY=$APP_BINARY --REGISTRY=$REGISTRY --TAG=latest
     BUILD +migration-image --PROJECT_NAME=$PROJECT_NAME --REGISTRY=$REGISTRY --TAG=latest
