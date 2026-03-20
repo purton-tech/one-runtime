@@ -1,13 +1,8 @@
-pub mod agents;
 pub mod api_keys;
 mod base_layout;
-pub mod billing;
-pub mod channels;
 pub mod components;
-pub mod connections;
 pub mod integrations;
 mod layout;
-pub mod providers;
 pub mod routes;
 
 use dioxus::prelude::*;
