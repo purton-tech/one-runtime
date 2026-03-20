@@ -2,7 +2,7 @@
 @plugin "@tailwindcss/typography";
 @plugin "daisyui";
 
-@source '../octo-ui/**/*.rs';
+@source '../one-runtime-ui/**/*.rs';
 
 .card {
     @apply bg-base-100 border border-base-300;
