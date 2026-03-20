@@ -3,10 +3,10 @@ mod config;
 mod errors;
 mod handlers;
 mod jwt;
+mod mcp;
 mod static_files;
-mod stripe;
 
-use std::net::SocketAddr;
+use std::{net::SocketAddr, sync::Arc};
 
 use axum::{
     Extension, Router,
@@ -41,31 +41,24 @@ async fn main() {
     let pool = clorinde::deadpool_postgres::Pool::builder(manager)
         .build()
         .expect("Failed to build database pool");
+    let mcp_state = Arc::new(
+        mcp::AppState::new(config.clone(), pool.clone()).expect("failed to initialize MCP state"),
+    );
 
     // build our application with a route
     let app = Router::new()
         .route("/", get(handlers::root::home))
-        .typed_get(handlers::agents::loader)
-        .typed_get(handlers::billing::loader)
-        .typed_get(handlers::channels::loader)
-        .typed_get(handlers::providers::loader)
-        .typed_get(handlers::providers::loader_new)
+        .route("/mcp", post(mcp::handler::handle_mcp))
+        .typed_get(handlers::api_keys::loader)
         .typed_get(handlers::integrations::loader)
         .typed_get(handlers::integrations::loader_new)
         .typed_get(handlers::integrations::loader_edit)
-        .typed_get(handlers::connections::loader)
-        .typed_get(handlers::connections::loader_new)
-        .typed_post(handlers::channels::action_connect_telegram)
-        .typed_post(handlers::billing::action_start_checkout)
-        .typed_post(handlers::providers::action_create)
+        .typed_post(handlers::api_keys::action_create)
+        .typed_post(handlers::api_keys::action_revoke)
         .typed_post(handlers::integrations::action_upsert)
         .typed_post(handlers::integrations::action_delete)
-        .typed_post(handlers::connections::action_create)
         .typed_get(static_files::static_path)
-        .route(
-            "/webhooks/stripe",
-            post(handlers::billing::action_stripe_webhook),
-        )
+        .with_state(mcp_state)
         .layer(Extension(config))
         .layer(Extension(pool.clone()));
 

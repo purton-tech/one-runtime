@@ -1,68 +1,24 @@
-pub mod agents {
+pub mod api_keys {
     use axum_extra::routing::TypedPath;
     use serde::Deserialize;
 
     #[derive(TypedPath, Deserialize)]
-    #[typed_path("/o/{org_id}/agents")]
-    pub struct Index {
-        pub org_id: String,
-    }
-}
-
-pub mod channels {
-    use axum_extra::routing::TypedPath;
-    use serde::Deserialize;
-
-    #[derive(TypedPath, Deserialize)]
-    #[typed_path("/o/{org_id}/channels")]
+    #[typed_path("/o/{org_id}/api-keys")]
     pub struct Index {
         pub org_id: String,
     }
 
     #[derive(TypedPath, Deserialize)]
-    #[typed_path("/o/{org_id}/channels/connect-telegram")]
-    pub struct ConnectTelegram {
-        pub org_id: String,
-    }
-}
-
-pub mod billing {
-    use axum_extra::routing::TypedPath;
-    use serde::Deserialize;
-
-    #[derive(TypedPath, Deserialize)]
-    #[typed_path("/o/{org_id}/billing")]
-    pub struct Index {
-        pub org_id: String,
-    }
-
-    #[derive(TypedPath, Deserialize)]
-    #[typed_path("/o/{org_id}/billing/start-checkout")]
-    pub struct StartCheckout {
-        pub org_id: String,
-    }
-}
-
-pub mod providers {
-    use axum_extra::routing::TypedPath;
-    use serde::Deserialize;
-
-    #[derive(TypedPath, Deserialize)]
-    #[typed_path("/o/{org_id}/providers")]
-    pub struct Index {
-        pub org_id: String,
-    }
-
-    #[derive(TypedPath, Deserialize)]
-    #[typed_path("/o/{org_id}/providers/new")]
-    pub struct New {
-        pub org_id: String,
-    }
-
-    #[derive(TypedPath, Deserialize)]
-    #[typed_path("/o/{org_id}/providers/create")]
+    #[typed_path("/o/{org_id}/api-keys/create")]
     pub struct Create {
         pub org_id: String,
+    }
+
+    #[derive(TypedPath, Deserialize)]
+    #[typed_path("/o/{org_id}/api-keys/revoke/{id}")]
+    pub struct Revoke {
+        pub org_id: String,
+        pub id: String,
     }
 }
 
@@ -100,28 +56,5 @@ pub mod integrations {
     pub struct Delete {
         pub org_id: String,
         pub id: String,
-    }
-}
-
-pub mod connections {
-    use axum_extra::routing::TypedPath;
-    use serde::Deserialize;
-
-    #[derive(TypedPath, Deserialize)]
-    #[typed_path("/o/{org_id}/connections")]
-    pub struct Index {
-        pub org_id: String,
-    }
-
-    #[derive(TypedPath, Deserialize)]
-    #[typed_path("/o/{org_id}/connections/new")]
-    pub struct New {
-        pub org_id: String,
-    }
-
-    #[derive(TypedPath, Deserialize)]
-    #[typed_path("/o/{org_id}/connections/create")]
-    pub struct Create {
-        pub org_id: String,
     }
 }

@@ -1,0 +1,79 @@
+name: Release Candidate
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  release-candidate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+
+      - name: Install release tooling
+        run: |
+          npm i -D @semantic-release/commit-analyzer
+          npm i -D @semantic-release/release-notes-generator
+
+      - name: Install Earthly
+        uses: earthly/actions-setup@v1
+        with:
+          version: v0.8.15
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Determine next version
+        id: next_version
+        run: |
+          npx semantic-release@20 --dry-run --no-ci --branches main --plugins @semantic-release/commit-analyzer --plugins @semantic-release/release-notes-generator > semantic-release.log 2>&1 || true
+          VERSION=$(grep -Eio 'next release version is [0-9]+\.[0-9]+\.[0-9]+' semantic-release.log \
+            | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' \
+            | tail -n 1)
+          if [ -z "$VERSION" ]; then
+            cat semantic-release.log >&2
+            echo "Unable to determine next version" >&2
+            exit 1
+          fi
+          printf '%s\n' "$VERSION" > version.txt
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Determined next version: $VERSION"
+
+      - name: Prepare release candidate image tag
+        id: release_candidate
+        run: |
+          set -euo pipefail
+          version="${{ steps.next_version.outputs.version }}"
+          image_tag="${version}-rc.${{ github.run_number }}"
+          echo "image_tag=$image_tag" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Build release candidate image
+        run: earthly --ci --push +release-candidate --TAG=${{ steps.release_candidate.outputs.image_tag }}
+
+      - name: Publish release candidate summary
+        run: |
+          {
+            echo "## Release Candidate Images"
+            echo ""
+            echo "- Version: \`${{ steps.release_candidate.outputs.version }}\`"
+            echo "- \`ghcr.io/purton-tech/one-runtime:${{ steps.release_candidate.outputs.image_tag }}\`"
+            echo "- \`ghcr.io/purton-tech/one-runtime-migrations:${{ steps.release_candidate.outputs.image_tag }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"

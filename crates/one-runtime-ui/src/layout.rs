@@ -3,16 +3,12 @@ use crate::base_layout::BaseLayout;
 use crate::routes;
 use daisy_rsx::*;
 use dioxus::prelude::*;
-use octo_assets::files::*;
+use one_runtime_assets::files::*;
 
 #[derive(PartialEq, Clone, Eq, Debug)]
 pub enum SideBar {
-    Agents,
-    Channels,
-    Providers,
+    ApiKeys,
     Integrations,
-    Connections,
-    Billing,
 }
 
 impl std::fmt::Display for SideBar {
@@ -32,17 +28,7 @@ pub fn Layout(
     selected_item: SideBar,
     content_class: Option<String>,
 ) -> Element {
-    let agents_icon = if selected_item == SideBar::Agents {
-        agents_active_svg.name
-    } else {
-        agents_svg.name
-    };
-    let channels_icon = if selected_item == SideBar::Channels {
-        channels_active_svg.name
-    } else {
-        channels_svg.name
-    };
-    let providers_icon = if selected_item == SideBar::Providers {
+    let api_keys_icon = if selected_item == SideBar::ApiKeys {
         providers_active_svg.name
     } else {
         providers_svg.name
@@ -52,33 +38,11 @@ pub fn Layout(
     } else {
         integrations_svg.name
     };
-    let connections_icon = if selected_item == SideBar::Connections {
-        integrations_active_svg.name
-    } else {
-        integrations_svg.name
-    };
-
-    let agents_href = routes::agents::Index {
-        org_id: org_id.clone(),
-    }
-    .to_string();
-    let channels_href = routes::channels::Index {
-        org_id: org_id.clone(),
-    }
-    .to_string();
-    let providers_href = routes::providers::Index {
+    let api_keys_href = routes::api_keys::Index {
         org_id: org_id.clone(),
     }
     .to_string();
     let integrations_href = routes::integrations::Index {
-        org_id: org_id.clone(),
-    }
-    .to_string();
-    let connections_href = routes::connections::Index {
-        org_id: org_id.clone(),
-    }
-    .to_string();
-    let billing_href = routes::billing::Index {
         org_id: org_id.clone(),
     }
     .to_string();
@@ -89,8 +53,8 @@ pub fn Layout(
             title,
             fav_icon_src: Some(favicon_svg.name.into()),
             web_assembly: (
-                octo_islands_js.name.into(),
-                octo_islands_bg_wasm.name.into()
+                one_runtime_islands_js.name.into(),
+                one_runtime_islands_bg_wasm.name.into()
             ),
             stylesheets: vec![tailwind_css.name.to_string(), "https://cdn.jsdelivr.net/npm/daisyui@5".into()],
             header_left,
@@ -100,25 +64,11 @@ pub fn Layout(
                     heading: "Your Menu",
                     content:  rsx!(
                         NavItem {
-                            id: SideBar::Agents.to_string(),
+                            id: SideBar::ApiKeys.to_string(),
                             selected_item_id: selected_item.to_string(),
-                            href: agents_href,
-                            icon: agents_icon,
-                            title: "Agents"
-                        }
-                        NavItem {
-                            id: SideBar::Channels.to_string(),
-                            selected_item_id: selected_item.to_string(),
-                            href: channels_href,
-                            icon: channels_icon,
-                            title: "Channels"
-                        }
-                        NavItem {
-                            id: SideBar::Providers.to_string(),
-                            selected_item_id: selected_item.to_string(),
-                            href: providers_href,
-                            icon: providers_icon,
-                            title: "Providers"
+                            href: api_keys_href,
+                            icon: api_keys_icon,
+                            title: "API Keys"
                         }
                         NavItem {
                             id: SideBar::Integrations.to_string(),
@@ -126,13 +76,6 @@ pub fn Layout(
                             href: integrations_href,
                             icon: integrations_icon,
                             title: "Integrations"
-                        }
-                        NavItem {
-                            id: SideBar::Connections.to_string(),
-                            selected_item_id: selected_item.to_string(),
-                            href: connections_href,
-                            icon: connections_icon,
-                            title: "Connections"
                         }
                     )
                 }
@@ -150,7 +93,7 @@ pub fn Layout(
                     class: "ml-3 flex flex-col gap-0.5 leading-none",
                     span {
                         class: "font-semibold uppercase",
-                        "Agent Octo"
+                        "READY RUN"
                     }
                     span {
                         class: "",
@@ -166,11 +109,7 @@ pub fn Layout(
                         "Remaining Balance"
                     }
                     div {
-                        a {
-                            class: "font-semibold text-primary underline underline-offset-2 hover:no-underline",
-                            href: billing_href,
-                            "{balance_label}"
-                        }
+                        span { class: "font-semibold", "{balance_label}" }
                     }
                 }
             ),

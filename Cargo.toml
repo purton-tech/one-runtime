@@ -1,13 +1,12 @@
 [workspace]
 members = [
-    "crates/agent-octo-com",
+    "crates/one-runtime-com",
     "crates/tool-runtime",
-    "crates/agent-runtime",
-    "crates/channels",
-    "crates/octo-assets",
-    "crates/octo-ui",
-    "crates/octo",
-    "crates/db", "crates/octo-islands",
+    "crates/one-runtime-assets",
+    "crates/one-runtime-ui",
+    "crates/one-runtime",
+    "crates/db",
+    "crates/one-runtime-islands",
 ]
 resolver = "3"
 
@@ -18,8 +17,11 @@ dotenvy = "0.15.7"
 monty = { git = "https://github.com/pydantic/monty", rev = "24dad05" }
 native-tls = { version = "0.2.18", features = ["vendored"] }
 oas3 = { version = "0.20.1", features = ["yaml-spec"] }
-reqwest = { version = "0.12.28", default-features = false, features = ["rustls-tls"] }
+rand = "0.9.2"
+reqwest = { version = "0.12.28", default-features = false, features = ["rustls-tls", "json"] }
 rig-core = "0.32.0"
+rmcp = { version = "1.2.0", features = ["server", "schemars", "transport-streamable-http-server"] }
+schemars = "1.0.4"
 serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.140"
 teloxide = { version = "0.17.0", default-features = false, features = ["rustls", "ctrlc_handler"] }

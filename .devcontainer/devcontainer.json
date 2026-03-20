@@ -44,7 +44,9 @@
         "mutantdino.resourcemonitor",
         "matklad.rust-analyzer",
         "tamasfe.even-better-toml",
-        "fill-labs.dependi"
+        "fill-labs.dependi",
+				"glehmann.earthlyls",
+        "nefrob.vscode-just-syntax"
       ]
     }
   },

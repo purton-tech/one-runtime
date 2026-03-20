@@ -10,7 +10,10 @@ fn main() {
     println!("cargo:rerun-if-changed=./dist");
 
     let static_out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
-    let asset_dirs = vec![PathBuf::from("./images"), PathBuf::from("./dist")];
+    let asset_dirs = vec![PathBuf::from("./images"), PathBuf::from("./dist")]
+        .into_iter()
+        .filter(|path| path.exists())
+        .collect::<Vec<_>>();
 
     generate_static_files_code(&static_out_dir, &asset_dirs, &[]).unwrap();
 }

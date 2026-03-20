@@ -6,8 +6,8 @@ use axum::{
 use clorinde::deadpool_postgres::Pool;
 use clorinde::types::ResourceVisibility;
 use oas3::OpenApiV3Spec;
-use octo_ui::integrations::upsert::UpsertDraft;
-use octo_ui::routes;
+use one_runtime_ui::integrations::upsert::UpsertDraft;
+use one_runtime_ui::routes;
 use serde::Deserialize;
 use uuid::Uuid;
 use validator::{Validate, ValidationError, ValidationErrors};
@@ -68,7 +68,7 @@ fn render_upsert_error(
     form: &UpsertIntegrationForm,
     message: String,
 ) -> Response {
-    let html = octo_ui::integrations::upsert::page(
+    let html = one_runtime_ui::integrations::upsert::page(
         org_id,
         balance_label,
         None,
