@@ -5,7 +5,6 @@ mod handlers;
 mod jwt;
 mod mcp;
 mod static_files;
-mod stripe;
 
 use std::{net::SocketAddr, sync::Arc};
 

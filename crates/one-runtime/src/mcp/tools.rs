@@ -281,7 +281,7 @@ impl AsyncTool<McpServer> for GetToolConnectUrlTool {
 
         let slug = slugify(&integration);
         let connect_url = format!(
-            "{}/o/{}/connections/new?integration={}",
+            "{}/o/{}/integrations/new?integration={}",
             service.state.config.app_base_url.trim_end_matches('/'),
             service.principal.org_public_id,
             slug
