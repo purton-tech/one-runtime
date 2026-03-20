@@ -41,7 +41,7 @@ _watch binary:
         -w crates/{{project-name}} \
         -w crates/{{project-name}}-ui \
         -w crates/{{project-name}}-assets/dist \
-        --no-gitignore -x "run --bin {{binary}}"
+        --no-gitignore -x "run --bin {{project-name}}"
 
 watch-binary: (_watch "{{project-name}}")
 
