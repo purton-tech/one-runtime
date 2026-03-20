@@ -105,20 +105,20 @@ start_code_tmux() {
   tmux select-pane -t "$session:0.0" -T "shell"
 
   tmux split-window -h -t "$session:0" -c "$REPO_ROOT"
-  tmux select-pane -t "$session:0.1" -T "octo"
-  tmux send-keys -t "$session:0.1" "just wo" C-m
+  tmux select-pane -t "$session:0.1" -T "axum"
+  tmux send-keys -t "$session:0.1" "just watch-binary" C-m
 
   tmux split-window -v -t "$session:0.1" -c "$REPO_ROOT"
   tmux select-pane -t "$session:0.2" -T "db queries"
-  tmux send-keys -t "$session:0.2" "just wd" C-m
+  tmux send-keys -t "$session:0.2" "just watch-db-gen" C-m
 
   tmux split-window -v -t "$session:0.2" -c "$REPO_ROOT"
   tmux select-pane -t "$session:0.3" -T "wasm"
-  tmux send-keys -t "$session:0.3" "just wi" C-m
+  tmux send-keys -t "$session:0.3" "just watch-islands" C-m
 
   tmux split-window -v -t "$session:0.3" -c "$REPO_ROOT"
   tmux select-pane -t "$session:0.4" -T "tailwind"
-  tmux send-keys -t "$session:0.4" "just wtw" C-m
+  tmux send-keys -t "$session:0.4" "just watch-tailwind" C-m
 
   tmux select-pane -t "$session:0.0"
   tmux select-layout -t "$session:0" main-vertical
