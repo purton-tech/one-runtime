@@ -1,0 +1,135 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      rc_tag:
+        description: RC image tag to promote (for example 1.2.0-rc.42)
+        required: true
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: main
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Parse release inputs
+        id: release
+        shell: bash
+        run: |
+          set -euo pipefail
+          rc_tag="${{ github.event.inputs.rc_tag }}"
+          if [[ ! "$rc_tag" =~ ^([0-9]+\.[0-9]+\.[0-9]+)-rc\.([0-9]+)$ ]]; then
+            echo "Invalid RC image tag: $rc_tag" >&2
+            echo "Expected format: <version>-rc.<number>" >&2
+            exit 1
+          fi
+          base="${BASH_REMATCH[1]}"
+          echo "rc_tag=${rc_tag}" >> "$GITHUB_OUTPUT"
+          echo "base=${base}" >> "$GITHUB_OUTPUT"
+          echo "Promoting all release images from :${rc_tag} to :${base}"
+
+      - name: Verify RC images exist
+        run: |
+          set -euo pipefail
+          images=(octo agent-runtime octo-migrations telegram-egress telegram-ingress-polling)
+          for image in "${images[@]}"; do
+            ref="ghcr.io/purton-tech/${image}:${{ steps.release.outputs.rc_tag }}"
+            if ! docker manifest inspect "${ref}" >/dev/null 2>&1; then
+              echo "RC image not found: ${ref}" >&2
+              echo "Use the exact tag from the Release Candidate workflow step summary." >&2
+              exit 1
+            fi
+          done
+
+      - name: Promote RC images to stable tags
+        run: |
+          set -euo pipefail
+          images=(octo agent-runtime octo-migrations telegram-egress telegram-ingress-polling)
+          for image in "${images[@]}"; do
+            rc_image="ghcr.io/purton-tech/${image}:${{ steps.release.outputs.rc_tag }}"
+            stable_image="ghcr.io/purton-tech/${image}:${{ steps.release.outputs.base }}"
+            docker pull "${rc_image}"
+            docker tag "${rc_image}" "${stable_image}"
+            docker push "${stable_image}"
+          done
+
+      - name: Create stable git tag
+        run: |
+          set -euo pipefail
+          git config user.name "${{ github.actor }}"
+          git config user.email "${{ github.actor }}@users.noreply.github.com"
+          stable="v${{ steps.release.outputs.base }}"
+          git tag -a "${stable}" -m "Release ${stable}"
+          git push origin "${stable}"
+
+      - name: Update versioned assets
+        env:
+          RELEASE_VERSION: ${{ steps.release.outputs.base }}
+        run: |
+          set -euo pipefail
+          files=(
+            "infra-as-code/docker-compose.yaml"
+            "infra-as-code/stack.yaml"
+            "infra-as-code/stack-selenium.yaml"
+          )
+
+          for file in "${files[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "Skipping missing file: $file"
+              continue
+            fi
+            sed -E -i "s#(^[[:space:]]*image:[[:space:]]*ghcr\.io/purton-tech/[^:[:space:]]+):[^[:space:]]+#\\1:${RELEASE_VERSION}#g" "$file"
+          done
+
+      - name: Configure git author
+        run: |
+          git config user.email "github-actions@users.noreply.github.com"
+          git config user.name "github-actions"
+
+      - name: Commit version bump
+        run: |
+          set -euo pipefail
+          files=()
+          [ -f infra-as-code/docker-compose.yaml ] && files+=("infra-as-code/docker-compose.yaml")
+          [ -f infra-as-code/stack.yaml ] && files+=("infra-as-code/stack.yaml")
+          [ -f infra-as-code/stack-selenium.yaml ] && files+=("infra-as-code/stack-selenium.yaml")
+
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "No versioned asset files found"
+            exit 0
+          fi
+
+          git add "${files[@]}"
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          git commit -m "chore(deployment): Update release metadata for ${{ steps.release.outputs.base }} [ci skip]"
+          git push
+
+      - name: Create GitHub Release (stable)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.release.outputs.base }}
+          target_commitish: ${{ github.sha }}
+          prerelease: false
+          generate_release_notes: true
