@@ -93,7 +93,7 @@ pub fn Layout(
                     class: "ml-3 flex flex-col gap-0.5 leading-none",
                     span {
                         class: "font-semibold uppercase",
-                        "Agent Octo"
+                        "READY RUN"
                     }
                     span {
                         class: "",
