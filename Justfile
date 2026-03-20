@@ -13,6 +13,9 @@ dev-setup:
 dev-secrets:
     stack secrets --manifest infra-as-code/stack.yaml --db-host host.docker.internal --db-port 32761 >> .env
 
+tmux:
+    scripts/nails code
+
 codex:
     sudo chown -R vscode:vscode /home/vscode/.codex
     sudo npm install -g @openai/codex
