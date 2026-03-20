@@ -13,8 +13,8 @@ db = { path = "../db" }
 dotenvy.workspace = true
 hmac = "0.12"
 hex = "0.4"
-octo-assets = { path = "../octo-assets" }
-octo-ui = { path = "../octo-ui" }
+octo-assets = { path = "../one-runtime-assets" }
+octo-ui = { path = "../one-runtime-ui" }
 oas3.workspace = true
 reqwest.workspace = true
 serde = { version = "1", features = ["derive"] }
