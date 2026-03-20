@@ -1,11 +1,5 @@
 VERSION 0.8
 
-ARG PROJECT_NAME=one-runtime
-ARG APP_BINARY=one-runtime
-ARG ISLANDS_PACKAGE=one-runtime-islands
-ARG ISLANDS_WASM=one_runtime_islands
-ARG REGISTRY=ghcr.io/purton-tech
-
 # Build the same toolchain environment as the devcontainer without hardcoding
 # the upstream image in two places.
 devcontainer:
@@ -19,6 +13,9 @@ certs:
 
 # Run the Rust checks that CI enforces inside the shared devcontainer toolchain.
 checks:
+    ARG PROJECT_NAME
+    ARG ISLANDS_PACKAGE
+    ARG ISLANDS_WASM
     FROM +devcontainer
     WORKDIR /workspace
     COPY . .
@@ -35,6 +32,10 @@ checks:
 # Compile the workspace once as static musl binaries, then export all of the
 # known binaries from the shared release output.
 build:
+    ARG PROJECT_NAME
+    ARG APP_BINARY
+    ARG ISLANDS_PACKAGE
+    ARG ISLANDS_WASM
     FROM +devcontainer
     WORKDIR /workspace
     COPY . .
@@ -53,6 +54,11 @@ build:
 
 # Package a selected binary into a scratch image tagged with the binary name.
 image:
+    ARG PROJECT_NAME
+    ARG APP_BINARY
+    ARG ISLANDS_PACKAGE
+    ARG ISLANDS_WASM
+    ARG REGISTRY
     ARG BINARY=$APP_BINARY
     ARG TAG=latest
     FROM scratch
@@ -68,6 +74,8 @@ image:
 # at startup. Attach this via Stack's `init` section so migrations complete
 # before the main service starts.
 migration-image:
+    ARG PROJECT_NAME
+    ARG REGISTRY
     ARG TAG=latest
     FROM ghcr.io/amacneil/dbmate:2.26.0
     COPY crates/db/migrations /migrations
@@ -75,6 +83,11 @@ migration-image:
     SAVE IMAGE --push $REGISTRY/${PROJECT_NAME}-migrations:$TAG
 
 release-candidate:
+    ARG PROJECT_NAME=one-runtime
+    ARG APP_BINARY=one-runtime
+    ARG ISLANDS_PACKAGE=one-runtime-islands
+    ARG ISLANDS_WASM=one_runtime_islands
+    ARG REGISTRY=ghcr.io/purton-tech
     ARG TAG
     BUILD +checks --PROJECT_NAME=$PROJECT_NAME --ISLANDS_PACKAGE=$ISLANDS_PACKAGE --ISLANDS_WASM=$ISLANDS_WASM
     BUILD +image --PROJECT_NAME=$PROJECT_NAME --BINARY=$APP_BINARY --REGISTRY=$REGISTRY --TAG=$TAG
@@ -82,6 +95,11 @@ release-candidate:
 
 # Build the currently packaged application image plus migrations.
 all:
+    ARG PROJECT_NAME=one-runtime
+    ARG APP_BINARY=one-runtime
+    ARG ISLANDS_PACKAGE=one-runtime-islands
+    ARG ISLANDS_WASM=one_runtime_islands
+    ARG REGISTRY=ghcr.io/purton-tech
     BUILD +checks --PROJECT_NAME=$PROJECT_NAME --ISLANDS_PACKAGE=$ISLANDS_PACKAGE --ISLANDS_WASM=$ISLANDS_WASM
     BUILD +image --PROJECT_NAME=$PROJECT_NAME --BINARY=$APP_BINARY --REGISTRY=$REGISTRY --TAG=latest
     BUILD +migration-image --PROJECT_NAME=$PROJECT_NAME --REGISTRY=$REGISTRY --TAG=latest
