@@ -3,10 +3,11 @@ mod config;
 mod errors;
 mod handlers;
 mod jwt;
+mod mcp;
 mod static_files;
 mod stripe;
 
-use std::net::SocketAddr;
+use std::{net::SocketAddr, sync::Arc};
 
 use axum::{
     Extension, Router,
@@ -41,10 +42,14 @@ async fn main() {
     let pool = clorinde::deadpool_postgres::Pool::builder(manager)
         .build()
         .expect("Failed to build database pool");
+    let mcp_state = Arc::new(
+        mcp::AppState::new(config.clone(), pool.clone()).expect("failed to initialize MCP state"),
+    );
 
     // build our application with a route
     let app = Router::new()
         .route("/", get(handlers::root::home))
+        .route("/mcp", post(mcp::handler::handle_mcp))
         .typed_get(handlers::agents::loader)
         .typed_get(handlers::billing::loader)
         .typed_get(handlers::channels::loader)
@@ -66,6 +71,7 @@ async fn main() {
             "/webhooks/stripe",
             post(handlers::billing::action_stripe_webhook),
         )
+        .with_state(mcp_state)
         .layer(Extension(config))
         .layer(Extension(pool.clone()));
 

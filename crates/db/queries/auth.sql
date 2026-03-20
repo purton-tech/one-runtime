@@ -3,6 +3,8 @@
 --: AuthUser()
 --: EnsureOrgMembership()
 --: UserOrg()
+--: ApiKeyLookup()
+--: CreatedApiKey()
 
 --! upsert_user_by_issuer_sub (first_name?, last_name?) : AuthUser
 INSERT INTO auth.users (
@@ -90,3 +92,45 @@ SELECT
     id, 
     email
 FROM auth.users;
+
+--! create_api_key : CreatedApiKey
+INSERT INTO auth.api_keys (
+    user_id,
+    org_id,
+    label,
+    key_prefix,
+    secret_hash
+)
+VALUES (
+    :user_id::UUID,
+    public.b64url_to_uuid(:org_id::TEXT),
+    :label::TEXT,
+    :key_prefix::TEXT,
+    :secret_hash::TEXT
+)
+RETURNING
+    id,
+    key_prefix;
+
+--! get_api_key_for_auth : ApiKeyLookup
+SELECT
+    ak.id,
+    ak.user_id,
+    ak.org_id,
+    public.uuid_to_b64url(ak.org_id) AS org_public_id,
+    ak.label,
+    ak.key_prefix,
+    ak.secret_hash,
+    u.issuer,
+    u.sub,
+    u.email
+FROM auth.api_keys ak
+INNER JOIN auth.users u ON u.id = ak.user_id
+WHERE ak.key_prefix = :key_prefix::TEXT
+  AND ak.revoked_at IS NULL
+LIMIT 1;
+
+--! touch_api_key_last_used
+UPDATE auth.api_keys
+SET last_used_at = NOW()
+WHERE id = :api_key_id::UUID;

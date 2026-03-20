@@ -38,6 +38,31 @@ struct OpenApiParameter {
     schema_type: String,
 }
 
+#[derive(Clone, Debug)]
+pub struct OpenApiToolSearchResult {
+    pub integration: String,
+    pub name: String,
+    pub description: String,
+}
+
+#[derive(Clone, Debug)]
+pub struct OpenApiToolParameterDetail {
+    pub name: String,
+    pub location: String,
+    pub required: bool,
+    pub schema_type: String,
+}
+
+#[derive(Clone, Debug)]
+pub struct OpenApiToolDetail {
+    pub integration: String,
+    pub name: String,
+    pub description: String,
+    pub method: String,
+    pub path: String,
+    pub parameters: Vec<OpenApiToolParameterDetail>,
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum ParameterLocation {
     Path,
@@ -141,6 +166,54 @@ impl OpenApiRegistry {
         names
     }
 
+    pub fn search(&self, query: &str) -> Vec<OpenApiToolSearchResult> {
+        let query = query.trim().to_ascii_lowercase();
+        let mut matches = Vec::new();
+
+        for action_name in self.function_names() {
+            let Some(detail) = self.detail(&action_name) else {
+                continue;
+            };
+            let haystack = format!(
+                "{} {} {}",
+                detail.integration, detail.name, detail.description
+            )
+            .to_ascii_lowercase();
+            if query.is_empty() || haystack.contains(&query) {
+                matches.push(OpenApiToolSearchResult {
+                    integration: detail.integration,
+                    name: detail.name,
+                    description: detail.description,
+                });
+            }
+        }
+
+        matches
+    }
+
+    pub fn detail(&self, function_name: &str) -> Option<OpenApiToolDetail> {
+        let action = self.actions.get(function_name)?;
+        let integration = self.integration_title_for(function_name)?;
+
+        Some(OpenApiToolDetail {
+            integration,
+            name: action.name.clone(),
+            description: action.description.clone(),
+            method: action.method.clone(),
+            path: action.path.clone(),
+            parameters: action
+                .parameters
+                .iter()
+                .map(|param| OpenApiToolParameterDetail {
+                    name: param.name.clone(),
+                    location: param.location.as_str().to_string(),
+                    required: param.required,
+                    schema_type: param.schema_type.clone(),
+                })
+                .collect(),
+        })
+    }
+
     pub fn prompt_fragment(&self) -> String {
         if self.plugins.is_empty() {
             return String::new();
@@ -194,6 +267,24 @@ impl OpenApiRegistry {
 
         let mut writer = PrintWriter::Stdout;
         Ok(state.run(result, &mut writer)?)
+    }
+
+    fn integration_title_for(&self, function_name: &str) -> Option<String> {
+        self.plugins
+            .iter()
+            .find(|plugin| plugin.actions.iter().any(|name| name == function_name))
+            .map(|plugin| plugin.title.clone())
+    }
+}
+
+impl ParameterLocation {
+    fn as_str(self) -> &'static str {
+        match self {
+            ParameterLocation::Path => "path",
+            ParameterLocation::Query => "query",
+            ParameterLocation::Header => "header",
+            ParameterLocation::Body => "body",
+        }
     }
 }
 

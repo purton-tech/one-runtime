@@ -11,7 +11,7 @@ use tracing::{info, warn};
 
 #[derive(Deserialize)]
 pub struct RunPythonArgs {
-    code: String,
+    pub code: String,
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -27,35 +27,10 @@ impl RunPython {
     pub fn new(openapi_actions: Arc<OpenApiRegistry>) -> Self {
         Self { openapi_actions }
     }
-}
 
-impl Tool for RunPython {
-    const NAME: &'static str = "run_python";
-    type Error = RunPythonError;
-    type Args = RunPythonArgs;
-    type Output = String;
-
-    async fn definition(&self, _prompt: String) -> ToolDefinition {
-        ToolDefinition {
-            name: "run_python".to_string(),
-            description: "Run a small snippet of sandboxed Python with Monty and return the result. Use this for calculation, looping, or data reshaping. Python code may call fetch_url(url) and any dynamically loaded OpenAPI actions.".to_string(),
-            parameters: json!({
-                "type": "object",
-                "properties": {
-                    "code": {
-                        "type": "string",
-                        "description": "Python code to execute. The last expression becomes the result. Host-provided functions include fetch_url(url) and runtime OpenAPI actions."
-                    }
-                },
-                "required": ["code"]
-            }),
-        }
-    }
-
-    async fn call(&self, args: Self::Args) -> std::result::Result<Self::Output, Self::Error> {
-        let code_len = args.code.len();
-        let code_preview = args
-            .code
+    pub async fn execute(&self, code: String) -> Result<String, RunPythonError> {
+        let code_len = code.len();
+        let code_preview = code
             .lines()
             .next()
             .unwrap_or("")
@@ -63,7 +38,7 @@ impl Tool for RunPython {
             .take(80)
             .collect::<String>();
         info!(code_len, code_preview = %code_preview, "running python tool");
-        let runner = MontyRun::new(args.code, "tool.py", vec![], {
+        let runner = MontyRun::new(code, "tool.py", vec![], {
             let mut functions = vec!["fetch_url".to_owned()];
             functions.extend(self.openapi_actions.function_names());
             functions
@@ -125,5 +100,33 @@ impl Tool for RunPython {
                 }
             }
         }
+    }
+}
+
+impl Tool for RunPython {
+    const NAME: &'static str = "run_python";
+    type Error = RunPythonError;
+    type Args = RunPythonArgs;
+    type Output = String;
+
+    async fn definition(&self, _prompt: String) -> ToolDefinition {
+        ToolDefinition {
+            name: "run_python".to_string(),
+            description: "Run a small snippet of sandboxed Python with Monty and return the result. Use this for calculation, looping, or data reshaping. Python code may call fetch_url(url) and any dynamically loaded OpenAPI actions.".to_string(),
+            parameters: json!({
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "description": "Python code to execute. The last expression becomes the result. Host-provided functions include fetch_url(url) and runtime OpenAPI actions."
+                    }
+                },
+                "required": ["code"]
+            }),
+        }
+    }
+
+    async fn call(&self, args: Self::Args) -> std::result::Result<Self::Output, Self::Error> {
+        self.execute(args.code).await
     }
 }
