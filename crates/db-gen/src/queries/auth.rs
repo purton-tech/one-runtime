@@ -32,6 +32,11 @@ pub struct CreateApiKeyParams<
     pub key_prefix: T3,
     pub secret_hash: T4,
 }
+#[derive(Debug)]
+pub struct RevokeApiKeyParams<T1: crate::StringSql> {
+    pub api_key_id: uuid::Uuid,
+    pub org_id: T1,
+}
 #[derive(Debug, Clone, PartialEq)]
 pub struct AuthUser {
     pub id: uuid::Uuid,
@@ -173,6 +178,44 @@ impl<'a> From<ApiKeyLookupBorrowed<'a>> for ApiKeyLookup {
             issuer: issuer.into(),
             sub: sub.into(),
             email: email.into(),
+        }
+    }
+}
+#[derive(Debug, Clone, PartialEq)]
+pub struct OrgApiKeyCard {
+    pub id: uuid::Uuid,
+    pub label: String,
+    pub key_prefix: String,
+    pub created_at: chrono::DateTime<chrono::FixedOffset>,
+    pub last_used_label: String,
+    pub revoked: bool,
+}
+pub struct OrgApiKeyCardBorrowed<'a> {
+    pub id: uuid::Uuid,
+    pub label: &'a str,
+    pub key_prefix: &'a str,
+    pub created_at: chrono::DateTime<chrono::FixedOffset>,
+    pub last_used_label: &'a str,
+    pub revoked: bool,
+}
+impl<'a> From<OrgApiKeyCardBorrowed<'a>> for OrgApiKeyCard {
+    fn from(
+        OrgApiKeyCardBorrowed {
+            id,
+            label,
+            key_prefix,
+            created_at,
+            last_used_label,
+            revoked,
+        }: OrgApiKeyCardBorrowed<'a>,
+    ) -> Self {
+        Self {
+            id,
+            label: label.into(),
+            key_prefix: key_prefix.into(),
+            created_at,
+            last_used_label: last_used_label.into(),
+            revoked,
         }
     }
 }
@@ -585,6 +628,73 @@ where
         mapper: fn(ApiKeyLookupBorrowed) -> R,
     ) -> ApiKeyLookupQuery<'c, 'a, 's, C, R, N> {
         ApiKeyLookupQuery {
+            client: self.client,
+            params: self.params,
+            query: self.query,
+            cached: self.cached,
+            extractor: self.extractor,
+            mapper,
+        }
+    }
+    pub async fn one(self) -> Result<T, tokio_postgres::Error> {
+        let row =
+            crate::client::async_::one(self.client, self.query, &self.params, self.cached).await?;
+        Ok((self.mapper)((self.extractor)(&row)?))
+    }
+    pub async fn all(self) -> Result<Vec<T>, tokio_postgres::Error> {
+        self.iter().await?.try_collect().await
+    }
+    pub async fn opt(self) -> Result<Option<T>, tokio_postgres::Error> {
+        let opt_row =
+            crate::client::async_::opt(self.client, self.query, &self.params, self.cached).await?;
+        Ok(opt_row
+            .map(|row| {
+                let extracted = (self.extractor)(&row)?;
+                Ok((self.mapper)(extracted))
+            })
+            .transpose()?)
+    }
+    pub async fn iter(
+        self,
+    ) -> Result<
+        impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'c,
+        tokio_postgres::Error,
+    > {
+        let stream = crate::client::async_::raw(
+            self.client,
+            self.query,
+            crate::slice_iter(&self.params),
+            self.cached,
+        )
+        .await?;
+        let mapped = stream
+            .map(move |res| {
+                res.and_then(|row| {
+                    let extracted = (self.extractor)(&row)?;
+                    Ok((self.mapper)(extracted))
+                })
+            })
+            .into_stream();
+        Ok(mapped)
+    }
+}
+pub struct OrgApiKeyCardQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
+    client: &'c C,
+    params: [&'a (dyn postgres_types::ToSql + Sync); N],
+    query: &'static str,
+    cached: Option<&'s tokio_postgres::Statement>,
+    extractor: fn(&tokio_postgres::Row) -> Result<OrgApiKeyCardBorrowed, tokio_postgres::Error>,
+    mapper: fn(OrgApiKeyCardBorrowed) -> T,
+}
+impl<'c, 'a, 's, C, T: 'c, const N: usize> OrgApiKeyCardQuery<'c, 'a, 's, C, T, N>
+where
+    C: GenericClient,
+{
+    pub fn map<R>(
+        self,
+        mapper: fn(OrgApiKeyCardBorrowed) -> R,
+    ) -> OrgApiKeyCardQuery<'c, 'a, 's, C, R, N> {
+        OrgApiKeyCardQuery {
             client: self.client,
             params: self.params,
             query: self.query,
@@ -1088,5 +1198,91 @@ impl TouchApiKeyLastUsedStmt {
         api_key_id: &'a uuid::Uuid,
     ) -> Result<u64, tokio_postgres::Error> {
         client.execute(self.0, &[api_key_id]).await
+    }
+}
+pub struct ListOrgApiKeysStmt(&'static str, Option<tokio_postgres::Statement>);
+pub fn list_org_api_keys() -> ListOrgApiKeysStmt {
+    ListOrgApiKeysStmt(
+        "SELECT ak.id, ak.label, ak.key_prefix, ak.created_at, COALESCE( to_char(ak.last_used_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"'), 'Never' ) AS last_used_label, (ak.revoked_at IS NOT NULL) AS revoked FROM auth.api_keys ak WHERE ak.org_id = public.b64url_to_uuid($1::TEXT) ORDER BY ak.created_at DESC",
+        None,
+    )
+}
+impl ListOrgApiKeysStmt {
+    pub async fn prepare<'a, C: GenericClient>(
+        mut self,
+        client: &'a C,
+    ) -> Result<Self, tokio_postgres::Error> {
+        self.1 = Some(client.prepare(self.0).await?);
+        Ok(self)
+    }
+    pub fn bind<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>(
+        &'s self,
+        client: &'c C,
+        org_id: &'a T1,
+    ) -> OrgApiKeyCardQuery<'c, 'a, 's, C, OrgApiKeyCard, 1> {
+        OrgApiKeyCardQuery {
+            client,
+            params: [org_id],
+            query: self.0,
+            cached: self.1.as_ref(),
+            extractor:
+                |row: &tokio_postgres::Row| -> Result<OrgApiKeyCardBorrowed, tokio_postgres::Error> {
+                    Ok(OrgApiKeyCardBorrowed {
+                        id: row.try_get(0)?,
+                        label: row.try_get(1)?,
+                        key_prefix: row.try_get(2)?,
+                        created_at: row.try_get(3)?,
+                        last_used_label: row.try_get(4)?,
+                        revoked: row.try_get(5)?,
+                    })
+                },
+            mapper: |it| OrgApiKeyCard::from(it),
+        }
+    }
+}
+pub struct RevokeApiKeyStmt(&'static str, Option<tokio_postgres::Statement>);
+pub fn revoke_api_key() -> RevokeApiKeyStmt {
+    RevokeApiKeyStmt(
+        "UPDATE auth.api_keys SET revoked_at = NOW() WHERE id = $1::UUID AND org_id = public.b64url_to_uuid($2::TEXT) AND revoked_at IS NULL",
+        None,
+    )
+}
+impl RevokeApiKeyStmt {
+    pub async fn prepare<'a, C: GenericClient>(
+        mut self,
+        client: &'a C,
+    ) -> Result<Self, tokio_postgres::Error> {
+        self.1 = Some(client.prepare(self.0).await?);
+        Ok(self)
+    }
+    pub async fn bind<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>(
+        &'s self,
+        client: &'c C,
+        api_key_id: &'a uuid::Uuid,
+        org_id: &'a T1,
+    ) -> Result<u64, tokio_postgres::Error> {
+        client.execute(self.0, &[api_key_id, org_id]).await
+    }
+}
+impl<'a, C: GenericClient + Send + Sync, T1: crate::StringSql>
+    crate::client::async_::Params<
+        'a,
+        'a,
+        'a,
+        RevokeApiKeyParams<T1>,
+        std::pin::Pin<
+            Box<dyn futures::Future<Output = Result<u64, tokio_postgres::Error>> + Send + 'a>,
+        >,
+        C,
+    > for RevokeApiKeyStmt
+{
+    fn params(
+        &'a self,
+        client: &'a C,
+        params: &'a RevokeApiKeyParams<T1>,
+    ) -> std::pin::Pin<
+        Box<dyn futures::Future<Output = Result<u64, tokio_postgres::Error>> + Send + 'a>,
+    > {
+        Box::pin(self.bind(client, &params.api_key_id, &params.org_id))
     }
 }

@@ -26,6 +26,30 @@ pub mod channels {
     }
 }
 
+pub mod api_keys {
+    use axum_extra::routing::TypedPath;
+    use serde::Deserialize;
+
+    #[derive(TypedPath, Deserialize)]
+    #[typed_path("/o/{org_id}/api-keys")]
+    pub struct Index {
+        pub org_id: String,
+    }
+
+    #[derive(TypedPath, Deserialize)]
+    #[typed_path("/o/{org_id}/api-keys/create")]
+    pub struct Create {
+        pub org_id: String,
+    }
+
+    #[derive(TypedPath, Deserialize)]
+    #[typed_path("/o/{org_id}/api-keys/revoke/{id}")]
+    pub struct Revoke {
+        pub org_id: String,
+        pub id: String,
+    }
+}
+
 pub mod billing {
     use axum_extra::routing::TypedPath;
     use serde::Deserialize;

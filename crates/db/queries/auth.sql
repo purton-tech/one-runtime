@@ -5,6 +5,7 @@
 --: UserOrg()
 --: ApiKeyLookup()
 --: CreatedApiKey()
+--: OrgApiKeyCard()
 
 --! upsert_user_by_issuer_sub (first_name?, last_name?) : AuthUser
 INSERT INTO auth.users (
@@ -134,3 +135,25 @@ LIMIT 1;
 UPDATE auth.api_keys
 SET last_used_at = NOW()
 WHERE id = :api_key_id::UUID;
+
+--! list_org_api_keys : OrgApiKeyCard
+SELECT
+    ak.id,
+    ak.label,
+    ak.key_prefix,
+    ak.created_at,
+    COALESCE(
+        to_char(ak.last_used_at AT TIME ZONE 'UTC', 'YYYY-MM-DD"T"HH24:MI:SS"Z"'),
+        'Never'
+    ) AS last_used_label,
+    (ak.revoked_at IS NOT NULL) AS revoked
+FROM auth.api_keys ak
+WHERE ak.org_id = public.b64url_to_uuid(:org_id::TEXT)
+ORDER BY ak.created_at DESC;
+
+--! revoke_api_key
+UPDATE auth.api_keys
+SET revoked_at = NOW()
+WHERE id = :api_key_id::UUID
+  AND org_id = public.b64url_to_uuid(:org_id::TEXT)
+  AND revoked_at IS NULL;

@@ -51,11 +51,10 @@ watch-binary: (_watch "{{project-name}}")
 watch-tailwind:
     cd /workspace/crates/{{project-name}}-assets && tailwind-extra -i ./input.css -o ./dist/tailwind.css --watch
 
+build-islands:
+    ./scripts/build-islands
+
 watch-islands:
     cargo watch \
       -w crates/{{project-name}}-islands \
-      -s 'cargo build -p {{project-name}}-islands --target wasm32-unknown-unknown --release && \
-          wasm-bindgen \
-            target/wasm32-unknown-unknown/release/{{project-name}}_islands.wasm \
-            --target web \
-            --out-dir crates/{{project-name}}-assets/dist'
+      -s './scripts/build-islands'

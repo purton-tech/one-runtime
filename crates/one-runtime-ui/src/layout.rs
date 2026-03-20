@@ -8,6 +8,7 @@ use one_runtime_assets::files::*;
 #[derive(PartialEq, Clone, Eq, Debug)]
 pub enum SideBar {
     Agents,
+    ApiKeys,
     Channels,
     Providers,
     Integrations,
@@ -42,6 +43,11 @@ pub fn Layout(
     } else {
         channels_svg.name
     };
+    let api_keys_icon = if selected_item == SideBar::ApiKeys {
+        providers_active_svg.name
+    } else {
+        providers_svg.name
+    };
     let providers_icon = if selected_item == SideBar::Providers {
         providers_active_svg.name
     } else {
@@ -63,6 +69,10 @@ pub fn Layout(
     }
     .to_string();
     let channels_href = routes::channels::Index {
+        org_id: org_id.clone(),
+    }
+    .to_string();
+    let api_keys_href = routes::api_keys::Index {
         org_id: org_id.clone(),
     }
     .to_string();
@@ -105,6 +115,13 @@ pub fn Layout(
                             href: agents_href,
                             icon: agents_icon,
                             title: "Agents"
+                        }
+                        NavItem {
+                            id: SideBar::ApiKeys.to_string(),
+                            selected_item_id: selected_item.to_string(),
+                            href: api_keys_href,
+                            icon: api_keys_icon,
+                            title: "API Keys"
                         }
                         NavItem {
                             id: SideBar::Channels.to_string(),

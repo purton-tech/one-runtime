@@ -16,6 +16,7 @@ hex = "0.4"
 one-runtime-assets = { path = "../one-runtime-assets" }
 one-runtime-ui = { path = "../one-runtime-ui" }
 oas3.workspace = true
+rand.workspace = true
 reqwest.workspace = true
 rmcp.workspace = true
 schemars.workspace = true

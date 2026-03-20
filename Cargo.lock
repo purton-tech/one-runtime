@@ -2627,6 +2627,7 @@ dependencies = [
  "oas3",
  "one-runtime-assets",
  "one-runtime-ui",
+ "rand 0.9.2",
  "reqwest 0.12.28",
  "rmcp",
  "schemars",
