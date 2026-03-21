@@ -174,17 +174,14 @@ pub fn page(
 #[component]
 fn IntegrationCard(integration: IntegrationCatalogItem) -> Element {
     let trigger_id = modal_trigger_id(&integration.id);
-    let category_label = integration
-        .category
-        .clone()
-        .unwrap_or_else(|| "All categories".to_string());
 
     rsx! {
         button {
-            class: "text-left",
-            popovertarget: trigger_id.clone(),
+            class: "w-full cursor-pointer text-left",
+            "data-target": trigger_id.clone(),
+            r#type: "button",
             Card {
-                class: Some("h-full border border-base-300 bg-base-100 shadow-sm transition-colors hover:border-primary/40 hover:bg-base-200/20".to_string()),
+                class: Some("h-full border border-base-300 bg-base-100 shadow-sm transition-colors hover:border-primary/40 hover:bg-base-200/20 focus-within:border-primary/40".to_string()),
                 CardBody {
                     class: Some("gap-4".to_string()),
                     div {
@@ -195,40 +192,14 @@ fn IntegrationCard(integration: IntegrationCatalogItem) -> Element {
                         }
                         div {
                             class: "min-w-0 flex-1 space-y-2",
-                            div {
-                                class: "flex flex-wrap items-center gap-2",
-                                h2 {
-                                    class: "card-title line-clamp-2 text-xl",
-                                    "{integration.name}"
-                                }
-                                if integration.owner_kind == "system" {
-                                    Badge {
-                                        badge_style: BadgeStyle::Outline,
-                                        badge_color: BadgeColor::Info,
-                                        "System"
-                                    }
-                                }
+                            h2 {
+                                class: "card-title line-clamp-2 text-xl",
+                                "{integration.name}"
                             }
                             p {
                                 class: "line-clamp-3 text-sm text-base-content/75",
                                 "{integration.description}"
                             }
-                        }
-                    }
-                    div {
-                        class: "mt-auto flex flex-wrap gap-2",
-                        Badge {
-                            badge_style: BadgeStyle::Outline,
-                            "{category_label}"
-                        }
-                        Badge {
-                            badge_style: BadgeStyle::Outline,
-                            badge_color: BadgeColor::Primary,
-                            "{integration.operation_count} methods"
-                        }
-                        Badge {
-                            badge_style: BadgeStyle::Outline,
-                            "{integration.visibility}"
                         }
                     }
                 }
@@ -257,19 +228,9 @@ fn IntegrationModal(org_id: String, integration: IntegrationCatalogItem) -> Elem
                         }
                         div {
                             class: "space-y-2",
-                            div {
-                                class: "flex flex-wrap items-center gap-2",
-                                h3 {
-                                    class: "text-3xl font-semibold",
-                                    "{integration.name}"
-                                }
-                                if integration.owner_kind == "system" {
-                                    Badge {
-                                        badge_style: BadgeStyle::Outline,
-                                        badge_color: BadgeColor::Info,
-                                        "System"
-                                    }
-                                }
+                            h3 {
+                                class: "text-3xl font-semibold",
+                                "{integration.name}"
                             }
                             p {
                                 class: "text-base text-base-content/75",
@@ -285,25 +246,32 @@ fn IntegrationModal(org_id: String, integration: IntegrationCatalogItem) -> Elem
                 }
 
                 div {
-                    class: "mt-6 flex flex-wrap gap-2",
-                    if let Some(category) = &integration.category {
-                        Badge {
-                            badge_style: BadgeStyle::Outline,
-                            "{category}"
+                    class: "mt-6 grid gap-4 text-sm text-base-content/75 md:grid-cols-2",
+                    DetailRow {
+                        label: "Ownership",
+                        value: if integration.owner_kind == "system" {
+                            "System".to_string()
+                        } else {
+                            "Organization".to_string()
                         }
                     }
-                    Badge {
-                        badge_style: BadgeStyle::Outline,
-                        badge_color: BadgeColor::Primary,
-                        "{integration.operation_count} methods"
+                    if let Some(category) = &integration.category {
+                        DetailRow {
+                            label: "Category",
+                            value: category.clone()
+                        }
                     }
-                    Badge {
-                        badge_style: BadgeStyle::Outline,
-                        "{integration.visibility}"
+                    DetailRow {
+                        label: "Visibility",
+                        value: integration.visibility.clone()
                     }
-                    Badge {
-                        badge_style: BadgeStyle::Outline,
-                        "Updated {integration.updated_at_label}"
+                    DetailRow {
+                        label: "Methods",
+                        value: integration.operation_count.to_string()
+                    }
+                    DetailRow {
+                        label: "Updated",
+                        value: integration.updated_at_label.clone()
                     }
                 }
 
@@ -401,6 +369,23 @@ fn IntegrationModal(org_id: String, integration: IntegrationCatalogItem) -> Elem
                         "Close"
                     }
                 }
+            }
+        }
+    }
+}
+
+#[component]
+fn DetailRow(label: &'static str, value: String) -> Element {
+    rsx! {
+        div {
+            class: "space-y-1",
+            p {
+                class: "text-xs font-medium uppercase tracking-wide text-base-content/50",
+                "{label}"
+            }
+            p {
+                class: "text-sm text-base-content/85",
+                "{value}"
             }
         }
     }
