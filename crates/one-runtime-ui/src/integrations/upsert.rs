@@ -2,7 +2,7 @@
 
 use crate::{
     components::section_introduction::SectionIntroduction,
-    layout::{Layout, SideBar},
+    layout::{ContentWidth, Layout, SideBar},
     render, routes,
 };
 use clorinde::queries::integrations::IntegrationForm;
@@ -61,7 +61,7 @@ pub fn page(
             org_id: org_id.clone(),
             balance_label,
             selected_item: SideBar::Integrations,
-            content_class: Some("p-4 max-w-5xl w-full mx-auto".to_string()),
+            content_width: Some(ContentWidth::Max),
             header_left: rsx!(
                 Breadcrumb {
                     items: vec![

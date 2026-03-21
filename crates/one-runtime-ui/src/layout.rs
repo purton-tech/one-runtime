@@ -11,6 +11,24 @@ pub enum SideBar {
     Integrations,
 }
 
+#[allow(dead_code)]
+#[derive(PartialEq, Clone, Eq, Debug)]
+pub enum ContentWidth {
+    Normal,
+    Max,
+    Full,
+}
+
+impl ContentWidth {
+    fn container_class(&self) -> &'static str {
+        match self {
+            Self::Normal => "p-4 w-full max-w-3xl mx-auto",
+            Self::Max => "p-4 w-full max-w-6xl mx-auto",
+            Self::Full => "p-4 w-full",
+        }
+    }
+}
+
 impl std::fmt::Display for SideBar {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         std::fmt::Debug::fmt(self, f)
@@ -26,6 +44,7 @@ pub fn Layout(
     header_right: Option<Element>,
     children: Element,
     selected_item: SideBar,
+    content_width: Option<ContentWidth>,
     content_class: Option<String>,
 ) -> Element {
     let api_keys_icon = if selected_item == SideBar::ApiKeys {
@@ -46,7 +65,12 @@ pub fn Layout(
         org_id: org_id.clone(),
     }
     .to_string();
-    let content_class = content_class.unwrap_or_else(|| "p-4 max-w-3xl w-full mx-auto".to_string());
+    let content_class = content_class.unwrap_or_else(|| {
+        content_width
+            .unwrap_or(ContentWidth::Normal)
+            .container_class()
+            .to_string()
+    });
 
     rsx! {
         BaseLayout {

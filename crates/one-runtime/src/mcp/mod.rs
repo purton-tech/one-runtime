@@ -2,15 +2,13 @@ pub mod auth;
 pub mod handler;
 pub mod tools;
 
-use std::{path::PathBuf, sync::Arc};
-
-use anyhow::Context;
 use clorinde::deadpool_postgres::Pool;
 use rmcp::{
     ServerHandler,
     handler::server::router::Router as McpRouter,
     model::{Implementation, InitializeResult, ServerCapabilities},
 };
+use std::sync::Arc;
 use tool_runtime::{monty_python::RunPython, openapi_actions::OpenApiRegistry};
 
 use crate::config::Config;
@@ -69,17 +67,5 @@ impl ServerHandler for McpServer {
 }
 
 fn load_openapi_registry() -> anyhow::Result<OpenApiRegistry> {
-    let candidate_dirs = [
-        PathBuf::from("crates/one-runtime-com/open-api-specs"),
-        PathBuf::from("wireframe/openapi/open-api-specs"),
-    ];
-
-    let mut specs = Vec::new();
-    for dir in candidate_dirs {
-        let loaded = OpenApiRegistry::load_specs_from_dir(&dir)
-            .with_context(|| format!("failed to load OpenAPI specs from {}", dir.display()))?;
-        specs.extend(loaded);
-    }
-
-    Ok(OpenApiRegistry::from_specs(&specs))
+    Ok(OpenApiRegistry::from_specs(&[]))
 }
