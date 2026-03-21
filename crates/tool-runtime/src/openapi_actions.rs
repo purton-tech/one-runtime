@@ -1,6 +1,4 @@
 use std::collections::HashMap;
-use std::fs;
-use std::path::Path;
 use std::sync::Arc;
 
 use monty::{MontyObject, PrintWriter, ResourceTracker, RunProgress, Snapshot};
@@ -72,30 +70,6 @@ enum ParameterLocation {
 }
 
 impl OpenApiRegistry {
-    pub fn load_specs_from_dir(path: impl AsRef<Path>) -> anyhow::Result<Vec<OpenApiV3Spec>> {
-        let path = path.as_ref();
-        let mut specs = Vec::new();
-
-        if !path.exists() {
-            return Ok(specs);
-        }
-
-        for entry in fs::read_dir(path)? {
-            let entry = entry?;
-            let path = entry.path();
-            let ext = path.extension().and_then(|ext| ext.to_str());
-            if !matches!(ext, Some("yaml" | "yml")) {
-                continue;
-            }
-
-            let contents = fs::read_to_string(&path)?;
-            let spec = oas3::from_yaml(contents)?;
-            specs.push(spec);
-        }
-
-        Ok(specs)
-    }
-
     pub fn from_specs(specs: &[OpenApiV3Spec]) -> Self {
         let mut actions = HashMap::new();
         let mut plugins = Vec::new();

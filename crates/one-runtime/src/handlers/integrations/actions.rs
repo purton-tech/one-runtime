@@ -216,11 +216,16 @@ pub async fn action_delete(
         ));
     }
 
-    clorinde::queries::integrations::delete_integration()
+    let deleted = clorinde::queries::integrations::delete_integration()
         .bind(&transaction, &integration_id, &org_id)
         .one()
         .await?;
 
+    if !deleted.changed {
+        return Err(CustomError::FaultySetup(
+            "Integration was not deleted".to_string(),
+        ));
+    }
     transaction.commit().await?;
 
     let href = routes::integrations::Index { org_id }.to_string();

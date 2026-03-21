@@ -28,14 +28,18 @@ pub struct IntegrationCard {
     pub id: uuid::Uuid,
     pub name: String,
     pub description: String,
+    pub owner_kind: String,
     pub visibility: String,
+    pub can_manage: bool,
     pub updated_at: chrono::DateTime<chrono::FixedOffset>,
 }
 pub struct IntegrationCardBorrowed<'a> {
     pub id: uuid::Uuid,
     pub name: &'a str,
     pub description: &'a str,
+    pub owner_kind: &'a str,
     pub visibility: &'a str,
+    pub can_manage: bool,
     pub updated_at: chrono::DateTime<chrono::FixedOffset>,
 }
 impl<'a> From<IntegrationCardBorrowed<'a>> for IntegrationCard {
@@ -44,7 +48,9 @@ impl<'a> From<IntegrationCardBorrowed<'a>> for IntegrationCard {
             id,
             name,
             description,
+            owner_kind,
             visibility,
+            can_manage,
             updated_at,
         }: IntegrationCardBorrowed<'a>,
     ) -> Self {
@@ -52,7 +58,9 @@ impl<'a> From<IntegrationCardBorrowed<'a>> for IntegrationCard {
             id,
             name: name.into(),
             description: description.into(),
+            owner_kind: owner_kind.into(),
             visibility: visibility.into(),
+            can_manage,
             updated_at,
         }
     }
@@ -301,7 +309,7 @@ where
 pub struct ListIntegrationsStmt(&'static str, Option<tokio_postgres::Statement>);
 pub fn list_integrations() -> ListIntegrationsStmt {
     ListIntegrationsStmt(
-        "SELECT i.id, COALESCE(i.openapi_spec #>> '{info,title}', 'Untitled') AS name, COALESCE(i.openapi_spec #>> '{info,description}', '') AS description, i.visibility::TEXT AS visibility, i.updated_at FROM public.integrations i WHERE i.org_id = public.b64url_to_uuid($1::TEXT) AND ( i.visibility = 'org' OR i.created_by_user_id = auth.uid() ) ORDER BY i.updated_at DESC",
+        "SELECT i.id, COALESCE(i.openapi_spec #>> '{info,title}', 'Untitled') AS name, COALESCE(i.openapi_spec #>> '{info,description}', '') AS description, i.owner_kind::TEXT AS owner_kind, i.visibility::TEXT AS visibility, CASE WHEN i.owner_kind = 'org' THEN ( (i.visibility = 'private' AND i.created_by_user_id = auth.uid()) OR (i.visibility = 'org' AND org.is_org_admin(i.org_id)) ) ELSE FALSE END AS can_manage, i.updated_at FROM public.integrations i WHERE i.owner_kind = 'system' OR ( i.owner_kind = 'org' AND i.org_id = public.b64url_to_uuid($1::TEXT) AND ( i.visibility = 'org' OR i.created_by_user_id = auth.uid() ) ) ORDER BY (i.owner_kind = 'system') DESC, LOWER(COALESCE(i.openapi_spec #>> '{info,title}', 'Untitled')), i.updated_at DESC",
         None,
     )
 }
@@ -330,8 +338,10 @@ impl ListIntegrationsStmt {
                     id: row.try_get(0)?,
                     name: row.try_get(1)?,
                     description: row.try_get(2)?,
-                    visibility: row.try_get(3)?,
-                    updated_at: row.try_get(4)?,
+                    owner_kind: row.try_get(3)?,
+                    visibility: row.try_get(4)?,
+                    can_manage: row.try_get(5)?,
+                    updated_at: row.try_get(6)?,
                 })
             },
             mapper: |it| IntegrationCard::from(it),
@@ -341,7 +351,7 @@ impl ListIntegrationsStmt {
 pub struct GetIntegrationForEditStmt(&'static str, Option<tokio_postgres::Statement>);
 pub fn get_integration_for_edit() -> GetIntegrationForEditStmt {
     GetIntegrationForEditStmt(
-        "SELECT i.id, COALESCE(i.openapi_spec #>> '{info,title}', 'Untitled') AS name, COALESCE(i.openapi_spec #>> '{info,description}', '') AS description, i.visibility::TEXT AS visibility, i.openapi_spec::TEXT AS openapi_spec FROM public.integrations i WHERE i.id = $1::UUID AND i.org_id = public.b64url_to_uuid($2::TEXT) LIMIT 1",
+        "SELECT i.id, COALESCE(i.openapi_spec #>> '{info,title}', 'Untitled') AS name, COALESCE(i.openapi_spec #>> '{info,description}', '') AS description, i.visibility::TEXT AS visibility, i.openapi_spec::TEXT AS openapi_spec FROM public.integrations i WHERE i.id = $1::UUID AND i.owner_kind = 'org' AND i.org_id = public.b64url_to_uuid($2::TEXT) LIMIT 1",
         None,
     )
 }
@@ -400,7 +410,7 @@ impl<'c, 'a, 's, C: GenericClient, T1: crate::StringSql>
 pub struct CreateIntegrationStmt(&'static str, Option<tokio_postgres::Statement>);
 pub fn create_integration() -> CreateIntegrationStmt {
     CreateIntegrationStmt(
-        "WITH inserted AS ( INSERT INTO public.integrations ( org_id, created_by_user_id, visibility, openapi_spec ) VALUES ( public.b64url_to_uuid($1::TEXT), auth.uid(), $2::resource_visibility, $3::JSONB ) RETURNING id ) SELECT EXISTS(SELECT 1 FROM inserted) AS changed",
+        "WITH inserted AS ( INSERT INTO public.integrations ( owner_kind, org_id, created_by_user_id, visibility, openapi_spec ) VALUES ( 'org'::integration_owner_kind, public.b64url_to_uuid($1::TEXT), auth.uid(), $2::resource_visibility, $3::JSONB ) RETURNING id ) SELECT EXISTS(SELECT 1 FROM inserted) AS changed",
         None,
     )
 }
@@ -460,7 +470,7 @@ impl<'c, 'a, 's, C: GenericClient, T1: crate::StringSql, T2: crate::JsonSql>
 pub struct UpdateIntegrationStmt(&'static str, Option<tokio_postgres::Statement>);
 pub fn update_integration() -> UpdateIntegrationStmt {
     UpdateIntegrationStmt(
-        "WITH updated AS ( UPDATE public.integrations i SET visibility = $1::resource_visibility, openapi_spec = $2::JSONB, updated_at = NOW() WHERE i.id = $3::UUID AND i.org_id = public.b64url_to_uuid($4::TEXT) RETURNING id ) SELECT EXISTS(SELECT 1 FROM updated) AS changed",
+        "WITH updated AS ( UPDATE public.integrations i SET visibility = $1::resource_visibility, openapi_spec = $2::JSONB, updated_at = NOW() WHERE i.id = $3::UUID AND i.owner_kind = 'org' AND i.org_id = public.b64url_to_uuid($4::TEXT) RETURNING id ) SELECT EXISTS(SELECT 1 FROM updated) AS changed",
         None,
     )
 }
@@ -522,7 +532,7 @@ impl<'c, 'a, 's, C: GenericClient, T1: crate::JsonSql, T2: crate::StringSql>
 pub struct DeleteIntegrationStmt(&'static str, Option<tokio_postgres::Statement>);
 pub fn delete_integration() -> DeleteIntegrationStmt {
     DeleteIntegrationStmt(
-        "WITH deleted AS ( DELETE FROM public.integrations i WHERE i.id = $1::UUID AND i.org_id = public.b64url_to_uuid($2::TEXT) RETURNING id ) SELECT EXISTS(SELECT 1 FROM deleted) AS changed",
+        "WITH deleted AS ( DELETE FROM public.integrations i WHERE i.id = $1::UUID AND i.owner_kind = 'org' AND i.org_id = public.b64url_to_uuid($2::TEXT) RETURNING id ) SELECT EXISTS(SELECT 1 FROM deleted) AS changed",
         None,
     )
 }

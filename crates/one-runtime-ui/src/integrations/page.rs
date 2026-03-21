@@ -76,39 +76,59 @@ pub fn page(org_id: String, balance_label: String, integrations: Vec<Integration
                                                 }
                                             }
                                             td {
-                                                span {
-                                                    class: if integration.visibility == "org" {
-                                                        "badge badge-success badge-outline"
-                                                    } else {
-                                                        "badge badge-ghost"
-                                                    },
-                                                    "{integration.visibility}"
+                                                div {
+                                                    class: "flex flex-wrap gap-2",
+                                                    if integration.owner_kind == "system" {
+                                                        span {
+                                                            class: "badge badge-info badge-outline",
+                                                            "system"
+                                                        }
+                                                    }
+                                                    span {
+                                                        class: if integration.visibility == "org" {
+                                                            "badge badge-success badge-outline"
+                                                        } else {
+                                                            "badge badge-ghost"
+                                                        },
+                                                        "{integration.visibility}"
+                                                    }
                                                 }
                                             }
                                             td { class: "text-sm text-base-content/70", "{integration.updated_at.to_rfc3339()}" }
                                             td {
                                                 class: "text-right",
-                                                div {
-                                                    class: "flex justify-end gap-2",
-                                                    Button {
-                                                        button_type: ButtonType::Link,
-                                                        button_style: ButtonStyle::Outline,
-                                                        href: routes::integrations::Edit {
-                                                            org_id: org_id.clone(),
-                                                            id: integration.id.to_string(),
-                                                        }.to_string(),
-                                                        "Edit"
+                                                if integration.can_manage {
+                                                    div {
+                                                        class: "flex justify-end gap-2",
+                                                        Button {
+                                                            button_type: ButtonType::Link,
+                                                            button_style: ButtonStyle::Outline,
+                                                            href: routes::integrations::Edit {
+                                                                org_id: org_id.clone(),
+                                                                id: integration.id.to_string(),
+                                                            }.to_string(),
+                                                            "Edit"
+                                                        }
+                                                        form {
+                                                            method: "post",
+                                                            action: routes::integrations::Delete {
+                                                                org_id: org_id.clone(),
+                                                                id: integration.id.to_string(),
+                                                            }.to_string(),
+                                                            button {
+                                                                class: "btn btn-warning",
+                                                                r#type: "submit",
+                                                                "Delete"
+                                                            }
+                                                        }
                                                     }
-                                                    form {
-                                                        method: "post",
-                                                        action: routes::integrations::Delete {
-                                                            org_id: org_id.clone(),
-                                                            id: integration.id.to_string(),
-                                                        }.to_string(),
-                                                        button {
-                                                            class: "btn btn-warning",
-                                                            r#type: "submit",
-                                                            "Delete"
+                                                } else {
+                                                    span {
+                                                        class: "text-sm text-base-content/60",
+                                                        if integration.owner_kind == "system" {
+                                                            "Managed from repo"
+                                                        } else {
+                                                            "Read only"
                                                         }
                                                     }
                                                 }
