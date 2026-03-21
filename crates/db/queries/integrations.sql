@@ -7,6 +7,7 @@ SELECT
     i.id,
     COALESCE(i.openapi_spec #>> '{info,title}', 'Untitled') AS name,
     COALESCE(i.openapi_spec #>> '{info,description}', '') AS description,
+    i.openapi_spec::TEXT AS openapi_spec,
     i.owner_kind::TEXT AS owner_kind,
     i.visibility::TEXT AS visibility,
     CASE
