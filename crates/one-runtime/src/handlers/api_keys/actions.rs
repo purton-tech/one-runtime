@@ -3,7 +3,7 @@ use axum::{
     response::{Html, IntoResponse, Redirect, Response},
 };
 use clorinde::{deadpool_postgres::Pool, queries::auth};
-use rand::RngCore;
+use rand::Rng;
 use serde::Deserialize;
 
 use crate::{CustomError, Jwt, authz, handlers, mcp::auth::hash_api_key_secret};
