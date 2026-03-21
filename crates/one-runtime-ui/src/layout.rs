@@ -47,16 +47,8 @@ pub fn Layout(
     content_width: Option<ContentWidth>,
     content_class: Option<String>,
 ) -> Element {
-    let api_keys_icon = if selected_item == SideBar::ApiKeys {
-        providers_active_svg.name
-    } else {
-        providers_svg.name
-    };
-    let integrations_icon = if selected_item == SideBar::Integrations {
-        integrations_active_svg.name
-    } else {
-        integrations_svg.name
-    };
+    let api_keys_icon = api_keys_svg.name;
+    let integrations_icon = integrations_svg.name;
     let api_keys_href = routes::api_keys::Index {
         org_id: org_id.clone(),
     }
