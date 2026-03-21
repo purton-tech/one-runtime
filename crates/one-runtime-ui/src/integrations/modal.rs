@@ -16,149 +16,162 @@ pub fn IntegrationModal(org_id: String, integration: IntegrationCatalogItem) -> 
             trigger_id: trigger_id,
             submit_action: None,
             ModalBody {
-                class: Some("max-w-4xl".to_string()),
+                class: Some("max-w-2xl p-0".to_string()),
                 div {
-                    class: "flex items-start justify-between gap-6",
+                    class: "border-b border-base-300 px-5 py-4",
                     div {
-                        class: "flex items-start gap-4",
-                        IntegrationLogo {
-                            logo_url: integration.logo_url.clone(),
-                            title: integration.name.clone(),
-                        }
+                        class: "flex items-start justify-between gap-4",
                         div {
-                            class: "space-y-2",
-                            h3 {
-                                class: "text-3xl font-semibold",
-                                "{integration.name}"
+                            class: "flex items-center gap-3",
+                            IntegrationLogo {
+                                logo_url: integration.logo_url.clone(),
+                                title: integration.name.clone(),
                             }
-                            p {
-                                class: "text-base text-base-content/75",
-                                "{integration.description}"
-                            }
-                        }
-                    }
-                    button {
-                        class: "btn btn-ghost btn-sm cancel-modal",
-                        r#type: "button",
-                        "Close"
-                    }
-                }
-
-                div {
-                    class: "mt-6 grid gap-4 text-sm text-base-content/75 md:grid-cols-2",
-                    DetailRow {
-                        label: "Ownership",
-                        value: if integration.owner_kind == "system" {
-                            "System".to_string()
-                        } else {
-                            "Organization".to_string()
-                        }
-                    }
-                    if let Some(category) = &integration.category {
-                        DetailRow {
-                            label: "Category",
-                            value: category.clone()
-                        }
-                    }
-                    DetailRow {
-                        label: "Visibility",
-                        value: integration.visibility.clone()
-                    }
-                    DetailRow {
-                        label: "Methods",
-                        value: integration.operation_count.to_string()
-                    }
-                    DetailRow {
-                        label: "Updated",
-                        value: integration.updated_at_label.clone()
-                    }
-                }
-
-                if !integration.overview_items.is_empty() {
-                    div {
-                        class: "mt-8 space-y-3",
-                        h4 {
-                            class: "text-xl font-semibold",
-                            "Overview"
-                        }
-                        ul {
-                            class: "list-disc space-y-2 pl-6 text-base-content/85",
-                            for item in &integration.overview_items {
-                                li { "{item}" }
-                            }
-                        }
-                    }
-                }
-
-                if integration.website_url.is_some()
-                    || integration.support_url.is_some()
-                    || integration.developer_name.is_some()
-                {
-                    div {
-                        class: "mt-8 grid gap-6 md:grid-cols-2",
-                        if integration.website_url.is_some() || integration.support_url.is_some() {
                             div {
-                                class: "space-y-3",
-                                h4 {
-                                    class: "text-xl font-semibold",
-                                    "Links"
-                                }
-                                div {
-                                    class: "flex flex-col gap-2",
-                                    if let Some(website_url) = &integration.website_url {
-                                        a {
-                                            class: "link link-primary",
-                                            href: website_url.clone(),
-                                            target: "_blank",
-                                            rel: "noreferrer",
-                                            "Website"
-                                        }
-                                    }
-                                    if let Some(support_url) = &integration.support_url {
-                                        a {
-                                            class: "link link-primary",
-                                            href: support_url.clone(),
-                                            target: "_blank",
-                                            rel: "noreferrer",
-                                            "Support"
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        if let Some(developer_name) = &integration.developer_name {
-                            div {
-                                class: "space-y-3",
-                                h4 {
-                                    class: "text-xl font-semibold",
-                                    "Developed by"
+                                class: "space-y-1",
+                                h3 {
+                                    class: "text-lg font-semibold",
+                                    "{integration.name}"
                                 }
                                 p {
-                                    class: "text-base-content/85",
-                                    "{developer_name}"
+                                    class: "text-sm text-base-content/70",
+                                    "{integration.description}"
                                 }
                             }
+                        }
+                        button {
+                            class: "btn btn-ghost btn-sm btn-circle cancel-modal",
+                            r#type: "button",
+                            aria_label: "Close",
+                            "x"
                         }
                     }
                 }
 
-                ModalAction {
-                    if let Some(edit_href) = &integration.edit_href {
-                        Button {
-                            button_type: ButtonType::Link,
-                            href: edit_href.clone(),
-                            button_style: ButtonStyle::Outline,
-                            "Edit"
+                div {
+                    class: "space-y-6 px-5 py-5",
+                    section {
+                        class: "grid gap-3 text-sm md:grid-cols-2",
+                        DetailRow {
+                            label: "Ownership",
+                            value: if integration.owner_kind == "system" {
+                                "System".to_string()
+                            } else {
+                                "Organization".to_string()
+                            }
+                        }
+                        if let Some(category) = &integration.category {
+                            DetailRow {
+                                label: "Category",
+                                value: category.clone()
+                            }
+                        }
+                        DetailRow {
+                            label: "Visibility",
+                            value: integration.visibility.clone()
+                        }
+                        DetailRow {
+                            label: "Methods",
+                            value: integration.operation_count.to_string()
+                        }
+                        DetailRow {
+                            label: "Updated",
+                            value: integration.updated_at_label.clone()
                         }
                     }
-                    if let Some(delete_href) = &integration.delete_href {
-                        form {
-                            method: "post",
-                            action: delete_href.clone(),
-                            button {
-                                class: "btn btn-warning",
-                                r#type: "submit",
-                                "Delete"
+
+                    if !integration.overview_items.is_empty() {
+                        section {
+                            class: "space-y-2",
+                            h4 {
+                                class: "text-base font-medium",
+                                "Overview"
+                            }
+                            ul {
+                                class: "space-y-1.5 pl-5 text-sm text-base-content/85",
+                                for item in &integration.overview_items {
+                                    li {
+                                        class: "list-disc",
+                                        "{item}"
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if integration.website_url.is_some()
+                        || integration.support_url.is_some()
+                        || integration.developer_name.is_some()
+                    {
+                        section {
+                            class: "grid gap-6 text-sm md:grid-cols-2",
+                            if integration.website_url.is_some() || integration.support_url.is_some() {
+                                div {
+                                    class: "space-y-2",
+                                    h4 {
+                                        class: "text-base font-medium",
+                                        "Links"
+                                    }
+                                    div {
+                                        class: "flex flex-col gap-2",
+                                        if let Some(website_url) = &integration.website_url {
+                                            a {
+                                                class: "link link-primary w-fit",
+                                                href: website_url.clone(),
+                                                target: "_blank",
+                                                rel: "noreferrer",
+                                                "Website"
+                                            }
+                                        }
+                                        if let Some(support_url) = &integration.support_url {
+                                            a {
+                                                class: "link link-primary w-fit",
+                                                href: support_url.clone(),
+                                                target: "_blank",
+                                                rel: "noreferrer",
+                                                "Support"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if let Some(developer_name) = &integration.developer_name {
+                                div {
+                                    class: "space-y-2",
+                                    h4 {
+                                        class: "text-base font-medium",
+                                        "Developed by"
+                                    }
+                                    p {
+                                        class: "text-sm text-base-content/70",
+                                        "{developer_name}"
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if integration.edit_href.is_some() || integration.delete_href.is_some() {
+                        ModalAction {
+                            class: Some("mt-0".to_string()),
+                            if let Some(edit_href) = &integration.edit_href {
+                                Button {
+                                    button_type: ButtonType::Link,
+                                    href: edit_href.clone(),
+                                    button_style: ButtonStyle::Outline,
+                                    "Edit"
+                                }
+                            }
+                            if let Some(delete_href) = &integration.delete_href {
+                                form {
+                                    method: "post",
+                                    action: delete_href.clone(),
+                                    button {
+                                        class: "btn btn-warning",
+                                        r#type: "submit",
+                                        "Delete"
+                                    }
+                                }
                             }
                         }
                     }
@@ -178,7 +191,7 @@ fn DetailRow(label: &'static str, value: String) -> Element {
                 "{label}"
             }
             p {
-                class: "text-sm text-base-content/85",
+                class: "text-sm text-base-content/80",
                 "{value}"
             }
         }
