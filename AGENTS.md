@@ -16,38 +16,12 @@ Environment variables are loaded from `/workspace/.env`.
 * Postgres          # Database
 * Earthly           # Build system for production. https://earthly.dev/
 
-## Folder: crates/db/migrations
+## Folder: crates/db
 
-* To create a new migration run `./scripts/dbmate new migration-name`. Always use `dbmate new` so timestamps are correct.
-* All of the `dbmate` migrations are stored in the `migrations` folder.
-* Use `./scripts/dbmate ...` for migrations, `./scripts/psql ...` for direct `psql` access, and `./scripts/clorinde` for one-shot Clorinde code generation. These scripts load `/workspace/.env`, set `DATABASE_URL`, and point tools at the repo's database paths.
-* When adding a new enum value (e.g., `ALTER TYPE ... ADD VALUE`), do not use the new value in the same migration transaction. Split into a follow-up migration before inserting rows that reference the new enum value.
-
-## Folder: crates/db/queries
-
-* Here is where we manage all interaction with the database.
-* Any schema change in migrations must be reflected in the corresponding query files.
-Clorinde will fail compilation if queries are out of sync.
-* All of the `.sql` files are in a folder called `queries`.
-* Each `.sql` file should group queries by aggregate/root entity (e.g., `users.sql`)
-* All the database CRUD operation are in these files.
-* Clorinde generates a dedicated Rust crate `db-gen` which is re-exported from `crates/db/lib.rs`.
-* Do not use `SELECT *`; always specify columns explicitly.
-
-## Folder: crates/db-gen
-
-* After modifying any `.sql` file in the `crates/db/queries` folder, the Clorinde code generator must be run.
-* To run `clorinde` and generate the database code use `./scripts/clorinde`
-* Do not edit code in this folder, it will just be overwritten on the next code generation.
-
-### Clorinde SQL Guidelines
-
-* Never embed raw SQL in Rust code; all SQL must live in crates/db/queries/*.sql and be executed only via generated Clorinde query functions.
-* **Struct Definitions**: Add `--: StructName` before queries to define return types
-* **Query Naming**: Use `--! query_name` to name queries
-* **Parameters**: Parameters are inferred automatically; do not declare them manually
-* **Intervals**: Use `($1 || ' days')::INTERVAL` for dynamic intervals
-* **Optional Fields**: Use `field_name?` for nullable fields when required
+* For detailed database workflow and conventions, see `crates/db/README.md`.
+* Migrations live in `crates/db/migrations`.
+* SQL queries live in `crates/db/queries`.
+* Generated query code lives in `crates/db-gen` and must not be edited directly.
 
 ## Variables
 
