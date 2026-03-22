@@ -1,5 +1,5 @@
 ws:
-    cd /workspace/crates/agent-octo-com && cargo watch --workdir /workspace/crates/agent-octo-com -w ./content -w ./src --no-gitignore -x "run --bin agent-octo-com"
+    cd /workspace/crates/static-website && cargo watch --workdir /workspace/crates/static-website -w ./content -w ./src --no-gitignore -x "run --bin static-website"
 
 wts:
-    cd /workspace/crates/agent-octo-com && tailwind-extra -i ./input.css -o ./dist/tailwind.css --watch
+    cd /workspace/crates/static-website && tailwind-extra -i ./input.css -o ./dist/tailwind.css --watch

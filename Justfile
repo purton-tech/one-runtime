@@ -16,6 +16,9 @@ dev-secrets:
 tmux:
     scripts/nails code
 
+tmux-site :
+    scripts/nails site
+
 codex:
     sudo chown -R vscode:vscode /home/vscode/.codex
     sudo npm install -g @openai/codex
