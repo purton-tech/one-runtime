@@ -8,6 +8,7 @@ anyhow.workspace = true
 axum = { version = "0.8", default-features = false, features = ["json", "http1", "tokio"] }
 axum-extra = { version = "0.12", features = ["form", "typed-routing"] }
 base64 = "0.22.1"
+chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
 clorinde = { version = "0.0.0", path = "../db-gen" }
 db = { path = "../db" }
 dotenvy.workspace = true

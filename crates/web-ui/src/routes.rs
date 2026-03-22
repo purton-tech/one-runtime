@@ -75,3 +75,20 @@ pub mod oauth_clients {
         pub org_id: String,
     }
 }
+
+pub mod hosted_connections {
+    use axum_extra::routing::TypedPath;
+    use serde::Deserialize;
+
+    #[derive(TypedPath, Deserialize)]
+    #[typed_path("/api/hosted-connection-sessions")]
+    pub struct CreateSession;
+
+    #[derive(TypedPath, Deserialize)]
+    #[typed_path("/connect")]
+    pub struct Popup;
+
+    #[derive(TypedPath, Deserialize)]
+    #[typed_path("/connect/submit")]
+    pub struct Submit;
+}

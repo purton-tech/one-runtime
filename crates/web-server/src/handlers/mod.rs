@@ -1,4 +1,5 @@
 pub mod api_keys;
+pub mod hosted_connections;
 pub mod integrations;
 pub mod oauth_clients;
 pub mod root;

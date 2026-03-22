@@ -57,20 +57,33 @@ The popup is where One Runtime collects whatever is required for that integratio
 ```html
 <button id="connect-hubspot">Connect HubSpot</button>
 <script type="module">
-  import { createOneRuntime } from "https://cdn.one-runtime.com/sdk.js";
+  import { createOneRuntime } from "https://api.one-runtime.com/connect.js";
 
   const oneRuntime = createOneRuntime({
-    publishableKey: "pk_live_your_app_key",
+    baseUrl: "https://api.one-runtime.com",
   });
 
   const button = document.getElementById("connect-hubspot");
 
   button.addEventListener("click", async () => {
+    const sessionResponse = await fetch("/api/one-runtime/hosted-connection-sessions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        integration_slug: "hubspot",
+        end_user_id: "user_123",
+        end_user_name: "Taylor",
+        end_user_email: "taylor@example.com",
+        suggested_connection_name: "Taylor's HubSpot",
+      }),
+    });
+
+    const { session_token } = await sessionResponse.json();
+
     const result = await oneRuntime.connections.open({
-      integrationSlug: "hubspot",
-      endUserId: "user_123",
-      endUserName: "Taylor",
-      endUserEmail: "taylor@example.com",
+      sessionToken: session_token,
     });
 
     if (result.status === "connected") {
@@ -80,7 +93,7 @@ The popup is where One Runtime collects whatever is required for that integratio
 </script>
 ```
 
-The popup helper resolves a promise when the flow finishes, so your UI can update immediately after a successful connection.
+Your backend creates the short-lived hosted connection session using your One Runtime API key. The popup helper resolves a promise when the flow finishes, so your UI can update immediately after a successful connection.
 
 ## 5. Let One Runtime handle credentials
 
