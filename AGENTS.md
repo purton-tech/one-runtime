@@ -84,14 +84,8 @@ Do not run these commands unless explicitly required.
 
 * Every route has its own folder under `crates/${project_name}-ui`.
 * The main page for a route lives in a file called `page.rs` inside that folder.
-* Additional components are stored either alongside `page.rs` or in a `components/` folder.
-* Shared widgets such as confirmation dialogs live under `components/` at the crate root.
 * Each page corresponds to a typed route defined in `crates/${project_name}-ui/routes.rs` and is called from the matching handler in `crates/${project_name}/handlers`.
-* We use Tailwind and Daisy UI. Only use Daisy UI colors and when possible the provided Daisy RSX library.
-* Buttons can open modals by setting `popover_target` to the modal's `trigger_id`.
-* Prefer DaisyUI components over raw Tailwind.
-* Avoid custom Tailwind styling unless necessary.
-* Do not hardcode colors; rely on theme tokens.
+* For detailed UI conventions in this crate, see `crates/one-runtime-ui/README.md`.
 
 ## Folder: crates/${project_name}
 
