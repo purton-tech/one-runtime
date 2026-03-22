@@ -4,10 +4,9 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-PROJECT_NAME="${PROJECT_NAME:-one-runtime}"
-ISLANDS_PACKAGE="${ISLANDS_PACKAGE:-${PROJECT_NAME}-islands}"
-ISLANDS_WASM="${ISLANDS_WASM:-${PROJECT_NAME//-/_}_islands}"
-DIST_DIR="${REPO_ROOT}/crates/${PROJECT_NAME}-assets/dist"
+ISLANDS_PACKAGE="${ISLANDS_PACKAGE:-web-islands}"
+ISLANDS_WASM="${ISLANDS_WASM:-web_islands}"
+DIST_DIR="${REPO_ROOT}/crates/web-assets/dist"
 WASM_PATH="${REPO_ROOT}/target/wasm32-unknown-unknown/release/${ISLANDS_WASM}.wasm"
 
 if ! command -v wasm-bindgen >/dev/null 2>&1; then

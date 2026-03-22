@@ -9,13 +9,23 @@ spec:
   profiles:
     dev:
       components:
+        oidc:
+          hostname-url: http://localhost:32760
         ingress:
           port: 32760
         db:
           expose_db_port: 32761
           danger_override_password: testpassword
+    prod:
+      components:
+        oidc:
+          # Required by keycloak for OIDC. OIDC requires a stable redirect URL.
+          hostname-url: https://app.one-runtime.com
   services:
     web:
-      image: mendhak/http-https-echo:latest
-      port: 8080
-      database_url: DATABASE_URL
+      image: ghcr.io/purton-tech/one-runtime:1.0.0-rc.2
+      port: 3000
+      database_url: APPLICATION_URL
+      init:
+        image: ghcr.io/purton-tech/one-runtime-migrations:1.0.0-rc.2
+        migrations_database_url: DATABASE_URL
