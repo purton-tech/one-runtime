@@ -7,14 +7,13 @@ Environment variables are loaded from `/workspace/.env`.
 
 ## Tech Stack
 
-* Axum              # Handles all the applications routes and actions https://github.com/tokio-rs/axum
-* Clorinde          # Generates a Rust crate from `.sql` files with type-checked Postgres queries https://halcyonnouveau.github.io/clorinde/
-* Dioxus rsx! macro # Used to create UI components and pages on the server side. https://dioxuslabs.com/
-* Daisy UI          # Tailwind components https://daisyui.com/
-* daisy_rsx         # A rust crate that implements the Daisy UI components in rsx!
-* DbMate            # Database Migrations https://github.com/amacneil/dbmate
-* Postgres          # Database
-* Earthly           # Build system for production. https://earthly.dev/
+* Axum: routing and handlers
+* Clorinde: typed SQL query generation
+* Dioxus: server-rendered UI
+* Daisy UI / `daisy_rsx`: UI components
+* DbMate: migrations
+* Postgres: database
+* Earthly: production builds
 
 ## Folder: crates/db
 
@@ -29,30 +28,14 @@ Environment variables are loaded from `/workspace/.env`.
 
 ## Folder: crates/${project_name}-assets
 
-* Any images that are needed by the application are stored in a sub folder called images
-* Also the tailwind config is stored here.
-* The user will run `just tailwind` this will watch the tailwind `input.css` and src files for any changes.
-* When changes occur the resulting `tailwind.css` is stored in a `dist` folder.
-* There is a `build.rs` it uses a crate called `cache-busters` that sees the images and css files.
-* It takes the hash of the files and creates a struct that gives us the ability to access the images by name in a typesafe way.
-* For example the `tailwind.css` will be exported as `${project_name}::files::tailwind_css` in the app and we reference it by calling `${project_name}::files::tailwind.name`.
+* For detailed asset workflow and conventions, see `crates/one-runtime-assets/README.md`.
+* Source assets live in `crates/${project_name}-assets/images`.
+* Generated frontend assets live in `crates/${project_name}-assets/dist`.
 
 ## Folder: crates/${project_name}-islands
 
-This crate implements client-side interactivity using an Islands Architecture.
-Use it for UI behavior that cannot be handled with server-side rendering.
-
-It is compiled to WebAssembly and the output is deployed to the frontend via the assets crate.
-
-Build commands (for reference only, not required for most changes):
-
-- Compile to WASM:
-  `cargo build -p ${project_name}-islands --target wasm32-unknown-unknown`
-
-- Generate JS bindings:
-  `wasm-bindgen target/wasm32-unknown-unknown/release/${project_name}_islands.wasm --target web --out-dir crates/${project_name}-assets/dist`
-
-Do not run these commands unless explicitly required.
+* For detailed islands workflow and conventions, see `crates/one-runtime-islands/README.md`.
+* Use this crate for client-side interactivity that cannot be handled with server rendering alone.
 
 ## Folder: crates/${project_name}-ui
 
