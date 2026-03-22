@@ -1,5 +1,26 @@
 VERSION 0.8
 
+# This Earthfile builds and packages the application, frontend assets, and
+# migration image used in deployment.
+#
+# Main entrypoints:
+# - `all`: build and push the current application image and migration image
+# - `release-candidate`: run checks, then build and push tagged release images
+#
+# Internal targets:
+# - `devcontainer`: shared toolchain environment
+# - `certs`: CA bundle for scratch images
+# - `checks`: CI-style verification plus frontend asset/WASM generation
+# - `build`: shared artifact build for binaries and frontend assets
+# - `image`: package a selected application binary
+# - `migration-image`: package dbmate migrations as a one-shot image
+#
+# Important args:
+# - `PROJECT_NAME`: crate prefix used for assets and packaging
+# - `APP_BINARY`: main server binary to package
+# - `ISLANDS_PACKAGE`: WASM crate to compile
+# - `ISLANDS_WASM`: generated WASM artifact name
+
 # Build the same toolchain environment as the devcontainer without hardcoding
 # the upstream image in two places.
 devcontainer:
