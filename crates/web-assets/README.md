@@ -15,7 +15,7 @@ Static assets, generated asset handles, and build output.
 - Run `just tailwind` when CSS assets need rebuilding.
 - Tailwind output is written to `dist/tailwind.css`.
 - `build.rs` watches `images/` and `dist/`, then generates typed asset handles.
-- Use asset references through `one_runtime_assets::files::*`.
+- Use asset references through `web_assets::files::*`.
 
 ## Rules
 

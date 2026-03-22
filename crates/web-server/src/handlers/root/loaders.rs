@@ -1,7 +1,7 @@
 use crate::{CustomError, Jwt, authz};
 use axum::{Extension, response::Redirect};
 use clorinde::deadpool_postgres::Pool;
-use one_runtime_ui::routes;
+use web_ui::routes;
 
 pub async fn home(
     Extension(pool): Extension<Pool>,

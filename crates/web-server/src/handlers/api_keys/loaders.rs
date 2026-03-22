@@ -1,7 +1,7 @@
 use crate::{CustomError, Jwt, authz, handlers};
 use axum::{Extension, response::Html};
 use clorinde::{deadpool_postgres::Pool, queries::auth};
-use one_runtime_ui::routes;
+use web_ui::routes;
 
 pub async fn loader(
     routes::api_keys::Index { org_id }: routes::api_keys::Index,
@@ -26,7 +26,6 @@ pub async fn loader(
 
     transaction.commit().await?;
 
-    let html =
-        one_runtime_ui::api_keys::page::page(org_id, balance_label, api_keys, None, None, None);
+    let html = web_ui::api_keys::page::page(org_id, balance_label, api_keys, None, None, None);
     Ok(Html(html))
 }

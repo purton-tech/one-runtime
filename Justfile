@@ -1,9 +1,9 @@
 # The name we'll give to our k3d cluster.
-project-name := "one-runtime"
+cluster-name := "one-runtime"
 
 dev-init:
-    k3d cluster delete {{project-name}}
-    k3d cluster create {{project-name}} --agents 1 -p "32760-32761:32760-32761@agent:0"
+    k3d cluster delete {{cluster-name}}
+    k3d cluster create {{cluster-name}} --agents 1 -p "32760-32761:32760-32761@agent:0"
     just get-config
 
 dev-setup:
@@ -25,7 +25,7 @@ tk:
 
 # Retrieve the cluster kube config - so kubectl and k9s work.
 get-config:
-    k3d kubeconfig write {{project-name}} --kubeconfig-merge-default
+    k3d kubeconfig write {{cluster-name}} --kubeconfig-merge-default
     sed -i "s/127\.0\.0\.1/host.docker.internal/g; s/0\.0\.0\.0/host.docker.internal/g" "$HOME/.kube/config"
     # Disable TLS verification for local dev
     sed -i '/certificate-authority-data/d' "$HOME/.kube/config"
@@ -41,20 +41,20 @@ _watch binary:
         --workdir /workspace/ \
         -w crates/db \
         -w crates/db-gen \
-        -w crates/{{project-name}} \
-        -w crates/{{project-name}}-ui \
-        -w crates/{{project-name}}-assets/dist \
-        --no-gitignore -x "run --bin {{project-name}}"
+        -w crates/web-server \
+        -w crates/web-ui \
+        -w crates/web-assets/dist \
+        --no-gitignore -x "run --bin web-server"
 
-watch-binary: (_watch "{{project-name}}")
+watch-binary: (_watch "web-server")
 
 watch-tailwind:
-    cd /workspace/crates/{{project-name}}-assets && tailwind-extra -i ./input.css -o ./dist/tailwind.css --watch
+    cd /workspace/crates/web-assets && tailwind-extra -i ./input.css -o ./dist/tailwind.css --watch
 
 build-islands:
     ./scripts/build-islands
 
 watch-islands:
     cargo watch \
-      -w crates/{{project-name}}-islands \
+      -w crates/web-islands \
       -s './scripts/build-islands'

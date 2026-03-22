@@ -1,12 +1,12 @@
 use crate::{CustomError, Jwt, authz, handlers};
 use axum::{Extension, extract::Query, response::Html};
 use clorinde::deadpool_postgres::Pool;
-use one_runtime_ui::integrations;
-use one_runtime_ui::integrations::model::{IntegrationCatalogFilters, IntegrationCatalogItem};
-use one_runtime_ui::routes;
 use serde::Deserialize;
 use serde_json::Value;
 use uuid::Uuid;
+use web_ui::integrations;
+use web_ui::integrations::model::{IntegrationCatalogFilters, IntegrationCatalogItem};
+use web_ui::routes;
 
 #[derive(Debug, Default, Deserialize)]
 pub struct IntegrationCatalogQuery {

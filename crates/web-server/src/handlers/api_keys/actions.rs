@@ -8,8 +8,8 @@ use serde::Deserialize;
 
 use crate::{CustomError, Jwt, authz, handlers, mcp::auth::hash_api_key_secret};
 
-use one_runtime_ui::api_keys::page::CreatedApiKeyState;
-use one_runtime_ui::routes;
+use web_ui::api_keys::page::CreatedApiKeyState;
+use web_ui::routes;
 
 #[derive(Debug, Deserialize, Clone)]
 pub struct CreateApiKeyForm {
@@ -52,7 +52,7 @@ async fn render_index(
 
     transaction.commit().await?;
 
-    let html = one_runtime_ui::api_keys::page::page(
+    let html = web_ui::api_keys::page::page(
         org_id,
         balance_label,
         api_keys,
@@ -118,7 +118,7 @@ pub async fn action_create(
 
     transaction.commit().await?;
 
-    let html = one_runtime_ui::api_keys::page::page(
+    let html = web_ui::api_keys::page::page(
         org_id,
         balance_label,
         api_keys,

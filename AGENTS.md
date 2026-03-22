@@ -22,32 +22,28 @@ Environment variables are loaded from `/workspace/.env`.
 * SQL queries live in `crates/db/queries`.
 * Generated query code lives in `crates/db-gen` and must not be edited directly.
 
-## Variables
+## Folder: crates/web-assets
 
-`project_name=one-runtime`
+* For detailed asset workflow and conventions, see `crates/web-assets/README.md`.
+* Source assets live in `crates/web-assets/images`.
+* Generated frontend assets live in `crates/web-assets/dist`.
 
-## Folder: crates/${project_name}-assets
+## Folder: crates/web-islands
 
-* For detailed asset workflow and conventions, see `crates/one-runtime-assets/README.md`.
-* Source assets live in `crates/${project_name}-assets/images`.
-* Generated frontend assets live in `crates/${project_name}-assets/dist`.
-
-## Folder: crates/${project_name}-islands
-
-* For detailed islands workflow and conventions, see `crates/one-runtime-islands/README.md`.
+* For detailed islands workflow and conventions, see `crates/web-islands/README.md`.
 * Use this crate for client-side interactivity that cannot be handled with server rendering alone.
 
-## Folder: crates/${project_name}-ui
+## Folder: crates/web-ui
 
-* Every route has its own folder under `crates/${project_name}-ui`.
+* Every route has its own folder under `crates/web-ui`.
 * The main page for a route lives in a file called `page.rs` inside that folder.
-* Each page corresponds to a typed route defined in `crates/${project_name}-ui/routes.rs` and is called from the matching handler in `crates/${project_name}/handlers`.
-* For detailed UI conventions in this crate, see `crates/one-runtime-ui/README.md`.
+* Each page corresponds to a typed route defined in `crates/web-ui/routes.rs` and is called from the matching handler in `crates/web-server/handlers`.
+* For detailed UI conventions in this crate, see `crates/web-ui/README.md`.
 
-## Folder: crates/${project_name}
+## Folder: crates/web-server
 
-* Every route lives in its own folder under `crates/${project_name}/handlers`.
-* Handler convention: each route domain in `crates/${project_name}/src/handlers/<domain>/` must use `loaders.rs` for GET handlers, `actions.rs` for POST handlers, and `mod.rs` to re-export both.
+* Every route lives in its own folder under `crates/web-server/src/handlers`.
+* Handler convention: each route domain in `crates/web-server/src/handlers/<domain>/` must use `loaders.rs` for GET handlers, `actions.rs` for POST handlers, and `mod.rs` to re-export both.
 * POST endpoints are implemented in `actions.rs` with functions prefixed by `action_`.
 * `mod.rs` re-exports the loader and actions and defines the `routes()` helper used by `main.rs`.
 * Each loader function fetches data from the database and renders the page.

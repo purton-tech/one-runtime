@@ -1,5 +1,5 @@
 [package]
-name = "one-runtime-islands"
+name = "web-islands"
 version = "0.1.0"
 edition = "2024"
 

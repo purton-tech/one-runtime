@@ -2,11 +2,11 @@
 members = [
     "crates/one-runtime-com",
     "crates/tool-runtime",
-    "crates/one-runtime-assets",
-    "crates/one-runtime-ui",
-    "crates/one-runtime",
+    "crates/web-assets",
+    "crates/web-ui",
+    "crates/web-server",
     "crates/db",
-    "crates/one-runtime-islands",
+    "crates/web-islands",
 ]
 resolver = "3"
 

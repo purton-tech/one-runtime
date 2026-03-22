@@ -11,11 +11,11 @@ Client-side interactivity that cannot be handled with server rendering alone.
 
 - Keep islands logic small and behavior-specific.
 - Use this crate only for client-side interactivity that needs browser APIs or event handling after render.
-- WASM output is deployed through `crates/one-runtime-assets/dist`.
+- WASM output is deployed through `crates/web-assets/dist`.
 
 ## Build Commands
 
 Reference only unless explicitly required:
 
-- `cargo build -p one-runtime-islands --target wasm32-unknown-unknown`
-- `wasm-bindgen target/wasm32-unknown-unknown/release/one_runtime_islands.wasm --target web --out-dir crates/one-runtime-assets/dist`
+- `cargo build -p web-islands --target wasm32-unknown-unknown`
+- `wasm-bindgen target/wasm32-unknown-unknown/release/web_islands.wasm --target web --out-dir crates/web-assets/dist`
