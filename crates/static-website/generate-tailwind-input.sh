@@ -4,7 +4,6 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 INPUT_FILE="${SCRIPT_DIR}/input.css"
 OUTPUT_FILE="${SCRIPT_DIR}/dist/generated-input.css"
-CARGO_HOME_DIR="${CARGO_HOME:-/usr/local/cargo}"
 
 mkdir -p "${SCRIPT_DIR}/dist"
 
@@ -18,13 +17,35 @@ if [[ -z "${lock_version}" ]]; then
   exit 1
 fi
 
-ssg_whiz_path="$(
-  find "${CARGO_HOME_DIR}/registry/src" -maxdepth 2 -type d -name "ssg_whiz-${lock_version}" | head -n 1
-)"
+search_roots=()
+if [[ -n "${CARGO_HOME:-}" ]]; then
+  search_roots+=("${CARGO_HOME}")
+fi
+if [[ -n "${HOME:-}" ]]; then
+  search_roots+=("${HOME}/.cargo")
+fi
+search_roots+=("/usr/local/cargo")
+
+ssg_whiz_path=""
+for root in "${search_roots[@]}"; do
+  registry_src="${root}/registry/src"
+  if [[ ! -d "${registry_src}" ]]; then
+    continue
+  fi
+
+  ssg_whiz_path="$(
+    find "${registry_src}" -maxdepth 2 -type d -name "ssg_whiz-${lock_version}" 2>/dev/null | head -n 1
+  )"
+
+  if [[ -n "${ssg_whiz_path}" ]]; then
+    break
+  fi
+done
 
 if [[ -z "${ssg_whiz_path}" ]]; then
-  echo "Could not find ssg_whiz-${lock_version} under ${CARGO_HOME_DIR}/registry/src" >&2
-  echo "Run a cargo command that fetches dependencies first." >&2
+  echo "Could not find ssg_whiz-${lock_version} in any Cargo registry cache." >&2
+  echo "Checked roots: ${search_roots[*]}" >&2
+  echo "Run 'cargo fetch --locked' first." >&2
   exit 1
 fi
 
