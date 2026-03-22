@@ -7,7 +7,7 @@ Agent-first rules for building UI in Dioxus projects that use Daisy UI, `daisy_r
 Use this order of preference:
 
 1. `daisy_rsx` components
-2. Semantic HTML in `rsx!`
+2. Semantic HTML in `rsx!` using Daisy UI markup/classes when `daisy_rsx` does not expose the component
 3. Small amounts of Tailwind for layout and spacing
 4. Custom utility-heavy styling only when the first three are not enough
 
@@ -15,11 +15,13 @@ Use this order of preference:
 
 - Prefer `daisy_rsx` when it fits.
 - If a fitting Daisy RSX component exists, do not rebuild it from raw HTML.
+- If `daisy_rsx` does not expose a Daisy UI component, prefer semantic/raw HTML with Daisy UI classes over inventing a custom look.
 - Use raw HTML only when the structure is semantic and Daisy RSX is not a good fit.
 - Use Tailwind mainly for layout, spacing, sizing, truncation, and light interaction polish.
 - Do not hardcode colors. Use Daisy/theme tokens.
 - Avoid long Tailwind class strings. If a block starts turning into class soup, extract a component or simplify it.
 - Prefer readable composition over large inline `rsx!` blocks.
+- If unsupported Daisy UI markup will be reused, wrap it in a small local or shared component instead of repeating class strings.
 
 ## File Organization
 
