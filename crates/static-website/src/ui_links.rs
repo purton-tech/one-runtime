@@ -8,6 +8,11 @@ pub fn navigation_links() -> NavigationModel {
         desktop_left: vec![
             NavigationEntry::Link(NavigationLink::external("Home", "/", Section::Home)),
             NavigationEntry::Link(NavigationLink::external(
+                "Docs",
+                "/docs/getting-started",
+                Section::Docs,
+            )),
+            NavigationEntry::Link(NavigationLink::external(
                 "Pricing",
                 "/pricing",
                 Section::Pricing,
@@ -27,6 +32,7 @@ pub fn navigation_links() -> NavigationModel {
         .with_class("btn btn-primary")],
         mobile: vec![
             NavigationLink::external("Home", "/", Section::Home),
+            NavigationLink::external("Docs", "/docs/getting-started", Section::Docs),
             NavigationLink::external("Pricing", "/pricing", Section::Pricing),
             NavigationLink::external("Specs", "/open-api-specs/", Section::McpServers),
             NavigationLink::external("Blog", "/blog", Section::Blog),
