@@ -2,4 +2,5 @@
 
 pub mod auth;
 pub mod integrations;
+pub mod oauth_clients;
 pub mod orgs;

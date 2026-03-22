@@ -3,6 +3,7 @@ mod base_layout;
 pub mod components;
 pub mod integrations;
 mod layout;
+pub mod oauth_clients;
 pub mod routes;
 
 use dioxus::prelude::*;
