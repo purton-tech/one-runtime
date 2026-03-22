@@ -2,7 +2,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="${SCRIPT_DIR}"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 MODE="${1:-}"
 TMUX_CONFIG="/tmp/octo-tmux.conf"
 DEBUG="${OCTO_TMUX_DEBUG:-0}"
@@ -128,8 +128,8 @@ start_code_tmux() {
 }
 
 start_site_tmux() {
-  local session="agent-octo-com"
-  local site_root="${REPO_ROOT}/crates/agent-octo-com"
+  local session="static-website"
+  local site_root="${REPO_ROOT}/crates/static-website"
 
   debug "starting site mode in $site_root"
 

@@ -1,12 +1,12 @@
-use crate::{CustomError, Jwt, authz};
-use axum::{Extension, response::Redirect};
+use crate::{CustomError, Jwt, authz, handlers};
+use axum::{Extension, response::IntoResponse};
 use clorinde::deadpool_postgres::Pool;
 use web_ui::routes;
 
 pub async fn home(
     Extension(pool): Extension<Pool>,
     current_user: Jwt,
-) -> Result<Redirect, CustomError> {
+) -> Result<impl IntoResponse, CustomError> {
     let mut client = pool.get().await?;
     let transaction = client.transaction().await?;
 
@@ -18,5 +18,5 @@ pub async fn home(
         org_id: context.org_id,
     }
     .to_string();
-    Ok(Redirect::to(&href))
+    handlers::redirect(&href)
 }

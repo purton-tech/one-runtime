@@ -9,6 +9,7 @@ use web_assets::files::*;
 pub enum SideBar {
     ApiKeys,
     Integrations,
+    OAuthClients,
 }
 
 #[allow(dead_code)]
@@ -49,11 +50,16 @@ pub fn Layout(
 ) -> Element {
     let api_keys_icon = api_keys_svg.name;
     let integrations_icon = integrations_svg.name;
+    let oauth_clients_icon = api_keys_svg.name;
     let api_keys_href = routes::api_keys::Index {
         org_id: org_id.clone(),
     }
     .to_string();
     let integrations_href = routes::integrations::Index {
+        org_id: org_id.clone(),
+    }
+    .to_string();
+    let oauth_clients_href = routes::oauth_clients::Index {
         org_id: org_id.clone(),
     }
     .to_string();
@@ -92,6 +98,13 @@ pub fn Layout(
                             href: integrations_href,
                             icon: integrations_icon,
                             title: "Integrations"
+                        }
+                        NavItem {
+                            id: SideBar::OAuthClients.to_string(),
+                            selected_item_id: selected_item.to_string(),
+                            href: oauth_clients_href,
+                            icon: oauth_clients_icon,
+                            title: "OAuth Clients"
                         }
                     )
                 }

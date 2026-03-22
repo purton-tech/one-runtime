@@ -58,3 +58,37 @@ pub mod integrations {
         pub id: String,
     }
 }
+
+pub mod oauth_clients {
+    use axum_extra::routing::TypedPath;
+    use serde::Deserialize;
+
+    #[derive(TypedPath, Deserialize)]
+    #[typed_path("/o/{org_id}/oauth-clients")]
+    pub struct Index {
+        pub org_id: String,
+    }
+
+    #[derive(TypedPath, Deserialize)]
+    #[typed_path("/o/{org_id}/oauth-clients/create")]
+    pub struct Create {
+        pub org_id: String,
+    }
+}
+
+pub mod hosted_connections {
+    use axum_extra::routing::TypedPath;
+    use serde::Deserialize;
+
+    #[derive(TypedPath, Deserialize)]
+    #[typed_path("/api/hosted-connection-sessions")]
+    pub struct CreateSession;
+
+    #[derive(TypedPath, Deserialize)]
+    #[typed_path("/connect")]
+    pub struct Popup;
+
+    #[derive(TypedPath, Deserialize)]
+    #[typed_path("/connect/submit")]
+    pub struct Submit;
+}

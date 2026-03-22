@@ -20,10 +20,28 @@ pub struct McpPrincipal {
     pub key_prefix: String,
 }
 
+#[derive(Debug)]
+pub enum ApiKeyAuthError {
+    Unauthorized(String),
+    Internal(String),
+}
+
 pub async fn authenticate(
     state: &AppState,
     headers: &HeaderMap,
 ) -> Result<McpPrincipal, ErrorData> {
+    authenticate_api_key(state, headers)
+        .await
+        .map_err(|err| match err {
+            ApiKeyAuthError::Unauthorized(message) => unauthorized(&message),
+            ApiKeyAuthError::Internal(message) => ErrorData::internal_error(message, None),
+        })
+}
+
+pub async fn authenticate_api_key(
+    state: &AppState,
+    headers: &HeaderMap,
+) -> Result<McpPrincipal, ApiKeyAuthError> {
     let raw_key = bearer_token(headers)?;
     let parsed = parse_api_key(raw_key)?;
     let secret_hash = hash_api_key_secret(parsed.secret);
@@ -32,23 +50,23 @@ pub async fn authenticate(
         .pool
         .get()
         .await
-        .map_err(|err| ErrorData::internal_error(err.to_string(), None))?;
+        .map_err(|err| ApiKeyAuthError::Internal(err.to_string()))?;
 
     let lookup = auth::get_api_key_for_auth()
         .bind(&client, &parsed.key_prefix)
         .opt()
         .await
-        .map_err(|err| ErrorData::internal_error(err.to_string(), None))?
-        .ok_or_else(|| unauthorized("Invalid API key"))?;
+        .map_err(|err| ApiKeyAuthError::Internal(err.to_string()))?
+        .ok_or_else(|| ApiKeyAuthError::Unauthorized("Invalid API key".to_string()))?;
 
     if lookup.secret_hash != secret_hash {
-        return Err(unauthorized("Invalid API key"));
+        return Err(ApiKeyAuthError::Unauthorized("Invalid API key".to_string()));
     }
 
     auth::touch_api_key_last_used()
         .bind(&client, &lookup.id)
         .await
-        .map_err(|err| ErrorData::internal_error(err.to_string(), None))?;
+        .map_err(|err| ApiKeyAuthError::Internal(err.to_string()))?;
 
     Ok(McpPrincipal {
         api_key_id: lookup.id,
@@ -63,16 +81,16 @@ pub async fn authenticate(
     })
 }
 
-fn bearer_token(headers: &HeaderMap) -> Result<&str, ErrorData> {
+fn bearer_token(headers: &HeaderMap) -> Result<&str, ApiKeyAuthError> {
     let value = headers
         .get(axum::http::header::AUTHORIZATION)
-        .ok_or_else(|| unauthorized("Missing Authorization header"))?;
-    let value = value
-        .to_str()
-        .map_err(|_| unauthorized("Authorization header is not valid UTF-8"))?;
-    value
-        .strip_prefix("Bearer ")
-        .ok_or_else(|| unauthorized("Authorization header must use Bearer auth"))
+        .ok_or_else(|| ApiKeyAuthError::Unauthorized("Missing Authorization header".to_string()))?;
+    let value = value.to_str().map_err(|_| {
+        ApiKeyAuthError::Unauthorized("Authorization header is not valid UTF-8".to_string())
+    })?;
+    value.strip_prefix("Bearer ").ok_or_else(|| {
+        ApiKeyAuthError::Unauthorized("Authorization header must use Bearer auth".to_string())
+    })
 }
 
 struct ParsedApiKey<'a> {
@@ -80,16 +98,16 @@ struct ParsedApiKey<'a> {
     secret: &'a str,
 }
 
-fn parse_api_key(raw_key: &str) -> Result<ParsedApiKey<'_>, ErrorData> {
-    let remainder = raw_key
-        .strip_prefix("oru_")
-        .ok_or_else(|| unauthorized("API keys must start with 'oru_'"))?;
-    let (prefix, secret) = remainder
-        .split_once('_')
-        .ok_or_else(|| unauthorized("API key format must be 'oru_<prefix>_<secret>'"))?;
+fn parse_api_key(raw_key: &str) -> Result<ParsedApiKey<'_>, ApiKeyAuthError> {
+    let remainder = raw_key.strip_prefix("oru_").ok_or_else(|| {
+        ApiKeyAuthError::Unauthorized("API keys must start with 'oru_'".to_string())
+    })?;
+    let (prefix, secret) = remainder.split_once('_').ok_or_else(|| {
+        ApiKeyAuthError::Unauthorized("API key format must be 'oru_<prefix>_<secret>'".to_string())
+    })?;
     if prefix.is_empty() || secret.is_empty() {
-        return Err(unauthorized(
-            "API key prefix and secret must both be present",
+        return Err(ApiKeyAuthError::Unauthorized(
+            "API key prefix and secret must both be present".to_string(),
         ));
     }
 

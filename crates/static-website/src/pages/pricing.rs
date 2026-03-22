@@ -2,16 +2,16 @@ use daisy_rsx::{Badge, BadgeColor, BadgeStyle, Button, ButtonScheme, ButtonType,
 use dioxus::prelude::*;
 use ssg_whiz::{layouts::layout::Layout, Footer, Section};
 
-const COMMUNITY_EDITION_URL: &str = "https://github.com/purton-tech/agent-octo";
-const APP_URL: &str = "https://app.agent-octo.com";
+const COMMUNITY_EDITION_URL: &str = "https://github.com/purton-tech/one-runtime";
+const APP_URL: &str = "https://app.one-runtime.com";
 const BYOK_INPUT_PRICE: &str = "$0.03 / 1M input tokens";
 const BYOK_OUTPUT_PRICE: &str = "$0.03 / 1M output tokens";
 
 pub fn page() -> String {
     let page = rsx! {
         Layout {
-            title: "Pricing | agent-octo.com".to_string(),
-            description: "Choose between the self-hosted Community Edition and Agent Octo BYOK token-based billing.".to_string(),
+            title: "Pricing | One Runtime".to_string(),
+            description: "Choose between the self-hosted Community Edition and the hosted One Runtime application.".to_string(),
             image: Some("/logo.svg".to_string()),
             mobile_menu: None,
             section: Section::Pricing,
@@ -31,11 +31,11 @@ pub fn page() -> String {
                             }
                             h1 {
                                 class: "text-4xl font-bold lg:text-5xl",
-                                "Simple pricing for self-hosting or BYOK usage"
+                                "Simple pricing for self-hosting or hosted usage"
                             }
                             p {
                                 class: "text-lg text-base-content/75",
-                                "Run Agent Octo yourself with the open-source Community Edition, or use the hosted app with token-based BYOK billing."
+                                "Run One Runtime yourself with the open-source Community Edition, or use the hosted application with usage-based billing."
                             }
                         }
 
@@ -54,7 +54,7 @@ pub fn page() -> String {
                                         h2 { class: "text-3xl font-bold", "Open source" }
                                         p {
                                             class: "text-base-content/75",
-                                            "Self-host Agent Octo on your own infrastructure and manage your own runtime, storage, and operations."
+                                            "Self-host One Runtime on your own infrastructure and manage your own runtime, storage, and operations."
                                         }
                                     }
                                     div {
@@ -89,7 +89,7 @@ pub fn page() -> String {
                                         h2 { class: "text-3xl font-bold", "Hosted app, token-based billing" }
                                         p {
                                             class: "text-base-content/75",
-                                            "Bring your own provider keys and pay for Agent Octo usage based on metered token throughput."
+                                            "Use the hosted One Runtime app and pay based on metered token throughput."
                                         }
                                     }
                                     div {
@@ -129,7 +129,7 @@ pub fn page() -> String {
                                 h2 { class: "text-2xl font-bold", "How usage is charged" }
                                 p {
                                     class: "text-base-content/75",
-                                    "Agent Octo currently records usage by pricing input and output tokens separately. The charge is computed from your configured provider pricing and deducted from your organization balance in microcents."
+                                    "One Runtime currently records usage by pricing input and output tokens separately. The charge is computed from your configured provider pricing and deducted from your organization balance in microcents."
                                 }
                                 p {
                                     class: "text-sm text-base-content/65",

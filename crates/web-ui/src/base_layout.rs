@@ -163,6 +163,24 @@ pub fn BaseLayout(props: BaseLayoutProps) -> Element {
                     }
                 }
             }
+            div {
+                id: "snackbar",
+                class: "toast toast-top toast-end z-50 pointer-events-none translate-y-full opacity-0 transition-all duration-300 ease-out",
+                "aria-live": "polite",
+                "aria-atomic": "true",
+                div {
+                    class: "pointer-events-auto alert alert-info shadow-lg flex items-start gap-3 max-w-sm",
+                    p {
+                        id: "snackbar-message",
+                        class: "flex-1 text-sm",
+                    }
+                    button {
+                        r#type: "button",
+                        class: "action btn btn-ghost btn-xs",
+                        "Dismiss"
+                    }
+                }
+            }
         }
     )
 }

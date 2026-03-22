@@ -1,5 +1,6 @@
 pub mod blog_summary;
 pub mod components;
+pub mod docs_summary;
 pub mod generator;
 pub mod pages;
 pub mod pages_summary;
@@ -7,7 +8,9 @@ pub mod ui_links;
 
 use std::net::SocketAddr;
 
-use ssg_whiz::{InlineScript, ScriptAsset, SiteAssets, SiteBuilder, SiteConfig};
+use ssg_whiz::{
+    DocumentSite, InlineScript, ScriptAsset, Section, SiteAssets, SiteBuilder, SiteConfig,
+};
 
 #[tokio::main]
 async fn main() {
@@ -67,6 +70,10 @@ async fn main() {
 
     SiteBuilder::new(config)
         .blog(blog_summary::summary())
+        .document(DocumentSite {
+            summary: docs_summary::summary(),
+            section: Section::Docs,
+        })
         .pages(pages_summary::summary())
         .static_pages(generator::generate_static_pages)
         .build()

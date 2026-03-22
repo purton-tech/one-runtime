@@ -5,8 +5,8 @@ use ssg_whiz::{layouts::layout::Layout, Footer, Section};
 pub fn page() -> String {
     let page = rsx! {
         Layout {
-            title: "OpenAPI Specs | agent-octo.com".to_string(),
-            description: "OpenAPI integrations are now managed in the application and will be exposed through API-backed views.".to_string(),
+            title: "OpenAPI Specs | One Runtime".to_string(),
+            description: "OpenAPI-backed integrations are managed in One Runtime and will later be exposed through API-backed catalog views.".to_string(),
             image: Some("/logo.svg".to_string()),
             mobile_menu: None,
             section: Section::McpServers,
@@ -26,11 +26,11 @@ pub fn page() -> String {
                             }
                             h1 {
                                 class: "text-4xl font-bold lg:text-5xl",
-                                "Integrations are moving into the app"
+                                "OpenAPI specs are managed in the application"
                             }
                             p {
                                 class: "text-lg text-base-content/75",
-                                "The website no longer reads local spec files. The source of truth is now the application database, and this page will later switch to an API-backed integration catalog."
+                                "The static site no longer reads local spec files. The source of truth is now the One Runtime application database, and this page will later move to an API-backed catalog."
                             }
                         }
 
@@ -45,13 +45,13 @@ pub fn page() -> String {
                                 }
                                 p {
                                     class: "text-base-content/75",
-                                    "System integrations are seeded in the app database. Public rendering here is intentionally minimal until the API exists."
+                                    "System integrations are seeded in the application database. Public rendering here is intentionally minimal until the external catalog API exists."
                                 }
                                 div {
                                     class: "flex flex-wrap gap-3",
                                     a {
                                         class: "btn btn-primary",
-                                        href: "https://app.agent-octo.com",
+                                        href: "https://app.one-runtime.com",
                                         "Open the app"
                                     }
                                     a {
