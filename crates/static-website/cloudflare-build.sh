@@ -11,5 +11,5 @@ if [[ ! -x ./tailwindcss-extra-linux-x64 ]]; then
   chmod +x ./tailwindcss-extra-linux-x64
 fi
 
-./tailwindcss-extra-linux-x64 -i ./input.css -o ./dist/tailwind.css
+./tailwindcss-extra-linux-x64 -i "$(bash ./generate-tailwind-input.sh)" -o ./dist/tailwind.css
 cargo run
