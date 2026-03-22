@@ -21,7 +21,7 @@ pub async fn action_create(
         client_secret,
     }): Form<CreateOAuthClientForm>,
 ) -> Result<impl IntoResponse, CustomError> {
-    let provider = provider.trim().to_string();
+    let provider = provider.trim().to_ascii_lowercase();
     let client_id = client_id.trim().to_string();
     let client_secret = client_secret.trim().to_string();
     let href = routes::oauth_clients::Index {

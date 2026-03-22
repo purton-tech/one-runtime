@@ -3,6 +3,8 @@
 @plugin "daisyui";
 
 @source '../web-ui/**/*.rs';
+@source '../web-islands/**/*.rs';
+@source inline("toast toast-top toast-end");
 
 .card {
     @apply bg-base-100 border border-base-300;

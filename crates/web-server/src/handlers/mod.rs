@@ -45,8 +45,7 @@ pub fn redirect_and_snackbar(
 ) -> Result<Response, CustomError> {
     let mut response = Redirect::to(url).into_response();
     let encoded_message = URL_SAFE_NO_PAD.encode(message.into());
-    let cookie_value =
-        format!("{FLASH_COOKIE_NAME}={encoded_message}; Path=/; HttpOnly; SameSite=Lax");
+    let cookie_value = format!("{FLASH_COOKIE_NAME}={encoded_message}; Path=/; SameSite=Lax");
     response.headers_mut().insert(
         SET_COOKIE,
         HeaderValue::from_str(&cookie_value)
@@ -78,5 +77,6 @@ mod tests {
             .unwrap();
         assert!(cookie_header.contains("flash_aargh="));
         assert!(cookie_header.contains("Path=/"));
+        assert!(!cookie_header.contains("HttpOnly"));
     }
 }
