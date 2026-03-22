@@ -11,5 +11,6 @@ if [[ ! -x ./tailwindcss-extra-linux-x64 ]]; then
   chmod +x ./tailwindcss-extra-linux-x64
 fi
 
+cargo fetch --locked
 ./tailwindcss-extra-linux-x64 -i "$(bash ./generate-tailwind-input.sh)" -o ./dist/tailwind.css
 cargo run
