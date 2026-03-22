@@ -37,7 +37,7 @@ Environment variables are loaded from `/workspace/.env`.
 
 * Every route has its own folder under `crates/web-ui`.
 * The main page for a route lives in a file called `page.rs` inside that folder.
-* Each page corresponds to a typed route defined in `crates/web-ui/routes.rs` and is called from the matching handler in `crates/web-server/handlers`.
+* Each page corresponds to a typed route defined in `crates/web-ui/routes.rs` and is called from the matching handler in `crates/web-server/src/handlers`.
 * For detailed UI conventions in this crate, see `crates/web-ui/README.md`.
 
 ## Folder: crates/web-server
@@ -48,6 +48,11 @@ Environment variables are loaded from `/workspace/.env`.
 * `mod.rs` re-exports the loader and actions and defines the `routes()` helper used by `main.rs`.
 * Each loader function fetches data from the database and renders the page.
 * Actions call the appropriate database functions before redirecting the browser.
+
+## Folder: crates/static-website
+
+* For detailed workflow and conventions, see `crates/static-website/README.md`.
+* This crate builds the static marketing/docs website.
 
 ## Earthfile
 

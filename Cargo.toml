@@ -1,6 +1,6 @@
 [workspace]
 members = [
-    "crates/one-runtime-com",
+    "crates/static-website",
     "crates/tool-runtime",
     "crates/web-assets",
     "crates/web-ui",
