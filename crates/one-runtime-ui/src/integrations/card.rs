@@ -1,6 +1,6 @@
 #![allow(non_snake_case)]
 
-use crate::integrations::page::{IntegrationCatalogItem, modal_trigger_id};
+use crate::integrations::model::{IntegrationCatalogItem, modal_trigger_id};
 use daisy_rsx::*;
 use dioxus::prelude::*;
 

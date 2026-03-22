@@ -2,7 +2,7 @@
 
 use crate::integrations::{
     card::IntegrationLogo,
-    page::{IntegrationCatalogItem, modal_trigger_id},
+    model::{IntegrationCatalogItem, modal_trigger_id},
 };
 use daisy_rsx::*;
 use dioxus::prelude::*;
@@ -10,6 +10,7 @@ use dioxus::prelude::*;
 #[component]
 pub fn IntegrationModal(org_id: String, integration: IntegrationCatalogItem) -> Element {
     let trigger_id = modal_trigger_id(&integration.id);
+    let _ = org_id;
 
     rsx! {
         Modal {

@@ -145,9 +145,9 @@ pub fn page(
                         }
                         div {
                             class: "flex justify-end",
-                            button {
-                                class: "btn btn-primary",
-                                r#type: "submit",
+                            Button {
+                                button_type: ButtonType::Submit,
+                                button_scheme: ButtonScheme::Primary,
                                 if is_edit { "Save Changes" } else { "Create Spec" }
                             }
                         }

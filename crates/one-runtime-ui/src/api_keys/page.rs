@@ -1,7 +1,7 @@
 #![allow(non_snake_case)]
 
 use crate::{
-    components::card_item::{CardItem, CountLabel},
+    api_keys::api_key_row::{ApiKeyRow, ApiKeyStatus},
     components::section_introduction::SectionIntroduction,
     layout::{Layout, SideBar},
     render, routes,
@@ -77,18 +77,18 @@ pub fn page(
                         p { class: "text-sm text-base-content/70", "Copy this token now. It will not be shown again." }
                         Fieldset {
                             legend: "Label".to_string(),
-                            input {
-                                class: "input input-bordered w-full",
-                                value: created.label,
-                                readonly: true,
+                            Input {
+                                name: "created_label".to_string(),
+                                value: Some(created.label),
+                                readonly: Some(true),
                             }
                         }
                         Fieldset {
                             legend: "Bearer token".to_string(),
-                            input {
-                                class: "input input-bordered w-full font-mono text-xs",
-                                value: created.token,
-                                readonly: true,
+                            Input {
+                                name: "created_token".to_string(),
+                                value: Some(created.token),
+                                readonly: Some(true),
                             }
                         }
                         div {
@@ -99,29 +99,26 @@ pub fn page(
                 }
             }
             for api_key in api_keys {
-                CardItem {
-                    class: None,
+                ApiKeyRow {
                     title: api_key.label.clone(),
-                    description: Some(rsx!(
+                    description: rsx!(
                         div {
                             class: "flex flex-col gap-1",
                             p { class: "font-mono text-xs", "{api_key.key_prefix}" }
                             p { class: "text-sm text-base-content/70", "Last used: {api_key.last_used_label}" }
                         }
-                    )),
-                    footer: Some(rsx!(
+                    ),
+                    footer: rsx!(
                         span {
                             "Created "
                             {api_key.created_at.to_rfc3339()}
                         }
-                    )),
-                    count_labels: vec![
-                        CountLabel {
-                            count: 1,
-                            label: if api_key.revoked { "revoked".to_string() } else { "active".to_string() },
-                        }
-                    ],
-                    action: Some(rsx!(
+                    ),
+                    status: ApiKeyStatus {
+                        count: 1,
+                        label: if api_key.revoked { "revoked".to_string() } else { "active".to_string() },
+                    },
+                    action: rsx!(
                         if api_key.revoked {
                             span { class: "text-xs text-base-content/60", "Revoked" }
                         } else {
@@ -131,14 +128,15 @@ pub fn page(
                                     org_id: org_id.clone(),
                                     id: api_key.id.to_string(),
                                 }.to_string(),
-                                button {
-                                    class: "btn btn-outline btn-sm",
-                                    r#type: "submit",
+                                Button {
+                                    button_type: ButtonType::Submit,
+                                    button_style: ButtonStyle::Outline,
+                                    button_size: ButtonSize::Small,
                                     "Revoke"
                                 }
                             }
                         }
-                    ))
+                    )
                 }
             }
             Modal {
@@ -147,22 +145,22 @@ pub fn page(
                 ModalBody {
                     h3 { class: "text-lg font-semibold", "Create API Key" }
                     p { class: "text-sm text-base-content/70 mt-1", "Create an org-scoped bearer token for MCP and API access." }
-                    div {
-                        class: "mt-4 flex flex-col gap-3",
-                        label { class: "label", "Label" }
-                        input {
-                            class: "input input-bordered w-full",
+                    div { class: "mt-4",
+                        Fieldset {
+                            legend: "Label".to_string(),
+                            Input {
                             name: "label",
-                            placeholder: "Production MCP client",
-                            value: draft_label.unwrap_or_default(),
-                            required: true
+                                placeholder: Some("Production MCP client".to_string()),
+                                value: draft_label,
+                                required: Some(true),
+                            }
                         }
                         p { class: "text-xs text-base-content/70", "The secret is shown once immediately after creation." }
                     }
                     ModalAction {
                         Button {
                             class: "cancel-modal",
-                            button_scheme: ButtonScheme::Warning,
+                            button_style: ButtonStyle::Ghost,
                             "Cancel"
                         }
                         Button {
