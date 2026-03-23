@@ -1,10 +1,10 @@
-name: CI
+name: Pull Request
 
 on:
   pull_request:
 
 jobs:
-  build:
+  checks:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,5 +16,5 @@ jobs:
         with:
           version: v0.8.15
 
-      - name: Run Earthly CI build
-        run: earthly --ci +all
+      - name: Run Earthly pull request checks
+        run: earthly --ci +checks

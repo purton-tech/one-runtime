@@ -5,12 +5,12 @@ VERSION 0.8
 #
 # Main entrypoints:
 # - `all`: build and push the current application image and migration image
-# - `release-candidate`: run checks, then build and push tagged release images
+# - `release-candidate`: run pull request checks, then build and push tagged release images
 #
 # Internal targets:
 # - `devcontainer`: shared toolchain environment
 # - `certs`: CA bundle for scratch images
-# - `checks`: CI-style verification plus frontend asset/WASM generation
+# - `checks`: pull request checks plus frontend asset/WASM generation
 # - `build`: shared artifact build for binaries and frontend assets
 # - `image`: package the web-server application image
 # - `migration-image`: package dbmate migrations as a one-shot image
@@ -31,7 +31,7 @@ certs:
     RUN apk add --no-cache ca-certificates
     SAVE ARTIFACT /etc/ssl/certs/ca-certificates.crt /ca-certificates.crt
 
-# Run the Rust checks that CI enforces inside the shared devcontainer toolchain.
+# Run the pull request checks inside the shared devcontainer toolchain.
 checks:
     FROM +devcontainer
     WORKDIR /workspace
