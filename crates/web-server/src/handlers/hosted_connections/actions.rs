@@ -56,6 +56,20 @@ pub struct PublicHostedIntegrationListResponse {
 }
 
 #[derive(Debug, Deserialize)]
+pub struct DisconnectHostedConnectionsRequest {
+    pub integration_slug: String,
+    pub end_user_id: String,
+}
+
+#[derive(Debug, Serialize)]
+pub struct DisconnectHostedConnectionsResponse {
+    pub status: String,
+    pub integration_slug: String,
+    pub end_user_id: String,
+    pub deleted_count: i64,
+}
+
+#[derive(Debug, Deserialize)]
 pub struct SubmitHostedConnectionForm {
     pub session_token: String,
     pub request_id: String,
@@ -305,6 +319,75 @@ pub async fn action_list_integrations(
         json!(PublicHostedIntegrationListResponse {
             end_user_id,
             integrations,
+        }),
+        StatusCode::OK,
+    ))
+}
+
+pub async fn action_disconnect_public(
+    State(state): State<std::sync::Arc<AppState>>,
+    headers: HeaderMap,
+    Json(body): Json<DisconnectHostedConnectionsRequest>,
+) -> Result<Response, CustomError> {
+    let principal = match crate::mcp::auth::authenticate_api_key(state.as_ref(), &headers).await {
+        Ok(principal) => principal,
+        Err(err) => return Ok(map_api_key_auth_error(err)),
+    };
+
+    let integration_slug = body.integration_slug.trim().to_ascii_lowercase();
+    let end_user_id = body.end_user_id.trim().to_string();
+
+    debug!(
+        integration_slug = %integration_slug,
+        end_user_id = %end_user_id,
+        "received public disconnect request"
+    );
+
+    if integration_slug.is_empty() || end_user_id.is_empty() {
+        warn!(
+            integration_slug = %integration_slug,
+            end_user_id = %end_user_id,
+            "public disconnect request missing required fields"
+        );
+        return Ok(public_json_error(
+            StatusCode::UNPROCESSABLE_ENTITY,
+            "integration_slug and end_user_id are required",
+        ));
+    }
+
+    let mut client = state.pool.get().await?;
+    let transaction = client.transaction().await?;
+    set_request_claims(&transaction, &principal.issuer, &principal.sub).await?;
+
+    let result = clorinde::queries::hosted_connections::disconnect_public_hosted_integrations()
+        .bind(
+            &transaction,
+            &principal.org_public_id,
+            &integration_slug,
+            &end_user_id,
+        )
+        .one()
+        .await?;
+
+    transaction.commit().await?;
+
+    debug!(
+        integration_slug = %integration_slug,
+        end_user_id = %end_user_id,
+        deleted_count = result.deleted_count,
+        "public disconnect completed"
+    );
+
+    Ok(public_json_response(
+        json!(DisconnectHostedConnectionsResponse {
+            status: if result.deleted_count > 0 {
+                "disconnected".to_string()
+            } else {
+                "not_found".to_string()
+            },
+            integration_slug,
+            end_user_id,
+            deleted_count: result.deleted_count,
         }),
         StatusCode::OK,
     ))

@@ -44,6 +44,16 @@ pub struct CreateApiKeyIntegrationConnectionParams<
     pub end_user_name: T5,
     pub end_user_email: T6,
 }
+#[derive(Debug)]
+pub struct DisconnectPublicHostedIntegrationsParams<
+    T1: crate::StringSql,
+    T2: crate::StringSql,
+    T3: crate::StringSql,
+> {
+    pub org_public_id: T1,
+    pub integration_slug: T2,
+    pub end_user_id: T3,
+}
 #[derive(Debug, Clone, PartialEq)]
 pub struct HostedIntegration {
     pub id: uuid::Uuid,
@@ -227,6 +237,10 @@ impl<'a> From<CreatedHostedConnectionBorrowed<'a>> for CreatedHostedConnection {
             name: name.into(),
         }
     }
+}
+#[derive(Debug, Clone, PartialEq, Copy)]
+pub struct DisconnectedHostedConnections {
+    pub deleted_count: i64,
 }
 use crate::client::async_::GenericClient;
 use futures::{self, StreamExt, TryStreamExt};
@@ -520,6 +534,74 @@ where
         mapper: fn(CreatedHostedConnectionBorrowed) -> R,
     ) -> CreatedHostedConnectionQuery<'c, 'a, 's, C, R, N> {
         CreatedHostedConnectionQuery {
+            client: self.client,
+            params: self.params,
+            query: self.query,
+            cached: self.cached,
+            extractor: self.extractor,
+            mapper,
+        }
+    }
+    pub async fn one(self) -> Result<T, tokio_postgres::Error> {
+        let row =
+            crate::client::async_::one(self.client, self.query, &self.params, self.cached).await?;
+        Ok((self.mapper)((self.extractor)(&row)?))
+    }
+    pub async fn all(self) -> Result<Vec<T>, tokio_postgres::Error> {
+        self.iter().await?.try_collect().await
+    }
+    pub async fn opt(self) -> Result<Option<T>, tokio_postgres::Error> {
+        let opt_row =
+            crate::client::async_::opt(self.client, self.query, &self.params, self.cached).await?;
+        Ok(opt_row
+            .map(|row| {
+                let extracted = (self.extractor)(&row)?;
+                Ok((self.mapper)(extracted))
+            })
+            .transpose()?)
+    }
+    pub async fn iter(
+        self,
+    ) -> Result<
+        impl futures::Stream<Item = Result<T, tokio_postgres::Error>> + 'c,
+        tokio_postgres::Error,
+    > {
+        let stream = crate::client::async_::raw(
+            self.client,
+            self.query,
+            crate::slice_iter(&self.params),
+            self.cached,
+        )
+        .await?;
+        let mapped = stream
+            .map(move |res| {
+                res.and_then(|row| {
+                    let extracted = (self.extractor)(&row)?;
+                    Ok((self.mapper)(extracted))
+                })
+            })
+            .into_stream();
+        Ok(mapped)
+    }
+}
+pub struct DisconnectedHostedConnectionsQuery<'c, 'a, 's, C: GenericClient, T, const N: usize> {
+    client: &'c C,
+    params: [&'a (dyn postgres_types::ToSql + Sync); N],
+    query: &'static str,
+    cached: Option<&'s tokio_postgres::Statement>,
+    extractor:
+        fn(&tokio_postgres::Row) -> Result<DisconnectedHostedConnections, tokio_postgres::Error>,
+    mapper: fn(DisconnectedHostedConnections) -> T,
+}
+impl<'c, 'a, 's, C, T: 'c, const N: usize> DisconnectedHostedConnectionsQuery<'c, 'a, 's, C, T, N>
+where
+    C: GenericClient,
+{
+    pub fn map<R>(
+        self,
+        mapper: fn(DisconnectedHostedConnections) -> R,
+    ) -> DisconnectedHostedConnectionsQuery<'c, 'a, 's, C, R, N> {
+        DisconnectedHostedConnectionsQuery {
             client: self.client,
             params: self.params,
             query: self.query,
@@ -984,6 +1066,83 @@ impl<
             &params.end_user_id,
             &params.end_user_name,
             &params.end_user_email,
+        )
+    }
+}
+pub struct DisconnectPublicHostedIntegrationsStmt(&'static str, Option<tokio_postgres::Statement>);
+pub fn disconnect_public_hosted_integrations() -> DisconnectPublicHostedIntegrationsStmt {
+    DisconnectPublicHostedIntegrationsStmt(
+        "WITH deleted AS ( DELETE FROM public.integration_connections c USING public.integrations i WHERE c.org_id = public.b64url_to_uuid($1::TEXT) AND c.integration_id = i.id AND i.owner_kind = 'system' AND i.slug = $2::TEXT AND c.end_user_id = $3::TEXT RETURNING c.id ) SELECT COUNT(*)::BIGINT AS deleted_count FROM deleted",
+        None,
+    )
+}
+impl DisconnectPublicHostedIntegrationsStmt {
+    pub async fn prepare<'a, C: GenericClient>(
+        mut self,
+        client: &'a C,
+    ) -> Result<Self, tokio_postgres::Error> {
+        self.1 = Some(client.prepare(self.0).await?);
+        Ok(self)
+    }
+    pub fn bind<
+        'c,
+        'a,
+        's,
+        C: GenericClient,
+        T1: crate::StringSql,
+        T2: crate::StringSql,
+        T3: crate::StringSql,
+    >(
+        &'s self,
+        client: &'c C,
+        org_public_id: &'a T1,
+        integration_slug: &'a T2,
+        end_user_id: &'a T3,
+    ) -> DisconnectedHostedConnectionsQuery<'c, 'a, 's, C, DisconnectedHostedConnections, 3> {
+        DisconnectedHostedConnectionsQuery {
+            client,
+            params: [org_public_id, integration_slug, end_user_id],
+            query: self.0,
+            cached: self.1.as_ref(),
+            extractor: |
+                row: &tokio_postgres::Row,
+            | -> Result<DisconnectedHostedConnections, tokio_postgres::Error> {
+                Ok(DisconnectedHostedConnections {
+                    deleted_count: row.try_get(0)?,
+                })
+            },
+            mapper: |it| DisconnectedHostedConnections::from(it),
+        }
+    }
+}
+impl<
+        'c,
+        'a,
+        's,
+        C: GenericClient,
+        T1: crate::StringSql,
+        T2: crate::StringSql,
+        T3: crate::StringSql,
+    >
+    crate::client::async_::Params<
+        'c,
+        'a,
+        's,
+        DisconnectPublicHostedIntegrationsParams<T1, T2, T3>,
+        DisconnectedHostedConnectionsQuery<'c, 'a, 's, C, DisconnectedHostedConnections, 3>,
+        C,
+    > for DisconnectPublicHostedIntegrationsStmt
+{
+    fn params(
+        &'s self,
+        client: &'c C,
+        params: &'a DisconnectPublicHostedIntegrationsParams<T1, T2, T3>,
+    ) -> DisconnectedHostedConnectionsQuery<'c, 'a, 's, C, DisconnectedHostedConnections, 3> {
+        self.bind(
+            client,
+            &params.org_public_id,
+            &params.integration_slug,
+            &params.end_user_id,
         )
     }
 }

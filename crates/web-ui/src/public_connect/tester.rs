@@ -1,6 +1,6 @@
 #![allow(non_snake_case)]
 
-use crate::{render, routes};
+use crate::render;
 use dioxus::prelude::*;
 use web_assets::files::*;
 
@@ -11,9 +11,6 @@ pub fn page() -> String {
     );
     let load_sdk =
         "import { createOneRuntime } from '/connect.js'; window.OneRuntime = { createOneRuntime };";
-
-    let docs_href = routes::public_connect::Docs.to_string();
-    let openapi_href = routes::public_connect::OpenApi.to_string();
 
     let page = rsx! {
         head {
@@ -37,11 +34,12 @@ pub fn page() -> String {
                     class: "hero rounded-box border border-base-300 bg-base-100 shadow-sm",
                     "data-list-url": "/api/public/integrations",
                     "data-create-session-url": "/api/public/hosted-connection-sessions",
+                    "data-disconnect-url": "/api/public/disconnect",
                     "data-connect-base-url": "/",
                     div {
                         class: "hero-content w-full max-w-none flex-col items-start gap-6",
                         div {
-                            class: "flex w-full flex-col gap-6 xl:flex-row xl:items-end xl:justify-between",
+                            class: "flex w-full flex-col gap-6",
                             div {
                                 class: "space-y-3",
                                 div {
@@ -59,21 +57,6 @@ pub fn page() -> String {
                                 p {
                                     class: "max-w-3xl text-sm leading-6 text-base-content/75",
                                     "Paste a real org API key and an end-user id to load system integrations, see saved connection status, and launch the same hosted connect modal your customers use."
-                                }
-                            }
-                            div {
-                                class: "flex flex-wrap gap-2",
-                                a {
-                                    class: "btn btn-outline btn-sm",
-                                    href: docs_href.clone(),
-                                    "REST docs"
-                                }
-                                a {
-                                    class: "btn btn-ghost btn-sm",
-                                    href: openapi_href.clone(),
-                                    target: "_blank",
-                                    rel: "noreferrer",
-                                    "OpenAPI JSON"
                                 }
                             }
                         }

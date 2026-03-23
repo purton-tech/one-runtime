@@ -100,12 +100,4 @@ pub mod public_connect {
     #[derive(TypedPath, Deserialize)]
     #[typed_path("/connect/test")]
     pub struct Tester;
-
-    #[derive(TypedPath, Deserialize)]
-    #[typed_path("/api/public/docs")]
-    pub struct Docs;
-
-    #[derive(TypedPath, Deserialize)]
-    #[typed_path("/api/public/openapi.json")]
-    pub struct OpenApi;
 }

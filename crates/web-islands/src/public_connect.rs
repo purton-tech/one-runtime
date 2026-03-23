@@ -48,6 +48,14 @@ struct CreateSessionResponse {
     connect_url: String,
 }
 
+#[derive(Debug, Deserialize)]
+struct DisconnectResponse {
+    status: String,
+    integration_slug: String,
+    end_user_id: String,
+    deleted_count: i64,
+}
+
 pub fn hydrate_public_connect_tester(doc: &Document) -> Result<(), JsValue> {
     let Some(root) = doc.get_element_by_id(ROOT_ID) else {
         return Ok(());
@@ -104,31 +112,60 @@ fn bind_card_actions(doc: &Document, root: &Element) -> Result<(), JsValue> {
             return;
         };
 
-        let Ok(Some(button)) = element.closest("[data-public-connect-slug]") else {
+        let doc = doc_for_handler.clone();
+        let root = root_for_handler.clone();
+        if let Ok(Some(button)) = element.closest("[data-public-connect-slug]") {
+            event.prevent_default();
+
+            let slug = button
+                .get_attribute("data-public-connect-slug")
+                .unwrap_or_default();
+            let name = button
+                .get_attribute("data-public-connect-name")
+                .unwrap_or_default();
+
+            if slug.trim().is_empty() || name.trim().is_empty() {
+                return;
+            }
+
+            spawn_local(async move {
+                if let Err(message) =
+                    connect_integration(doc.clone(), root.clone(), &slug, &name).await
+                {
+                    let _ = show_feedback(
+                        &doc,
+                        &format!("Failed to start connection for {}: {}", name, message),
+                        true,
+                    );
+                }
+            });
+            return;
+        }
+
+        let Ok(Some(button)) = element.closest("[data-public-disconnect-slug]") else {
             return;
         };
 
         event.prevent_default();
 
         let slug = button
-            .get_attribute("data-public-connect-slug")
+            .get_attribute("data-public-disconnect-slug")
             .unwrap_or_default();
         let name = button
-            .get_attribute("data-public-connect-name")
+            .get_attribute("data-public-disconnect-name")
             .unwrap_or_default();
 
         if slug.trim().is_empty() || name.trim().is_empty() {
             return;
         }
 
-        let doc = doc_for_handler.clone();
-        let root = root_for_handler.clone();
         spawn_local(async move {
-            if let Err(message) = connect_integration(doc.clone(), root.clone(), &slug, &name).await
+            if let Err(message) =
+                disconnect_integration(doc.clone(), root.clone(), &slug, &name).await
             {
                 let _ = show_feedback(
                     &doc,
-                    &format!("Failed to start connection for {}: {}", name, message),
+                    &format!("Failed to disconnect {}: {}", name, message),
                     true,
                 );
             }
@@ -238,6 +275,58 @@ async fn connect_integration(
             let message = format!("Popup returned unexpected status: {other}");
             show_feedback(&doc, &message, true)?;
             return Err(message);
+        }
+    }
+
+    Ok(())
+}
+
+async fn disconnect_integration(
+    doc: Document,
+    root: Element,
+    slug: &str,
+    name: &str,
+) -> Result<(), String> {
+    let api_key = required_input_value(&doc, API_KEY_ID, "API key is required")?;
+    let end_user_id = required_input_value(&doc, END_USER_ID_ID, "End user id is required")?;
+
+    show_feedback(&doc, &format!("Disconnecting {}...", name), false)?;
+
+    let payload = json!({
+        "integration_slug": slug,
+        "end_user_id": end_user_id,
+    });
+
+    let disconnect_url = required_dataset(&root, "disconnectUrl")?;
+    let value = fetch_json("POST", &disconnect_url, &api_key, Some(payload)).await?;
+    let response: DisconnectResponse =
+        serde_json::from_value(value).map_err(|err| err.to_string())?;
+
+    match response.status.as_str() {
+        "disconnected" => {
+            show_feedback(
+                &doc,
+                &format!(
+                    "{} disconnected. Removed {} saved connection(s).",
+                    name, response.deleted_count
+                ),
+                false,
+            )?;
+            load_integrations(doc, root).await?;
+        }
+        "not_found" => {
+            show_feedback(
+                &doc,
+                &format!(
+                    "No saved connection found for {} and end user {}.",
+                    response.integration_slug, response.end_user_id
+                ),
+                true,
+            )?;
+            load_integrations(doc, root).await?;
+        }
+        other => {
+            return Err(format!("Unexpected disconnect status: {other}"));
         }
     }
 
@@ -423,7 +512,11 @@ fn render_card_html(card: &IntegrationCard) -> String {
         })
         .unwrap_or_default();
     let action_html = if is_connected {
-        "<span class=\"btn btn-success btn-sm btn-disabled\">Connected</span>".to_string()
+        format!(
+            "<button class=\"btn btn-outline btn-warning btn-sm\" type=\"button\" data-public-disconnect-slug=\"{}\" data-public-disconnect-name=\"{}\">Disconnect</button>",
+            escape_html_attr(&card.slug),
+            escape_html_attr(&card.name),
+        )
     } else {
         format!(
             "<button class=\"btn btn-primary btn-sm\" type=\"button\" data-public-connect-slug=\"{}\" data-public-connect-name=\"{}\">Connect</button>",
@@ -498,6 +591,7 @@ fn required_dataset(root: &Element, key: &str) -> Result<String, String> {
     let attribute_name = match key {
         "listUrl" => "data-list-url",
         "createSessionUrl" => "data-create-session-url",
+        "disconnectUrl" => "data-disconnect-url",
         other => return Err(format!("Unsupported dataset key: {other}")),
     };
 

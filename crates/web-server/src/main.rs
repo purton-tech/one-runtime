@@ -59,15 +59,6 @@ async fn main() {
             get(handlers::hosted_connections::loader_tester),
         )
         .route(
-            "/api/public/docs",
-            get(handlers::hosted_connections::loader_docs),
-        )
-        .route(
-            "/api/public/openapi.json",
-            get(handlers::hosted_connections::loader_openapi_json)
-                .options(handlers::hosted_connections::options_public_api),
-        )
-        .route(
             "/api/public/integrations",
             get(handlers::hosted_connections::action_list_integrations)
                 .options(handlers::hosted_connections::options_public_api),
@@ -75,6 +66,11 @@ async fn main() {
         .route(
             "/api/public/hosted-connection-sessions",
             post(handlers::hosted_connections::action_create_session_public)
+                .options(handlers::hosted_connections::options_public_api),
+        )
+        .route(
+            "/api/public/disconnect",
+            post(handlers::hosted_connections::action_disconnect_public)
                 .options(handlers::hosted_connections::options_public_api),
         )
         .typed_get(handlers::api_keys::loader)
