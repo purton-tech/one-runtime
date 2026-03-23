@@ -7,7 +7,7 @@ Static marketing and documentation site.
 * `src/`: site generator, page definitions, and summary lists.
 * `assets/`: static files copied into the generated site.
 * `content/`: page and blog source content.
-* `input.css`: Tailwind input stylesheet for the site build.
+* `input.css`: Tailwind input stylesheet for the site build, including `@crate` directives for external Cargo packages.
 * `cloudflare-build.sh`: production build entrypoint for deployment.
 
 ## Workflow
@@ -40,5 +40,5 @@ Static marketing and documentation site.
 
 ## Build Notes
 
-* Tailwind for this crate is built from a generated input file so external crate sources can be scanned.
+* Tailwind for this crate is built through `/workspace/scripts/tailwind-crates`, which resolves `@crate "..."` directives into Cargo-registry `@source` entries before invoking `tailwind-extra`.
 * `cloudflare-build.sh` is the deploy build path and should stay aligned with the local build flow.
