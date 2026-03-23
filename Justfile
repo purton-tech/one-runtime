@@ -52,7 +52,7 @@ _watch binary:
 watch-binary: (_watch "web-server")
 
 watch-tailwind:
-    cd /workspace/crates/web-assets && tailwind-extra -i ./input.css -o ./dist/tailwind.css --watch
+    cd /workspace/crates/web-assets && /workspace/scripts/tailwind-crates --input ./input.css --output ./dist/tailwind.css --watch
 
 build-islands:
     ./scripts/build-islands

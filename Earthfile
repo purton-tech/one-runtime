@@ -5,20 +5,20 @@ VERSION 0.8
 #
 # Main entrypoints:
 # - `all`: build and push the current application image and migration image
-# - `release-candidate`: run checks, then build and push tagged release images
+# - `release-candidate`: run pull request checks, then build and push tagged release images
 #
 # Internal targets:
 # - `devcontainer`: shared toolchain environment
 # - `certs`: CA bundle for scratch images
-# - `checks`: CI-style verification plus frontend asset/WASM generation
+# - `checks`: pull request checks plus frontend asset/WASM generation
 # - `build`: shared artifact build for binaries and frontend assets
-# - `image`: package a selected application binary
+# - `image`: package the web-server application image
 # - `migration-image`: package dbmate migrations as a one-shot image
 #
 # Important args:
-# - `APP_BINARY`: main server binary to package
-# - `ISLANDS_PACKAGE`: WASM crate to compile
-# - `ISLANDS_WASM`: generated WASM artifact name
+# - `REGISTRY`: image registry and namespace prefix
+# - `IMAGE_NAME`: application image repository name
+# - `TAG`: image tag for release builds
 
 # Build the same toolchain environment as the devcontainer without hardcoding
 # the upstream image in two places.
@@ -31,89 +31,78 @@ certs:
     RUN apk add --no-cache ca-certificates
     SAVE ARTIFACT /etc/ssl/certs/ca-certificates.crt /ca-certificates.crt
 
-# Run the Rust checks that CI enforces inside the shared devcontainer toolchain.
+# Run the pull request checks inside the shared devcontainer toolchain.
 checks:
-    ARG ISLANDS_PACKAGE
-    ARG ISLANDS_WASM
     FROM +devcontainer
     WORKDIR /workspace
     COPY . .
     RUN cd /workspace/crates/web-assets && mkdir -p dist && tailwind-extra -i ./input.css -o ./dist/tailwind.css
     RUN rustup target add wasm32-unknown-unknown
-    RUN cargo build -p ${ISLANDS_PACKAGE} --target wasm32-unknown-unknown --release && \
+    RUN cargo build -p web-islands --target wasm32-unknown-unknown --release && \
         wasm-bindgen \
-          target/wasm32-unknown-unknown/release/${ISLANDS_WASM}.wasm \
+          target/wasm32-unknown-unknown/release/web_islands.wasm \
           --target web \
           --out-dir crates/web-assets/dist
     RUN cargo fmt --check
     RUN cargo clippy --workspace --all-targets -- -D warnings
 
 # Compile the workspace once as static musl binaries, then export all of the
-# known binaries from the shared release output.
+# known runtime artifacts from the shared release output.
 build:
-    ARG APP_BINARY
-    ARG ISLANDS_PACKAGE
-    ARG ISLANDS_WASM
     FROM +devcontainer
     WORKDIR /workspace
     COPY . .
     RUN cd /workspace/crates/web-assets && mkdir -p dist && tailwind-extra -i ./input.css -o ./dist/tailwind.css
     RUN rustup target add wasm32-unknown-unknown
-    RUN cargo build -p ${ISLANDS_PACKAGE} --target wasm32-unknown-unknown --release && \
+    RUN cargo build -p web-islands --target wasm32-unknown-unknown --release && \
         wasm-bindgen \
-          target/wasm32-unknown-unknown/release/${ISLANDS_WASM}.wasm \
+          target/wasm32-unknown-unknown/release/web_islands.wasm \
           --target web \
           --out-dir crates/web-assets/dist
     RUN rustup target add x86_64-unknown-linux-musl
-    RUN cargo build --workspace --exclude ${ISLANDS_PACKAGE} --release --target x86_64-unknown-linux-musl
-    SAVE ARTIFACT target/x86_64-unknown-linux-musl/release/${APP_BINARY} /${APP_BINARY}
+    RUN cargo build --workspace --exclude web-islands --release --target x86_64-unknown-linux-musl
+    SAVE ARTIFACT target/x86_64-unknown-linux-musl/release/web-server /web-server
     SAVE ARTIFACT crates/web-assets/dist /workspace/crates/web-assets/dist
     SAVE ARTIFACT crates/web-assets/images /workspace/crates/web-assets/images
 
-# Package a selected binary into a scratch image tagged with the binary name.
+# Package the web-server binary into the main application image.
 image:
-    ARG APP_BINARY
-    ARG ISLANDS_PACKAGE
-    ARG ISLANDS_WASM
     ARG REGISTRY
-    ARG BINARY=$APP_BINARY
+    ARG IMAGE_NAME
     ARG TAG=latest
     FROM scratch
     COPY +certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
-    COPY (+build/$BINARY --APP_BINARY=$APP_BINARY --ISLANDS_PACKAGE=$ISLANDS_PACKAGE --ISLANDS_WASM=$ISLANDS_WASM) /app
-    COPY (+build/workspace/crates/web-assets/dist --APP_BINARY=$APP_BINARY --ISLANDS_PACKAGE=$ISLANDS_PACKAGE --ISLANDS_WASM=$ISLANDS_WASM) /workspace/crates/web-assets/dist
-    COPY (+build/workspace/crates/web-assets/images --APP_BINARY=$APP_BINARY --ISLANDS_PACKAGE=$ISLANDS_PACKAGE --ISLANDS_WASM=$ISLANDS_WASM) /workspace/crates/web-assets/images
+    COPY (+build/web-server) /app
+    COPY (+build/workspace/crates/web-assets/dist) /workspace/crates/web-assets/dist
+    COPY (+build/workspace/crates/web-assets/images) /workspace/crates/web-assets/images
     USER 65532:65532
     ENTRYPOINT ["/app"]
-    SAVE IMAGE --push $REGISTRY/$BINARY:$TAG
+    SAVE IMAGE --push $REGISTRY/$IMAGE_NAME:$TAG
 
 # Package the dbmate migrations into a one-shot image that runs `dbmate up`
 # at startup. Attach this via Stack's `init` section so migrations complete
 # before the main service starts.
 migration-image:
     ARG REGISTRY
+    ARG IMAGE_NAME
     ARG TAG=latest
     FROM ghcr.io/amacneil/dbmate:2.26.0
     COPY crates/db/migrations /migrations
     ENTRYPOINT ["dbmate", "--no-dump-schema", "--migrations-dir", "/migrations", "up"]
-    SAVE IMAGE --push $REGISTRY/web-server-migrations:$TAG
+    SAVE IMAGE --push $REGISTRY/$IMAGE_NAME-migrations:$TAG
 
 release-candidate:
-    ARG APP_BINARY=web-server
-    ARG ISLANDS_PACKAGE=web-islands
-    ARG ISLANDS_WASM=web_islands
     ARG REGISTRY=ghcr.io/purton-tech
+    ARG IMAGE_NAME=one-runtime
     ARG TAG
-    BUILD +checks --ISLANDS_PACKAGE=$ISLANDS_PACKAGE --ISLANDS_WASM=$ISLANDS_WASM
-    BUILD +image --APP_BINARY=$APP_BINARY --ISLANDS_PACKAGE=$ISLANDS_PACKAGE --ISLANDS_WASM=$ISLANDS_WASM --BINARY=$APP_BINARY --REGISTRY=$REGISTRY --TAG=$TAG
-    BUILD +migration-image --REGISTRY=$REGISTRY --TAG=$TAG
+    BUILD +checks
+    BUILD +image --REGISTRY=$REGISTRY --IMAGE_NAME=$IMAGE_NAME --TAG=$TAG
+    BUILD +migration-image --REGISTRY=$REGISTRY --IMAGE_NAME=$IMAGE_NAME --TAG=$TAG
 
 # Build the currently packaged application image plus migrations.
 all:
-    ARG APP_BINARY=web-server
-    ARG ISLANDS_PACKAGE=web-islands
-    ARG ISLANDS_WASM=web_islands
     ARG REGISTRY=ghcr.io/purton-tech
-    BUILD +checks --ISLANDS_PACKAGE=$ISLANDS_PACKAGE --ISLANDS_WASM=$ISLANDS_WASM
-    BUILD +image --APP_BINARY=$APP_BINARY --ISLANDS_PACKAGE=$ISLANDS_PACKAGE --ISLANDS_WASM=$ISLANDS_WASM --BINARY=$APP_BINARY --REGISTRY=$REGISTRY --TAG=latest
-    BUILD +migration-image --REGISTRY=$REGISTRY --TAG=latest
+    ARG IMAGE_NAME=one-runtime
+    BUILD +checks
+    BUILD +image --REGISTRY=$REGISTRY --IMAGE_NAME=$IMAGE_NAME --TAG=latest
+    BUILD +migration-image --REGISTRY=$REGISTRY --IMAGE_NAME=$IMAGE_NAME --TAG=latest

@@ -12,6 +12,5 @@ if [[ ! -x ./tailwindcss-extra-linux-x64 ]]; then
 fi
 
 cargo fetch --locked
-generated_input="$(bash ./generate-tailwind-input.sh)"
-./tailwindcss-extra-linux-x64 -i "${generated_input}" -o ./dist/tailwind.css
+/workspace/scripts/tailwind-crates --input ./input.css --output ./dist/tailwind.css --tailwind-bin ./tailwindcss-extra-linux-x64
 cargo run

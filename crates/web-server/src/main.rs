@@ -50,6 +50,29 @@ async fn main() {
         .route("/", get(handlers::root::home))
         .route("/mcp", post(mcp::handler::handle_mcp))
         .route("/connect.js", get(handlers::hosted_connections::loader_sdk))
+        .route(
+            "/connect/submit.json",
+            post(handlers::hosted_connections::action_submit_json),
+        )
+        .route(
+            "/connect/test",
+            get(handlers::hosted_connections::loader_tester),
+        )
+        .route(
+            "/api/public/integrations",
+            get(handlers::hosted_connections::action_list_integrations)
+                .options(handlers::hosted_connections::options_public_api),
+        )
+        .route(
+            "/api/public/hosted-connection-sessions",
+            post(handlers::hosted_connections::action_create_session_public)
+                .options(handlers::hosted_connections::options_public_api),
+        )
+        .route(
+            "/api/public/disconnect",
+            post(handlers::hosted_connections::action_disconnect_public)
+                .options(handlers::hosted_connections::options_public_api),
+        )
         .typed_get(handlers::api_keys::loader)
         .typed_get(handlers::hosted_connections::loader_popup)
         .typed_get(handlers::integrations::loader)

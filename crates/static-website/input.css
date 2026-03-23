@@ -1,4 +1,6 @@
 @import 'tailwindcss';
 @plugin "daisyui";
 @plugin "@tailwindcss/typography";
+@crate "ssg_whiz";
+@crate "daisy_rsx";
 @source "./src/**/*.{rs,html}";
