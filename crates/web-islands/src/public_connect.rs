@@ -390,12 +390,13 @@ fn render_integrations(doc: &Document, integrations: &[IntegrationCard]) -> Resu
 }
 
 fn render_card_html(card: &IntegrationCard) -> String {
-    let status_class = if card.status == "connected" {
+    let is_connected = card.status == "connected";
+    let status_class = if is_connected {
         "badge badge-success badge-outline"
     } else {
         "badge badge-ghost"
     };
-    let status_label = if card.status == "connected" {
+    let status_label = if is_connected {
         "Connected"
     } else {
         "Not connected"
@@ -421,17 +422,25 @@ fn render_card_html(card: &IntegrationCard) -> String {
             )
         })
         .unwrap_or_default();
+    let action_html = if is_connected {
+        "<span class=\"btn btn-success btn-sm btn-disabled\">Connected</span>".to_string()
+    } else {
+        format!(
+            "<button class=\"btn btn-primary btn-sm\" type=\"button\" data-public-connect-slug=\"{}\" data-public-connect-name=\"{}\">Connect</button>",
+            escape_html_attr(&card.slug),
+            escape_html_attr(&card.name),
+        )
+    };
 
     format!(
-        "<article class=\"card border border-base-300 bg-base-100 shadow-sm\"><div class=\"card-body gap-4\"><div class=\"flex items-start justify-between gap-3\"><div class=\"flex items-start gap-3 min-w-0\">{}<div class=\"min-w-0\"><h3 class=\"truncate text-base font-semibold\">{}</h3><p class=\"mt-1 line-clamp-3 text-sm text-base-content/70\">{}</p></div></div><span class=\"{} shrink-0\">{}</span></div><div class=\"flex items-center justify-between gap-2\">{}<button class=\"btn btn-primary btn-sm\" type=\"button\" data-public-connect-slug=\"{}\" data-public-connect-name=\"{}\">Connect</button></div></div></article>",
+        "<article class=\"card border border-base-300 bg-base-100 shadow-sm\"><div class=\"card-body gap-4\"><div class=\"flex items-start justify-between gap-3\"><div class=\"flex items-start gap-3 min-w-0\">{}<div class=\"min-w-0\"><h3 class=\"truncate text-base font-semibold\">{}</h3><p class=\"mt-1 line-clamp-3 text-sm text-base-content/70\">{}</p></div></div><span class=\"{} shrink-0\">{}</span></div><div class=\"flex items-center justify-between gap-2\">{}{}</div></div></article>",
         logo,
         escape_html_text(&card.name),
         escape_html_text(&card.description),
         status_class,
         status_label,
         category,
-        escape_html_attr(&card.slug),
-        escape_html_attr(&card.name),
+        action_html,
     )
 }
 
