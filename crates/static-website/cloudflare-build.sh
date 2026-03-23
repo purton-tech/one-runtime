@@ -12,5 +12,5 @@ if [[ ! -x ./tailwindcss-extra-linux-x64 ]]; then
 fi
 
 cargo fetch --locked
-/workspace/scripts/tailwind-crates --input ./input.css --output ./dist/tailwind.css --tailwind-bin ./tailwindcss-extra-linux-x64
+../../scripts/tailwind-crates --input ./input.css --output ./dist/tailwind.css --tailwind-bin ./tailwindcss-extra-linux-x64
 cargo run
