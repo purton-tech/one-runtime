@@ -27,6 +27,109 @@ pub fn page(model: HostedConnectionPageModel) -> String {
         end_user_email,
         error_message,
     } = model;
+    let has_error = error_message.is_some();
+
+    let submit_script = r#"
+const RESULT_SOURCE = "one-runtime";
+const SESSION_TOKEN = __SESSION_TOKEN__;
+const REQUEST_ID = __REQUEST_ID__;
+
+function showError(message) {
+  const root = document.getElementById("connect-error");
+  const messageNode = document.getElementById("connect-error-message");
+  if (!root || !messageNode) return;
+  messageNode.textContent = message;
+  root.classList.remove("hidden");
+}
+
+function hideError() {
+  const root = document.getElementById("connect-error");
+  if (root) root.classList.add("hidden");
+}
+
+function relay(payload) {
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage(payload, "*");
+  }
+  if (window.opener) {
+    window.opener.postMessage(payload, "*");
+  }
+}
+
+function cancelFlow() {
+  console.log("[hosted-connect] cancel", { requestId: REQUEST_ID, sessionToken: String(SESSION_TOKEN).slice(0, 8) + "..." });
+  relay({ source: RESULT_SOURCE, requestId: REQUEST_ID, status: "cancelled" });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("connect-form");
+  const cancel = document.getElementById("connect-cancel");
+  const connectionNameInput = document.getElementById("connection-name");
+  const apiKeyInput = document.getElementById("provider-api-key");
+  const submitButton = document.getElementById("connect-submit");
+  if (!form || !submitButton || !connectionNameInput || !apiKeyInput) return;
+
+  cancel?.addEventListener("click", (event) => {
+    event.preventDefault();
+    cancelFlow();
+  });
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    hideError();
+    submitButton.setAttribute("disabled", "disabled");
+
+    try {
+      console.log("[hosted-connect] submit", {
+        requestId: REQUEST_ID,
+        sessionToken: String(SESSION_TOKEN).slice(0, 8) + "...",
+        connectionName: connectionNameInput.value,
+      });
+      const response = await fetch("/connect/submit.json", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          session_token: SESSION_TOKEN,
+          request_id: REQUEST_ID,
+          connection_name: connectionNameInput.value,
+          api_key: apiKeyInput.value,
+        }),
+      });
+      const rawText = await response.text();
+      let payload = null;
+      try {
+        payload = rawText ? JSON.parse(rawText) : null;
+      } catch (_error) {
+        payload = null;
+      }
+
+      if (!payload) {
+        showError(rawText || "Unable to connect this account.");
+        return;
+      }
+      if (!response.ok || payload.status === "error") {
+        showError(payload.error || "Unable to connect this account.");
+        return;
+      }
+      relay(payload);
+    } catch (error) {
+      showError(error instanceof Error ? error.message : "Unable to connect this account.");
+    } finally {
+      submitButton.removeAttribute("disabled");
+    }
+  });
+});
+"#
+    .replace(
+        "__SESSION_TOKEN__",
+        &serde_json::to_string(&session_token).unwrap(),
+    )
+    .replace(
+        "__REQUEST_ID__",
+        &serde_json::to_string(&request_id).unwrap(),
+    );
 
     let page = rsx! {
         head {
@@ -36,6 +139,7 @@ pub fn page(model: HostedConnectionPageModel) -> String {
             link { rel: "stylesheet", href: tailwind_css.name }
             link { rel: "stylesheet", href: "https://cdn.jsdelivr.net/npm/daisyui@5" }
             link { rel: "icon", "type": "image/svg+xml", href: favicon_svg.name }
+            script { "type": "module", dangerous_inner_html: submit_script }
         }
         body {
             class: "min-h-screen bg-base-200 text-base-content",
@@ -78,22 +182,24 @@ pub fn page(model: HostedConnectionPageModel) -> String {
                                     }
                                 }
                             }
-                            if let Some(error_message) = error_message {
-                                div {
-                                    class: "alert alert-error",
-                                    span { "{error_message}" }
+                            div {
+                                id: "connect-error",
+                                class: if has_error { "alert alert-error" } else { "hidden alert alert-error" },
+                                span {
+                                    id: "connect-error-message",
+                                    if let Some(error_message) = &error_message {
+                                        "{error_message}"
+                                    }
                                 }
                             }
                             form {
-                                method: "post",
-                                action: "/connect/submit",
+                                id: "connect-form",
                                 class: "space-y-4",
-                                input { r#type: "hidden", name: "session_token", value: "{session_token}" }
-                                input { r#type: "hidden", name: "request_id", value: "{request_id}" }
                                 fieldset {
                                     class: "fieldset",
                                     legend { class: "fieldset-legend", "Connection name" }
                                     input {
+                                        id: "connection-name",
                                         class: "input input-bordered w-full",
                                         r#type: "text",
                                         name: "connection_name",
@@ -107,6 +213,7 @@ pub fn page(model: HostedConnectionPageModel) -> String {
                                     class: "fieldset",
                                     legend { class: "fieldset-legend", "API key" }
                                     input {
+                                        id: "provider-api-key",
                                         class: "input input-bordered w-full",
                                         r#type: "password",
                                         name: "api_key",
@@ -117,12 +224,14 @@ pub fn page(model: HostedConnectionPageModel) -> String {
                                 }
                                 div {
                                     class: "flex justify-end gap-2",
-                                    a {
+                                    button {
+                                        id: "connect-cancel",
                                         class: "btn btn-ghost",
-                                        href: "javascript:window.close()",
+                                        r#type: "button",
                                         "Cancel"
                                     }
                                     button {
+                                        id: "connect-submit",
                                         class: "btn btn-primary",
                                         r#type: "submit",
                                         "Connect"
@@ -140,6 +249,20 @@ pub fn page(model: HostedConnectionPageModel) -> String {
 }
 
 pub fn error_page(title: String, message: String) -> String {
+    let close_script = r#"
+function closeHostedConnect() {
+  if (window.parent && window.parent !== window) {
+    window.parent.postMessage({ source: "one-runtime", requestId: "", status: "cancelled" }, "*");
+  }
+  if (window.opener) {
+    window.close();
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("connect-error-close")?.addEventListener("click", closeHostedConnect);
+});
+"#;
     let page = rsx! {
         head {
             title { "{title}" }
@@ -148,6 +271,7 @@ pub fn error_page(title: String, message: String) -> String {
             link { rel: "stylesheet", href: tailwind_css.name }
             link { rel: "stylesheet", href: "https://cdn.jsdelivr.net/npm/daisyui@5" }
             link { rel: "icon", "type": "image/svg+xml", href: favicon_svg.name }
+            script { dangerous_inner_html: close_script }
         }
         body {
             class: "min-h-screen bg-base-200 text-base-content",
@@ -172,9 +296,10 @@ pub fn error_page(title: String, message: String) -> String {
                         }
                         div {
                             class: "flex justify-center",
-                            a {
+                            button {
+                                id: "connect-error-close",
                                 class: "btn btn-primary",
-                                href: "javascript:window.close()",
+                                r#type: "button",
                                 "Close"
                             }
                         }

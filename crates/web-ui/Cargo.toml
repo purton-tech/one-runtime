@@ -12,3 +12,4 @@ dioxus = { version = "0.7.3", default-features = false, features = ["macro", "ht
 dioxus-ssr = { version = "0.7.3", default-features = false }
 web-assets = { path = "../web-assets" }
 serde = { version = "1", features = ["derive"] }
+serde_json.workspace = true

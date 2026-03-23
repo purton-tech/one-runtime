@@ -5019,7 +5019,10 @@ dependencies = [
  "base64",
  "console_error_panic_hook",
  "js-sys",
+ "serde",
+ "serde_json",
  "wasm-bindgen",
+ "wasm-bindgen-futures",
  "wasm-bindgen-test",
  "web-sys",
 ]
@@ -5089,6 +5092,7 @@ dependencies = [
  "dioxus",
  "dioxus-ssr",
  "serde",
+ "serde_json",
  "web-assets",
 ]
 

@@ -92,3 +92,20 @@ pub mod hosted_connections {
     #[typed_path("/connect/submit")]
     pub struct Submit;
 }
+
+pub mod public_connect {
+    use axum_extra::routing::TypedPath;
+    use serde::Deserialize;
+
+    #[derive(TypedPath, Deserialize)]
+    #[typed_path("/connect/test")]
+    pub struct Tester;
+
+    #[derive(TypedPath, Deserialize)]
+    #[typed_path("/api/public/docs")]
+    pub struct Docs;
+
+    #[derive(TypedPath, Deserialize)]
+    #[typed_path("/api/public/openapi.json")]
+    pub struct OpenApi;
+}

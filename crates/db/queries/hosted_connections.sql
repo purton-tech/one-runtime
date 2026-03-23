@@ -2,6 +2,7 @@
 --: HostedConnectionSession()
 --: HostedConnectionSessionContext()
 --: CreatedHostedConnection()
+--: PublicHostedIntegration()
 
 --! get_system_integration_by_slug : HostedIntegration
 SELECT
@@ -14,6 +15,28 @@ FROM public.integrations i
 WHERE i.owner_kind = 'system'
   AND i.slug = :integration_slug::TEXT
 LIMIT 1;
+
+--! list_public_hosted_integrations : PublicHostedIntegration
+SELECT
+    i.id,
+    COALESCE(i.slug, '') AS slug,
+    COALESCE(i.openapi_spec #>> '{info,title}', 'Untitled') AS name,
+    COALESCE(i.openapi_spec #>> '{info,description}', '') AS description,
+    i.openapi_spec::TEXT AS openapi_spec,
+    EXISTS(
+        SELECT 1
+        FROM public.integration_connections c
+        WHERE c.org_id = public.b64url_to_uuid(:org_public_id::TEXT)
+          AND c.integration_id = i.id
+          AND c.end_user_id = :end_user_id::TEXT
+          AND (
+              c.visibility = 'org'
+              OR c.created_by_user_id = auth.uid()
+          )
+    ) AS connected
+FROM public.integrations i
+WHERE i.owner_kind = 'system'
+ORDER BY LOWER(COALESCE(i.openapi_spec #>> '{info,title}', 'Untitled')), i.updated_at DESC;
 
 --! create_hosted_connection_session : HostedConnectionSession
 INSERT INTO public.hosted_connection_sessions (
@@ -93,7 +116,7 @@ INNER JOIN public.integrations i ON i.id = s.integration_id
 INNER JOIN auth.users u ON u.id = s.created_by_user_id
 WHERE s.token = :token::TEXT
 LIMIT 1
-FOR UPDATE;
+FOR UPDATE OF s;
 
 --! create_api_key_integration_connection : CreatedHostedConnection
 INSERT INTO public.integration_connections (

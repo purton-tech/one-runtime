@@ -5,6 +5,7 @@ pub mod hosted_connections;
 pub mod integrations;
 mod layout;
 pub mod oauth_clients;
+pub mod public_connect;
 pub mod routes;
 
 use dioxus::prelude::*;
