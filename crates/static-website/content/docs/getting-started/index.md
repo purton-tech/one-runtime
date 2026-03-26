@@ -57,10 +57,10 @@ The popup is where One Runtime collects whatever is required for that integratio
 ```html
 <button id="connect-hubspot">Connect HubSpot</button>
 <script type="module">
-  import { createOneRuntime } from "https://api.one-runtime.com/connect.js";
+  import { createOneRuntime } from "https://app.one-runtime.com/connect.js";
 
   const oneRuntime = createOneRuntime({
-    baseUrl: "https://api.one-runtime.com",
+    baseUrl: "https://app.one-runtime.com",
   });
 
   const button = document.getElementById("connect-hubspot");
