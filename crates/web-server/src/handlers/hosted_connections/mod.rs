@@ -17,19 +17,19 @@ pub fn routes() -> Router<Arc<AppState>> {
         .route("/connect.js", get(loaders::loader_sdk))
         .route("/connect/submit.json", post(actions::action_submit_json))
         .route(
-            "/api/public/catalog/integrations",
+            "/v1/catalog/integrations",
             get(actions::action_list_catalog_integrations).options(actions::options_public_api),
         )
         .route(
-            "/api/public/integrations",
+            "/v1/integrations",
             get(actions::action_list_integrations).options(actions::options_public_api),
         )
         .route(
-            "/api/public/hosted-connection-sessions",
+            "/v1/hosted-connection-sessions",
             post(actions::action_create_session_public).options(actions::options_public_api),
         )
         .route(
-            "/api/public/disconnect",
+            "/v1/disconnect",
             post(actions::action_disconnect_public).options(actions::options_public_api),
         )
         .typed_get(loaders::loader_popup)

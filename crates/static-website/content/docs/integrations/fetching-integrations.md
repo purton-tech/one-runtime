@@ -10,7 +10,7 @@ This is the endpoint to use when you already know which end user is connecting a
 
 ## Endpoint
 
-`GET /api/public/integrations?end_user_id=<END_USER_ID>`
+`GET /v1/integrations?end_user_id=<END_USER_ID>`
 
 - Send your One Runtime org API key in the `Authorization` header.
 - Keep the API key on your server. Do not expose it to the browser.
@@ -25,7 +25,7 @@ export API_KEY='oru_your_api_key_here'
 
 ```bash
 curl --request GET \
-  --url 'https://app.one-runtime.com/api/public/integrations?end_user_id=user_123' \
+  --url 'https://app.one-runtime.com/v1/integrations?end_user_id=user_123' \
   --header "Authorization: Bearer $API_KEY" \
   --header 'Accept: application/json'
 ```
