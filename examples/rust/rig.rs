@@ -59,7 +59,7 @@ async fn main() -> Result<()> {
 
     let response: String = agent
         .prompt(
-            "Use the run_python tool to execute exactly this Python code:\nprint(\"hello from python\")\nThen reply with one short sentence explaining what you ran and include the printed output.",
+            "Use the run_python tool to execute exactly this Python code:\nresult = (37 * 42) + 11\nprint(result)\nThen reply with one short sentence explaining the calculation and include the printed output.",
         )
         .max_turns(4)
         .await
