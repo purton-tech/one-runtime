@@ -1,5 +1,6 @@
 [workspace]
 members = [
+    "examples/rust",
     "crates/static-website",
     "crates/tool-runtime",
     "crates/web-assets",

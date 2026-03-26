@@ -1330,6 +1330,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "examples-rust"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "dotenvy",
+ "rig-core",
+ "rmcp 0.16.0",
+ "tokio",
+]
+
+[[package]]
 name = "exr"
 version = "1.74.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3474,6 +3485,7 @@ dependencies = [
  "ordered-float",
  "pin-project-lite",
  "reqwest 0.13.2",
+ "rmcp 0.16.0",
  "schemars",
  "serde",
  "serde_json",
@@ -3500,6 +3512,32 @@ dependencies = [
 
 [[package]]
 name = "rmcp"
+version = "0.16.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cc4c9c94680f75470ee8083a0667988b5d7b5beb70b9f998a8e51de7c682ce60"
+dependencies = [
+ "async-trait",
+ "base64",
+ "chrono",
+ "futures",
+ "http",
+ "pastey 0.2.1",
+ "pin-project-lite",
+ "reqwest 0.13.2",
+ "rmcp-macros 0.16.0",
+ "schemars",
+ "serde",
+ "serde_json",
+ "sse-stream",
+ "thiserror 2.0.18",
+ "tokio",
+ "tokio-stream",
+ "tokio-util",
+ "tracing",
+]
+
+[[package]]
+name = "rmcp"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ba6b9d2f0efe2258b23767f1f9e0054cfbcac9c2d6f81a031214143096d7864f"
@@ -3515,7 +3553,7 @@ dependencies = [
  "pastey 0.2.1",
  "pin-project-lite",
  "rand 0.10.0",
- "rmcp-macros",
+ "rmcp-macros 1.2.0",
  "schemars",
  "serde",
  "serde_json",
@@ -3527,6 +3565,19 @@ dependencies = [
  "tower-service",
  "tracing",
  "uuid",
+]
+
+[[package]]
+name = "rmcp-macros"
+version = "0.16.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "90c23c8f26cae4da838fbc3eadfaecf2d549d97c04b558e7bd90526a9c28b42a"
+dependencies = [
+ "darling 0.23.0",
+ "proc-macro2",
+ "quote",
+ "serde_json",
+ "syn",
 ]
 
 [[package]]
@@ -5046,7 +5097,7 @@ dependencies = [
  "oas3",
  "rand 0.10.0",
  "reqwest 0.12.28",
- "rmcp",
+ "rmcp 1.2.0",
  "schemars",
  "serde",
  "serde_json",

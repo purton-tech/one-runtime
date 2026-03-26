@@ -1,0 +1,15 @@
+[package]
+name = "examples-rust"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "rig"
+path = "rig.rs"
+
+[dependencies]
+anyhow.workspace = true
+dotenvy.workspace = true
+rig-core = { workspace = true, features = ["rmcp"] }
+rmcp = { version = "0.16", features = ["client", "transport-streamable-http-client-reqwest", "reqwest"] }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
