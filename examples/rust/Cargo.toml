@@ -1,0 +1,13 @@
+[package]
+name = "examples-rust"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "rig"
+path = "rig.rs"
+
+[dependencies]
+anyhow.workspace = true
+rig-core.workspace = true
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
