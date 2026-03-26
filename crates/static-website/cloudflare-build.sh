@@ -11,6 +11,9 @@ if [[ ! -x ./tailwindcss-extra-linux-x64 ]]; then
   chmod +x ./tailwindcss-extra-linux-x64
 fi
 
+TIMESTAMP=$(date +%s)
+export TAILWIND_STYLESHEET="/tailwind-${TIMESTAMP}.css"
+
 cargo fetch --locked
-../../scripts/tailwind-crates --input ./input.css --output ./dist/tailwind.css --tailwind-bin ./tailwindcss-extra-linux-x64
+../../scripts/tailwind-crates --input ./input.css --output "./dist/tailwind-${TIMESTAMP}.css" --tailwind-bin ./tailwindcss-extra-linux-x64
 cargo run

@@ -18,6 +18,9 @@ async fn main() {
         .with_max_level(tracing::Level::INFO)
         .init();
 
+    let tailwind_stylesheet =
+        std::env::var("TAILWIND_STYLESHEET").unwrap_or_else(|_| "/tailwind.css".to_string());
+
     let config = SiteConfig {
         dist_dir: "dist".into(),
         run_server: std::env::var("DO_NOT_RUN_SERVER").is_err(),
@@ -28,10 +31,7 @@ async fn main() {
         site_meta: ui_links::site_meta(),
         site_header: None,
         site_assets: SiteAssets {
-            stylesheets: vec![
-                "/tailwind.css".to_string(),
-                "/content-lightbox.css".to_string(),
-            ],
+            stylesheets: vec![tailwind_stylesheet, "/content-lightbox.css".to_string()],
             head_scripts: vec![ScriptAsset {
                 src: "/copy-paste.js".to_string(),
                 script_type: None,
