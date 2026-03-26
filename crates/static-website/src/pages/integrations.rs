@@ -5,8 +5,8 @@ use ssg_whiz::{layouts::layout::Layout, Footer, Section};
 pub fn page() -> String {
     let page = rsx! {
         Layout {
-            title: "OpenAPI Specs | One Runtime".to_string(),
-            description: "OpenAPI-backed integrations are managed in One Runtime and will later be exposed through API-backed catalog views.".to_string(),
+            title: "Integrations | One Runtime".to_string(),
+            description: "Browse the integrations surface in One Runtime and jump into the API docs for fetching available integrations and connection state.".to_string(),
             image: Some("/logo.svg".to_string()),
             mobile_menu: None,
             section: Section::McpServers,
@@ -22,15 +22,15 @@ pub fn page() -> String {
                             Badge {
                                 badge_style: BadgeStyle::Outline,
                                 badge_color: BadgeColor::Primary,
-                                "OpenAPI specs"
+                                "Integrations"
                             }
                             h1 {
                                 class: "text-4xl font-bold lg:text-5xl",
-                                "OpenAPI specs are managed in the application"
+                                "Integrations are managed in One Runtime"
                             }
                             p {
                                 class: "text-lg text-base-content/75",
-                                "The static site no longer reads local spec files. The source of truth is now the One Runtime application database, and this page will later move to an API-backed catalog."
+                                "Use One Runtime to expose an integrations catalog to your customers, show connection state for each end user, and launch the hosted connection flow from your product."
                             }
                         }
 
@@ -41,23 +41,23 @@ pub fn page() -> String {
                                 Badge {
                                     badge_style: BadgeStyle::Outline,
                                     badge_color: BadgeColor::Primary,
-                                    "Temporary"
+                                    "API-first"
                                 }
                                 p {
                                     class: "text-base-content/75",
-                                    "System integrations are seeded in the application database. Public rendering here is intentionally minimal until the external catalog API exists."
+                                    "Your backend can fetch the integrations available to an end user with an org API key, then drive the hosted connection flow for the integrations the user selects."
                                 }
                                 div {
                                     class: "flex flex-wrap gap-3",
                                     a {
                                         class: "btn btn-primary",
-                                        href: "https://app.one-runtime.com",
-                                        "Open the app"
+                                        href: "/docs/integrations/fetching-integrations",
+                                        "Read the docs"
                                     }
                                     a {
                                         class: "btn btn-outline",
-                                        href: "/",
-                                        "Back home"
+                                        href: "https://app.one-runtime.com",
+                                        "Open the app"
                                     }
                                 }
                             }

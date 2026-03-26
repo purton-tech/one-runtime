@@ -40,8 +40,8 @@ pub fn HomepageHeroSection() -> Element {
                         }
                         a {
                             class: "btn btn-outline",
-                            href: "/open-api-specs/",
-                            "OpenAPI Specs"
+                            href: "/integrations/",
+                            "Integrations"
                         }
                         a {
                             class: "btn btn-outline",

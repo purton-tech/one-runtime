@@ -13,6 +13,6 @@ pub async fn generate_static_pages() -> Vec<SitePage> {
     vec![
         output_page("", pages::index::page()),
         output_page("pricing", pages::pricing::page()),
-        output_page("open-api-specs", pages::open_api_specs::page()),
+        output_page("integrations", pages::integrations::page()),
     ]
 }
