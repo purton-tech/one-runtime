@@ -10,10 +10,9 @@ fn output_page(path: &str, html: String) -> SitePage {
 }
 
 async fn fetch_integrations() -> Result<Vec<pages::integrations::IntegrationCard>, String> {
-    let api_base_url = std::env::var("ONE_RUNTIME_API_BASE_URL")
-        .unwrap_or_else(|_| "http://localhost:3000".to_string());
+    let api_base_url = "https://app.one-runtime.com".to_string();
     let url = format!(
-        "{}/api/public/catalog/integrations",
+        "{}/v1/catalog/integrations",
         api_base_url.trim_end_matches('/')
     );
 

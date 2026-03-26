@@ -32,9 +32,9 @@ pub fn page() -> String {
                 section {
                     id: "public-integration-tester",
                     class: "hero rounded-box border border-base-300 bg-base-100 shadow-sm",
-                    "data-list-url": "/api/public/integrations",
-                    "data-create-session-url": "/api/public/hosted-connection-sessions",
-                    "data-disconnect-url": "/api/public/disconnect",
+                    "data-list-url": "/v1/integrations",
+                    "data-create-session-url": "/v1/hosted-connection-sessions",
+                    "data-disconnect-url": "/v1/disconnect",
                     "data-connect-base-url": "/",
                     div {
                         class: "hero-content w-full max-w-none flex-col items-start gap-6",

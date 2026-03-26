@@ -10,7 +10,7 @@ This endpoint is useful for:
 
 ## Endpoint
 
-`GET /api/public/catalog/integrations`
+`GET /v1/catalog/integrations`
 
 - This endpoint does not require authentication.
 - It returns the public catalog only.
@@ -20,7 +20,7 @@ This endpoint is useful for:
 
 ```bash
 curl --request GET \
-  --url 'https://app.one-runtime.com/api/public/catalog/integrations' \
+  --url 'https://app.one-runtime.com/v1/catalog/integrations' \
   --header 'Accept: application/json'
 ```
 
