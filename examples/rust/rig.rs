@@ -40,6 +40,13 @@ async fn main() -> Result<()> {
             "Connected to MCP server: {} {}",
             server_info.server_info.name, server_info.server_info.version
         );
+        eprintln!(
+            "MCP instructions: {}",
+            server_info
+                .instructions
+                .as_deref()
+                .unwrap_or("No MCP instructions provided.")
+        );
     }
 
     let tools: Vec<Tool> = mcp_client
