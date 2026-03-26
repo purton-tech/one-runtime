@@ -1334,6 +1334,7 @@ name = "examples-rust"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "dotenvy",
  "rig-core",
  "rmcp 0.16.0",
  "tokio",

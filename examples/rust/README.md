@@ -12,6 +12,8 @@ Runnable Rust examples for One Runtime.
 - `ONE_RUNTIME_API_KEY`
 - Optional: `ONE_RUNTIME_MCP_URL` (defaults to `https://app.one-runtime.com/v1/mcp`)
 
+The example loads variables from `.env` when you run it from the repo root.
+
 ## Run
 
 ```bash

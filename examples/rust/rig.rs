@@ -10,6 +10,8 @@ use rmcp::{
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    dotenvy::dotenv().ok();
+
     let _openai_api_key = std::env::var("OPENAI_API_KEY")
         .context("OPENAI_API_KEY is required to run examples/rust/rig.rs")?;
     let one_runtime_api_key = std::env::var("ONE_RUNTIME_API_KEY")
