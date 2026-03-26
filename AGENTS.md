@@ -42,12 +42,16 @@ Environment variables are loaded from `/workspace/.env`.
 
 ## Folder: crates/web-server
 
-* Every route lives in its own folder under `crates/web-server/src/handlers`.
-* Handler convention: each route domain in `crates/web-server/src/handlers/<domain>/` must use `loaders.rs` for GET handlers, `actions.rs` for POST handlers, and `mod.rs` to re-export both.
-* POST endpoints are implemented in `actions.rs` with functions prefixed by `action_`.
-* `mod.rs` re-exports the loader and actions and defines the `routes()` helper used by `main.rs`.
-* Each loader function fetches data from the database and renders the page.
-* Actions call the appropriate database functions before redirecting the browser.
+* For detailed server architecture and routing conventions, see `crates/web-server/README.md`.
+* `crates/web-server` is the Axum composition crate: `main.rs` wires shared state, layers, MCP, static files, and merges handler-domain routers.
+* Route domains live under `crates/web-server/src/handlers/<domain>/`.
+* Handler convention: each route domain uses `loaders.rs` for GET/page-loading handlers, `actions.rs` for POST/mutation handlers, and `mod.rs` to define the domain `routes()` function used by `main.rs`.
+* Use typed routing with `axum_extra::routing::{TypedPath, RouterExt}` for app routes where possible.
+* UI/page route definitions live in `crates/web-ui/src/routes.rs`; server handlers consume those typed route structs directly.
+* Each loader fetches data and renders `web-ui`; actions perform mutations and return redirects, form responses, or API responses.
+* Public/API endpoints may use manual `.route(...)` wiring inside a domain `routes()` when typed routing is not the best fit.
+* Shared request helpers belong in `crates/web-server/src/handlers/mod.rs`; request auth/bootstrap lives in `config.rs`, `jwt.rs`, and `authz.rs`.
+* Static assets are served through `crates/web-server/src/static_files.rs` and `crates/web-assets`; do not bypass the typed static-file path with ad hoc file serving.
 
 ## Folder: crates/static-website
 
