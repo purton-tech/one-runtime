@@ -48,6 +48,15 @@ async fn main() -> Result<()> {
         .context("failed to list One Runtime MCP tools")?
         .tools;
 
+    eprintln!("Available MCP tools:");
+    for tool in &tools {
+        let description = tool
+            .description
+            .as_deref()
+            .unwrap_or("No description provided.");
+        eprintln!("- {}: {}", tool.name, description);
+    }
+
     let client = openai::Client::from_env();
     let agent = client
         .agent(openai::GPT_4O)
