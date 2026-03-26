@@ -41,4 +41,4 @@ Static marketing and documentation site.
 ## Build Notes
 
 * Tailwind for this crate is built through `/workspace/scripts/tailwind-crates`, which resolves `@crate "..."` directives into Cargo-registry `@source` entries before invoking `tailwind-extra`.
-* `cloudflare-build.sh` is the deploy build path and should stay aligned with the local build flow.
+* 
