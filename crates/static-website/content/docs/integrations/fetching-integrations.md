@@ -13,9 +13,13 @@ Use the public integrations endpoint from your backend to load the integrations 
 ## Example
 
 ```bash
+export API_KEY='oru_your_api_key_here'
+```
+
+```bash
 curl --request GET \
   --url 'https://api.one-runtime.com/api/public/integrations?end_user_id=user_123' \
-  --header 'Authorization: Bearer oru_your_api_key_here' \
+  --header "Authorization: Bearer $API_KEY" \
   --header 'Accept: application/json'
 ```
 
