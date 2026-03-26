@@ -19,16 +19,28 @@ pub fn summary() -> Summary {
             },
             Category {
                 name: "Integrations".to_string(),
-                pages: vec![PageSummary {
-                    date: "2026-03-26",
-                    title: "Fetching Integrations",
-                    description: "List integrations and current connection status for an end user with an org API key.",
-                    folder: "docs/integrations/fetching-integrations",
-                    markdown: include_str!("../content/docs/integrations/fetching-integrations.md"),
-                    image: None,
-                    author: None,
-                    author_image: None,
-                }],
+                pages: vec![
+                    PageSummary {
+                        date: "2026-03-26",
+                        title: "Fetching the Catalog",
+                        description: "Load the public integrations catalog without auth for docs pages and general browsing.",
+                        folder: "docs/integrations/fetching-the-catalog",
+                        markdown: include_str!("../content/docs/integrations/fetching-the-catalog.md"),
+                        image: None,
+                        author: None,
+                        author_image: None,
+                    },
+                    PageSummary {
+                        date: "2026-03-26",
+                        title: "Fetching Integrations",
+                        description: "Fetch integrations for an end user with an org API key and inspect current connection status.",
+                        folder: "docs/integrations/fetching-integrations",
+                        markdown: include_str!("../content/docs/integrations/fetching-integrations.md"),
+                        image: None,
+                        author: None,
+                        author_image: None,
+                    },
+                ],
             },
         ],
     }

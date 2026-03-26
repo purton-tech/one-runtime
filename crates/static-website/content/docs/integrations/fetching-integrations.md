@@ -1,6 +1,12 @@
 # Fetching Integrations
 
-Use the public integrations endpoint from your backend to load the integrations available to one of your users and the current connection status for each one.
+Use the authenticated integrations endpoint from your backend to load the integrations available to one of your users and the current connection status for each one.
+
+This is the endpoint to use when you already know which end user is connecting and you want to show:
+
+- which integrations are available
+- which ones are already connected
+- which ones still need a hosted connection flow
 
 ## Endpoint
 
@@ -9,6 +15,7 @@ Use the public integrations endpoint from your backend to load the integrations 
 - Send your One Runtime org API key in the `Authorization` header.
 - Keep the API key on your server. Do not expose it to the browser.
 - Pass your own user identifier as `end_user_id`.
+- This endpoint is customer-specific because the response includes connection state for that end user.
 
 ## Example
 
@@ -18,7 +25,7 @@ export API_KEY='oru_your_api_key_here'
 
 ```bash
 curl --request GET \
-  --url 'https://api.one-runtime.com/api/public/integrations?end_user_id=user_123' \
+  --url 'https://app.one-runtime.com/api/public/integrations?end_user_id=user_123' \
   --header "Authorization: Bearer $API_KEY" \
   --header 'Accept: application/json'
 ```
@@ -52,7 +59,7 @@ Example response:
       "slug": "hubspot",
       "name": "HubSpot",
       "description": "CRM and marketing automation.",
-      "logo_url": "https://cdn.example.com/hubspot.png",
+      "logo_url": "data:image/svg+xml;base64,...",
       "category": "CRM",
       "status": "connected",
       "supported_auth_types": ["api_key"]
@@ -69,5 +76,7 @@ Typical backend flow:
 2. Return the list to your frontend.
 3. Show connected integrations separately from available ones.
 4. When the user selects an unconnected integration, create a hosted connection session and open the One Runtime popup.
+
+If you only need the public catalog without end-user state, use [Fetching the Catalog](/docs/integrations/fetching-the-catalog).
 
 See [Getting Started](/docs/getting-started) for the full hosted connection flow.
