@@ -4,16 +4,16 @@ Runnable Rust examples for One Runtime.
 
 ## `rig.rs`
 
-Minimal OpenAI-backed `rig` example that asks the model to say hello.
+`rig.rs` connects a `rig` agent to One Runtime's MCP server, gives it the available tools, and prompts it to call `run_python`.
 
 ## Requirements
 
 - `OPENAI_API_KEY`
+- `ONE_RUNTIME_API_KEY`
+- Optional: `ONE_RUNTIME_MCP_URL` (defaults to `https://app.one-runtime.com/v1/mcp`)
 
 ## Run
 
 ```bash
 cargo run -p examples-rust --bin rig
 ```
-
-MCP-focused examples can be added here later.

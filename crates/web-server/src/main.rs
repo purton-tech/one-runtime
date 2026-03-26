@@ -52,7 +52,7 @@ async fn main() {
         // API and Customer Connection Popup
         .merge(handlers::hosted_connections::routes())
         // MCP server
-        .route("/mcp", post(mcp::handler::handle_mcp))
+        .route("/v1/mcp", post(mcp::handler::handle_mcp))
         .typed_get(static_files::static_path)
         .with_state(mcp_state)
         .layer(Extension(config))

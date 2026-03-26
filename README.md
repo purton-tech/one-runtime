@@ -102,7 +102,7 @@ response = client.responses.create(
     tools=[
         {
             "type": "mcp",
-            "server_url": "https://api.one-runtime.com/mcp",
+            "server_url": "https://app.one-runtime.com/v1/mcp",
             "headers": {
                 "Authorization": "Bearer oru_abc123"
             }
