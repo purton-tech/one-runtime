@@ -17,6 +17,10 @@ pub fn routes() -> Router<Arc<AppState>> {
         .route("/connect.js", get(loaders::loader_sdk))
         .route("/connect/submit.json", post(actions::action_submit_json))
         .route(
+            "/api/public/catalog/integrations",
+            get(actions::action_list_catalog_integrations).options(actions::options_public_api),
+        )
+        .route(
             "/api/public/integrations",
             get(actions::action_list_integrations).options(actions::options_public_api),
         )

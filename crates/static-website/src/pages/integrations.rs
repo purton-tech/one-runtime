@@ -1,8 +1,25 @@
 use daisy_rsx::{Badge, BadgeColor, BadgeStyle, Card, CardBody};
 use dioxus::prelude::*;
+use serde::Deserialize;
 use ssg_whiz::{layouts::layout::Layout, Footer, Section};
 
-pub fn page() -> String {
+#[derive(Debug, Clone, Deserialize)]
+pub struct IntegrationCard {
+    pub id: String,
+    pub slug: String,
+    pub name: String,
+    pub description: String,
+    pub logo_url: Option<String>,
+    pub category: Option<String>,
+    pub supported_auth_types: Vec<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct IntegrationCatalogResponse {
+    pub integrations: Vec<IntegrationCard>,
+}
+
+pub fn page(integrations: Vec<IntegrationCard>) -> String {
     let page = rsx! {
         Layout {
             title: "Integrations | One Runtime".to_string(),
@@ -16,7 +33,7 @@ pub fn page() -> String {
                 section {
                     class: "px-6 pt-28 pb-16 md:pt-40 lg:px-12",
                     div {
-                        class: "mx-auto max-w-5xl space-y-10",
+                        class: "mx-auto max-w-6xl space-y-10",
                         div {
                             class: "max-w-3xl space-y-4",
                             Badge {
@@ -31,6 +48,66 @@ pub fn page() -> String {
                             p {
                                 class: "text-lg text-base-content/75",
                                 "Use One Runtime to expose an integrations catalog to your customers, show connection state for each end user, and launch the hosted connection flow from your product."
+                            }
+                        }
+
+                        div {
+                            class: "grid gap-6 md:grid-cols-2 xl:grid-cols-3",
+                            for integration in integrations {
+                                Card {
+                                    key: "{integration.id}",
+                                    class: Some("border border-base-300 bg-base-100 shadow-sm".to_string()),
+                                    CardBody {
+                                        class: Some("gap-4".to_string()),
+                                        div {
+                                            class: "flex items-start gap-4",
+                                            if let Some(logo_url) = &integration.logo_url {
+                                                img {
+                                                    class: "h-12 w-12 rounded-xl border border-base-300 bg-base-200 object-contain p-2",
+                                                    src: "{logo_url}",
+                                                    alt: "{integration.name} logo",
+                                                }
+                                            } else {
+                                                div {
+                                                    class: "flex h-12 w-12 items-center justify-center rounded-xl border border-base-300 bg-base-200 text-sm font-semibold",
+                                                    "{integration.name.chars().next().unwrap_or('?')}"
+                                                }
+                                            }
+                                            div {
+                                                class: "space-y-1",
+                                                h2 {
+                                                    class: "card-title text-xl",
+                                                    "{integration.name}"
+                                                }
+                                                p {
+                                                    class: "text-sm text-base-content/60",
+                                                    "{integration.slug}"
+                                                }
+                                            }
+                                        }
+                                        p {
+                                            class: "text-base-content/75",
+                                            "{integration.description}"
+                                        }
+                                        div {
+                                            class: "flex flex-wrap gap-2",
+                                            if let Some(category) = &integration.category {
+                                                Badge {
+                                                    badge_style: BadgeStyle::Outline,
+                                                    badge_color: BadgeColor::Primary,
+                                                    "{category}"
+                                                }
+                                            }
+                                            for auth_type in &integration.supported_auth_types {
+                                                Badge {
+                                                    badge_style: BadgeStyle::Outline,
+                                                    badge_color: BadgeColor::Neutral,
+                                                    "{auth_type}"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
 

@@ -50,9 +50,25 @@ pub struct PublicHostedIntegrationResponse {
 }
 
 #[derive(Debug, Serialize)]
+pub struct PublicCatalogIntegrationResponse {
+    pub id: String,
+    pub slug: String,
+    pub name: String,
+    pub description: String,
+    pub logo_url: Option<String>,
+    pub category: Option<String>,
+    pub supported_auth_types: Vec<String>,
+}
+
+#[derive(Debug, Serialize)]
 pub struct PublicHostedIntegrationListResponse {
     pub end_user_id: String,
     pub integrations: Vec<PublicHostedIntegrationResponse>,
+}
+
+#[derive(Debug, Serialize)]
+pub struct PublicCatalogIntegrationListResponse {
+    pub integrations: Vec<PublicCatalogIntegrationResponse>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -324,6 +340,33 @@ pub async fn action_list_integrations(
     ))
 }
 
+pub async fn action_list_catalog_integrations(
+    State(state): State<std::sync::Arc<AppState>>,
+) -> Result<Response, CustomError> {
+    let client = state.pool.get().await?;
+
+    let integrations = clorinde::queries::hosted_connections::list_public_catalog_integrations()
+        .bind(&client)
+        .all()
+        .await?;
+
+    let integrations = integrations
+        .into_iter()
+        .filter_map(
+            |integration| match build_public_catalog_integration(integration) {
+                Ok(Some(integration)) => Some(Ok(integration)),
+                Ok(None) => None,
+                Err(err) => Some(Err(err)),
+            },
+        )
+        .collect::<Result<Vec<_>, _>>()?;
+
+    Ok(public_json_response(
+        json!(PublicCatalogIntegrationListResponse { integrations }),
+        StatusCode::OK,
+    ))
+}
+
 pub async fn action_disconnect_public(
     State(state): State<std::sync::Arc<AppState>>,
     headers: HeaderMap,
@@ -556,32 +599,70 @@ pub async fn action_submit_json(
 fn build_public_integration(
     integration: clorinde::queries::hosted_connections::PublicHostedIntegration,
 ) -> Result<Option<PublicHostedIntegrationResponse>, CustomError> {
-    if !supports_api_key_auth(&integration.openapi_spec)? {
+    let Some(metadata) = build_public_catalog_metadata(&integration.openapi_spec)? else {
         return Ok(None);
-    }
-
-    let spec: Value = serde_json::from_str(&integration.openapi_spec).map_err(|err| {
-        CustomError::FaultySetup(format!(
-            "Invalid OpenAPI spec stored for integration: {err}"
-        ))
-    })?;
+    };
 
     Ok(Some(PublicHostedIntegrationResponse {
         id: integration.id.to_string(),
         slug: integration.slug,
         name: integration.name,
         description: integration.description,
+        logo_url: metadata.logo_url,
+        category: metadata.category,
+        status: if integration.connected {
+            "connected".to_string()
+        } else {
+            "not_connected".to_string()
+        },
+        supported_auth_types: metadata.supported_auth_types,
+    }))
+}
+
+fn build_public_catalog_integration(
+    integration: clorinde::queries::hosted_connections::HostedIntegration,
+) -> Result<Option<PublicCatalogIntegrationResponse>, CustomError> {
+    let Some(metadata) = build_public_catalog_metadata(&integration.openapi_spec)? else {
+        return Ok(None);
+    };
+
+    Ok(Some(PublicCatalogIntegrationResponse {
+        id: integration.id.to_string(),
+        slug: integration.slug,
+        name: integration.name,
+        description: integration.description,
+        logo_url: metadata.logo_url,
+        category: metadata.category,
+        supported_auth_types: metadata.supported_auth_types,
+    }))
+}
+
+struct PublicCatalogMetadata {
+    logo_url: Option<String>,
+    category: Option<String>,
+    supported_auth_types: Vec<String>,
+}
+
+fn build_public_catalog_metadata(
+    openapi_spec: &str,
+) -> Result<Option<PublicCatalogMetadata>, CustomError> {
+    if !supports_api_key_auth(openapi_spec)? {
+        return Ok(None);
+    }
+
+    let spec: Value = serde_json::from_str(openapi_spec).map_err(|err| {
+        CustomError::FaultySetup(format!(
+            "Invalid OpenAPI spec stored for integration: {err}"
+        ))
+    })?;
+
+    Ok(Some(PublicCatalogMetadata {
         logo_url: info_string(&spec, "x-logo").or_else(|| {
             spec.pointer("/info/x-logo/url")
                 .and_then(Value::as_str)
                 .map(ToString::to_string)
         }),
         category: info_string(&spec, "x-category"),
-        status: if integration.connected {
-            "connected".to_string()
-        } else {
-            "not_connected".to_string()
-        },
         supported_auth_types: vec!["api_key".to_string()],
     }))
 }

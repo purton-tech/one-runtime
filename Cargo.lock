@@ -4044,6 +4044,8 @@ dependencies = [
  "daisy_rsx",
  "dioxus",
  "dioxus-ssr",
+ "reqwest 0.12.28",
+ "serde",
  "serde_json",
  "serde_yaml",
  "ssg_whiz",

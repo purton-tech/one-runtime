@@ -39,6 +39,17 @@ FROM public.integrations i
 WHERE i.owner_kind = 'system'
 ORDER BY LOWER(COALESCE(i.openapi_spec #>> '{info,title}', 'Untitled')), i.updated_at DESC;
 
+--! list_public_catalog_integrations : HostedIntegration
+SELECT
+    i.id,
+    COALESCE(i.slug, '') AS slug,
+    COALESCE(i.openapi_spec #>> '{info,title}', 'Untitled') AS name,
+    COALESCE(i.openapi_spec #>> '{info,description}', '') AS description,
+    i.openapi_spec::TEXT AS openapi_spec
+FROM public.integrations i
+WHERE i.owner_kind = 'system'
+ORDER BY LOWER(COALESCE(i.openapi_spec #>> '{info,title}', 'Untitled')), i.updated_at DESC;
+
 --! create_hosted_connection_session : HostedConnectionSession
 INSERT INTO public.hosted_connection_sessions (
     org_id,

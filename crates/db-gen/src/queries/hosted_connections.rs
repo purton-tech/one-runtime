@@ -752,6 +752,45 @@ impl<'c, 'a, 's, C: GenericClient, T1: crate::StringSql, T2: crate::StringSql>
         self.bind(client, &params.org_public_id, &params.end_user_id)
     }
 }
+pub struct ListPublicCatalogIntegrationsStmt(&'static str, Option<tokio_postgres::Statement>);
+pub fn list_public_catalog_integrations() -> ListPublicCatalogIntegrationsStmt {
+    ListPublicCatalogIntegrationsStmt(
+        "SELECT i.id, COALESCE(i.slug, '') AS slug, COALESCE(i.openapi_spec #>> '{info,title}', 'Untitled') AS name, COALESCE(i.openapi_spec #>> '{info,description}', '') AS description, i.openapi_spec::TEXT AS openapi_spec FROM public.integrations i WHERE i.owner_kind = 'system' ORDER BY LOWER(COALESCE(i.openapi_spec #>> '{info,title}', 'Untitled')), i.updated_at DESC",
+        None,
+    )
+}
+impl ListPublicCatalogIntegrationsStmt {
+    pub async fn prepare<'a, C: GenericClient>(
+        mut self,
+        client: &'a C,
+    ) -> Result<Self, tokio_postgres::Error> {
+        self.1 = Some(client.prepare(self.0).await?);
+        Ok(self)
+    }
+    pub fn bind<'c, 'a, 's, C: GenericClient>(
+        &'s self,
+        client: &'c C,
+    ) -> HostedIntegrationQuery<'c, 'a, 's, C, HostedIntegration, 0> {
+        HostedIntegrationQuery {
+            client,
+            params: [],
+            query: self.0,
+            cached: self.1.as_ref(),
+            extractor: |
+                row: &tokio_postgres::Row,
+            | -> Result<HostedIntegrationBorrowed, tokio_postgres::Error> {
+                Ok(HostedIntegrationBorrowed {
+                    id: row.try_get(0)?,
+                    slug: row.try_get(1)?,
+                    name: row.try_get(2)?,
+                    description: row.try_get(3)?,
+                    openapi_spec: row.try_get(4)?,
+                })
+            },
+            mapper: |it| HostedIntegration::from(it),
+        }
+    }
+}
 pub struct CreateHostedConnectionSessionStmt(&'static str, Option<tokio_postgres::Statement>);
 pub fn create_hosted_connection_session() -> CreateHostedConnectionSessionStmt {
     CreateHostedConnectionSessionStmt(
