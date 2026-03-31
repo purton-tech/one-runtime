@@ -12,7 +12,7 @@ chrono = { version = "0.4", default-features = false, features = ["clock", "std"
 clorinde = { version = "0.0.0", path = "../db-gen" }
 db = { path = "../db" }
 dotenvy.workspace = true
-hmac = "0.12"
+hmac = "0.13"
 hex = "0.4"
 web-assets = { path = "../web-assets" }
 web-ui = { path = "../web-ui" }
