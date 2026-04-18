@@ -11,5 +11,5 @@ path = "rig.rs"
 anyhow.workspace = true
 dotenvy.workspace = true
 rig-core = { workspace = true, features = ["rmcp"] }
-rmcp = { version = "0.16", features = ["client", "transport-streamable-http-client-reqwest", "reqwest"] }
+rmcp = { version = "1.2", features = ["client", "transport-streamable-http-client-reqwest", "reqwest"] }
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
