@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "examples/rust",
+    "crates/mcp-app",
     "crates/static-website",
     "crates/tool-runtime",
     "crates/web-assets",
