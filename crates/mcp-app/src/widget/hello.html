@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Hello App</title>
+    <style>
+      :root { color-scheme: light dark; }
+      body {
+        font-family: ui-sans-serif, system-ui, sans-serif;
+        margin: 0;
+        padding: 16px;
+      }
+      .card {
+        border: 1px solid #8884;
+        border-radius: 14px;
+        padding: 16px;
+      }
+      h1 { margin: 0 0 8px; font-size: 18px; }
+      p { margin: 0; opacity: 0.85; }
+    </style>
+  </head>
+  <body>
+    <!-- This is the tiny UI the host iframe renders for the tool result. -->
+    <div class="card">
+      <h1 id="message">Hello</h1>
+      <p id="subtitle">Waiting for tool result...</p>
+    </div>
+
+    <script>
+      const message = document.getElementById("message");
+      const subtitle = document.getElementById("subtitle");
+
+      function applyPayload(payload) {
+        const sc = payload?.structuredContent ?? payload ?? {};
+        message.textContent = sc.message ?? "Hello";
+        subtitle.textContent = sc.subtitle ?? "No subtitle";
+      }
+
+      // ChatGPT-style hosts send globals, including toolOutput, into the iframe.
+      function applyOpenAIGlobals(globals) {
+        if (globals?.toolOutput) {
+          applyPayload(globals.toolOutput);
+        }
+      }
+
+      // Simpler hosts may still forward a JSON-RPC tool-result notification.
+      function applyLegacyToolResult(params) {
+        applyPayload(params);
+      }
+
+      // The widget only needs to listen for host messages and map them to one render path.
+      window.addEventListener("message", (event) => {
+        const msg = event.data;
+        if (!msg) return;
+
+        if (msg.type === "openai:set_globals") {
+          applyOpenAIGlobals(msg.globals);
+          return;
+        }
+
+        if (msg.jsonrpc === "2.0" && msg.method === "ui/notifications/tool-result") {
+          applyLegacyToolResult(msg.params);
+        }
+      });
+    </script>
+  </body>
+</html>
