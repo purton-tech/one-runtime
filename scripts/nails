@@ -30,8 +30,9 @@ usage() {
 Usage: ./octo-tmux.sh <mode>
 
 Modes:
-  code  Start the main app development tmux session and watchers
-  site  Start the static site tmux session and watchers
+  code     Start the main app development tmux session and watchers
+  site     Start the static site tmux session and watchers
+  mcp-app  Start the MCP app and a Cloudflare quick tunnel
 EOF
   exit 1
 }
@@ -153,10 +154,35 @@ start_site_tmux() {
   attach_session "$session"
 }
 
+start_mcp_app_tmux() {
+  local session="mcp-app"
+
+  debug "starting mcp-app mode in $REPO_ROOT"
+
+  if tmux has-session -t "$session" 2>/dev/null; then
+    debug "session '$session' already exists"
+    attach_session "$session"
+  fi
+
+  debug "creating session '$session'"
+  tmux -f "$TMUX_CONFIG" new-session -d -s "$session" -n app -c "$REPO_ROOT"
+
+  tmux select-pane -t "$session:0.0" -T "mcp-app"
+  tmux send-keys -t "$session:0.0" "RUST_LOG=debug cargo run -p mcp-app" C-m
+
+  tmux split-window -h -t "$session:0" -c "$REPO_ROOT"
+  tmux select-pane -t "$session:0.1" -T "cloudflare tunnel"
+  tmux send-keys -t "$session:0.1" "docker run --rm --network host cloudflare/cloudflared:latest tunnel --url http://127.0.0.1:8080" C-m
+
+  tmux select-pane -t "$session:0.0"
+  tmux select-layout -t "$session:0" even-horizontal
+  attach_session "$session"
+}
+
 start_tmux() {
   debug "mode='$MODE' repo_root='$REPO_ROOT' in_devcontainer=$(in_devcontainer && echo yes || echo no)"
   case "$MODE" in
-    code|site) ;;
+    code|site|mcp-app) ;;
     *) usage ;;
   esac
 
@@ -167,6 +193,7 @@ start_tmux() {
   case "$MODE" in
     code) start_code_tmux ;;
     site) start_site_tmux ;;
+    mcp-app) start_mcp_app_tmux ;;
   esac
 }
 

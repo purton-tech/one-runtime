@@ -19,6 +19,9 @@ tmux:
 tmux-site :
     scripts/nails site
 
+tmux-mcp-app:
+    scripts/nails mcp-app
+
 codex:
     sudo apt update && sudo apt install bubblewrap
     sudo chown -R vscode:vscode /home/vscode/.codex
